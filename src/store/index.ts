@@ -1,18 +1,28 @@
 import { configureStore, createAction, createReducer } from "@reduxjs/toolkit";
 import { range } from "../util";
 import { NUM_BOARDS, NUM_GUESSES, WORDS_VALID } from "./consts";
-import { getGuessResult, getTargetWords, State } from "./funcs";
+import { allWordsGuessed, getTargetWords } from "./funcs";
+import ReactRedux, { TypedUseSelectorHook } from "react-redux";
+
+export type State = {
+  // Daily duotrigordle number (seed for target words)
+  id: number;
+  // Current word input (1 character per string)
+  input: string[];
+  // List of guesses
+  guesses: string[];
+  // 32 wordle targets
+  targets: string[];
+  // Whether or not the game is finished
+  gameOver: boolean;
+};
 
 const initialState: State = {
   id: 0,
   input: [],
-  boards: range(NUM_BOARDS).map((_) => ({
-    target: "AAAAA",
-    guesses: [],
-    complete: false,
-    won: false,
-  })),
-  gameOver: true,
+  guesses: [],
+  targets: range(NUM_BOARDS).map((_) => "AAAAA"),
+  gameOver: false,
 };
 
 // Actions
@@ -29,15 +39,10 @@ const reducer = createReducer(initialState, (builder) => {
       return action.payload.state;
     })
     .addCase(startGame, (_, action) => {
-      const targets = getTargetWords(action.payload.id);
       const newState: State = {
         id: action.payload.id,
-        boards: targets.map((target) => ({
-          target,
-          guesses: [],
-          complete: false,
-          won: false,
-        })),
+        targets: getTargetWords(action.payload.id),
+        guesses: [],
         input: [],
         gameOver: false,
       };
@@ -61,20 +66,12 @@ const reducer = createReducer(initialState, (builder) => {
       if (!WORDS_VALID.has(guess)) {
         return;
       }
+      state.guesses.push(guess);
 
-      let allComplete = true;
-      for (const board of state.boards) {
-        if (board.complete) continue;
-        board.guesses.push(guess);
-        if (getGuessResult(guess, board.target) === "GGGGG") {
-          board.complete = true;
-          board.won = true;
-        } else if (board.guesses.length === NUM_GUESSES) {
-          board.complete = true;
-        }
-      }
-
-      if (allComplete) {
+      if (
+        state.guesses.length === NUM_GUESSES ||
+        allWordsGuessed(state.guesses, state.targets)
+      ) {
         state.gameOver = true;
       }
     });
@@ -84,6 +81,6 @@ const reducer = createReducer(initialState, (builder) => {
 export const store = configureStore({ reducer });
 
 // Reexports
-export * from "./selector";
-export * from "./funcs";
 export * from "./consts";
+export * from "./funcs";
+export * from "./selector";

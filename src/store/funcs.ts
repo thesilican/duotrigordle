@@ -1,31 +1,13 @@
+import { START_DATE } from ".";
 import { mulberry32 } from "../util";
 import { NUM_BOARDS, WORDS_TARGET } from "./consts";
 
-export type State = {
-  // Daily duotrigordle number (seed for target words)
-  id: number;
-  // Current word input
-  input: string[];
-  // 32 wordle boards
-  boards: Board[];
-  // Whether or not the game is finished
-  gameOver: boolean;
-};
-export type Board = {
-  // Target word of board
-  target: string;
-  // Guessed words of board
-  guesses: string[];
-  // Whether the board is complete (board.won == true or guesses.length == NUM_GUESSES)
-  complete: boolean;
-  // Whether the target word has been guessed
-  won: boolean;
-};
-
-// One of the 3 colors that a letter in a guess word can have
-export type GuessColor = "B" | "Y" | "G";
-// GuessResult should be a 5-letter string, where each character is a GuessColor
-export type GuessResult = string;
+// Returns the id for today's duotrigordle
+export function getTodaysId(): number {
+  const today = new Date();
+  const diff = today.getTime() - START_DATE.getTime();
+  return Math.ceil(diff / 1000 / 60 / 60 / 24);
+}
 
 // Given a duotrigordle id, return the corresponding 32 target wordles
 export function getTargetWords(id: number): string[] {
@@ -41,18 +23,18 @@ export function getTargetWords(id: number): string[] {
   return targetWords;
 }
 
-// Given a guess word and target word, returns the color results
-export function getGuessResult(guess: string, target: string): GuessResult {
-  let guessResult = "BBBBB";
-  function replace(str: string, idx: number, letter: string) {
-    return str.substring(0, idx) + str[idx] + str.substring(idx + 1);
-  }
+// Given a guess word and target word, returns a 5-letter string
+// consisting of either "B", "Y", or "G" representing a
+// black, yellow, or green letter guess
+// e.g. getGuessResult("XYCEZ", "ABCDE") returns "BBGYB"
+export function getGuessResult(guess: string, target: string): string {
+  let guessResult: string[] = ["B", "B", "B", "B", "B"];
 
   // Find green letters
   const unmatched = new Map<string, number>();
   for (let i = 0; i < 5; i++) {
     if (guess[i] === target[i]) {
-      guessResult = replace(guessResult, i, "G");
+      guessResult[i] = "G";
     } else {
       const count = unmatched.get(target[i]) ?? 0;
       unmatched.set(target[i], count + 1);
@@ -66,9 +48,22 @@ export function getGuessResult(guess: string, target: string): GuessResult {
     }
     const count = unmatched.get(guess[i]);
     if (count !== undefined && count > 0) {
-      guessResult = replace(guessResult, i, "Y");
+      guessResult[i] = "Y";
       unmatched.set(guess[i], count - 1);
     }
   }
-  return guessResult;
+  return guessResult.join("");
+}
+
+// Check if every target word has been guessed
+export function allWordsGuessed(guesses: string[], targets: string[]) {
+  if (guesses.length < targets.length) {
+    return false;
+  }
+  for (const guess of guesses) {
+    if (targets.indexOf(guess) === -1) {
+      return false;
+    }
+  }
+  return true;
 }

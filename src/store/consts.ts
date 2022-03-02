@@ -2,6 +2,9 @@ export const NUM_BOARDS = 32;
 
 export const NUM_GUESSES = 39;
 
+// TODO: Set this to launch date
+export const START_DATE = new Date("2022-03-01T00:00:00");
+
 export const WORDS_TARGET = [
   "ABACK",
   "ABASE",

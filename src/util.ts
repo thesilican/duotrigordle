@@ -1,3 +1,4 @@
+// Similar to python range()
 export function range(min: number, max?: number): number[] {
   if (max === undefined) {
     max = min;

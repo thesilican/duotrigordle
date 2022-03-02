@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { WORDS_TARGET, WORDS_VALID } from "../store/consts";
+import { WORDS_TARGET } from "../store/consts";
 import { getGuessResult } from "../store/funcs";
 
 function App() {

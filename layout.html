@@ -35,14 +35,30 @@
         height: 100%;
       }
       body {
+        height: 100%;
+
         background: var(--black);
         color: var(--white);
-        height: 100%;
         font-family: "Outfit", sans-serif;
-        font-size: calc(var(--app-width) / 25);
+        font-size: calc(var(--app-width) / 30);
       }
       p {
         margin: 0;
+      }
+      ul {
+        margin: 0;
+      }
+      a {
+        color: var(--white);
+      }
+      button {
+        font-size: calc(var(--app-width) / 30);
+        padding: calc(var(--app-width) / 75);
+        color: var(--white);
+        background-color: var(--black);
+        border: none;
+        border-style: double;
+        cursor: pointer;
       }
 
       /* Game */
@@ -172,9 +188,9 @@
       /* Result */
       .result {
         display: grid;
-        grid-template-columns: 1fr 1fr;
+        grid-template-columns: 1fr auto;
         padding: calc(var(--app-width) / 75);
-        font-size: calc(var(--app-width) / 35);
+        font-size: calc(var(--app-width) / 30);
       }
       .result.hidden {
         display: none;
@@ -194,18 +210,35 @@
         margin-bottom: calc(var(--app-width) / 75);
       }
 
-      .copy {
-        font-size: calc(var(--app-width) / 30);
-        padding: calc(var(--app-width) / 75);
-        color: var(--white);
-        background-color: var(--black);
-        border: none;
-        border-style: double;
-        cursor: pointer;
-      }
-
       .words {
         text-align: center;
+      }
+
+      .popup-wrapper {
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .popup-wrapper.hidden {
+        display: none;
+      }
+      .popup {
+        background-color: var(--black);
+
+        width: min(calc(var(--app-max-width) * 0.75), 100vw);
+        padding: calc(var(--app-width) / 20);
+
+        display: flex;
+        flex-direction: column;
+      }
+      .close {
+        margin-top: calc(var(--app-width) / 30);
       }
     </style>
   </head>
@@ -6530,7 +6563,7 @@
           <div class="cell"><span>H</span></div>
         </div>
       </div>
-      <div class="keyboard">
+      <div class="keyboard hidden">
         <div class="key"><span>Q</span></div>
         <div class="key"><span>W</span></div>
         <div class="key"><span>E</span></div>
@@ -6562,7 +6595,7 @@
         <div class="key enter-2"><span></span></div>
         <div class="key enter-3"><span>⏎</span></div>
       </div>
-      <div class="result hidden">
+      <div class="result">
         <div class="share">
           <p class="text">
             Daily Duotrigordle #13 34/39<br />
@@ -6590,6 +6623,49 @@
           <p>CHAIR - CHAIR - CHAIR - CHAIR</p>
           <p>CHAIR - CHAIR - CHAIR - CHAIR</p>
         </div>
+      </div>
+    </div>
+    <div class="popup-wrapper">
+      <div class="popup">
+        <p>Duotrigordle by Bryan Chen</p>
+        <p>
+          Source code on
+          <a target="_blank" href="https://github.com/thesilican/duotrigordle"
+            >GitHub</a
+          >
+        </p>
+        <p>Based on</p>
+        <ul>
+          <li>
+            <a target="_blank" href="https://hexadecordle.co.uk/"
+              >Hexadecordle</a
+            >
+            by Alfie Rayner
+          </li>
+          <li>
+            <a target="_blank" href="https://octordle.com/">Octordle</a> by
+            Kenneth Crawford
+          </li>
+          <li>
+            <a target="_blank" href="https://quordle.com/">Quordle</a> by
+            @fireph
+          </li>
+          <li>
+            <a target="_blank" href="https://zaratustra.itch.io/dordle"
+              >Dordle</a
+            >
+            by Guilherme S. Töws
+          </li>
+          <li>
+            <a
+              target="_blank"
+              href="https://www.nytimes.com/games/wordle/index.html"
+              >Wordle</a
+            >
+            by Josh Wardle
+          </li>
+        </ul>
+        <button class="close">close</button>
       </div>
     </div>
   </body>

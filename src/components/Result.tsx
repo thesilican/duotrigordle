@@ -87,7 +87,10 @@ const EMOJI_MAP = [
   "🅰️",
   "🅱️",
   "🆎",
+  "🆎",
+  "🆑",
   "🅾️",
+  "🆘",
 ];
 
 function getShareableText(

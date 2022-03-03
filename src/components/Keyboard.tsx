@@ -215,9 +215,9 @@ function generateStyles(
     }
     backgroundImage.push(`linear-gradient(90deg,${row.join(",")})`);
   }
-  const backgroundSize = `100% 25%`;
+  const backgroundSize = `100% 15%`;
   const backgroundPosition = range(8)
-    .map((i) => `0% calc(100%*${i}/7)`)
+    .map((i) => `0% calc(100%*${i}/7 - 1%)`)
     .join(",");
 
   return {

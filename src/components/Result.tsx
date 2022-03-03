@@ -22,7 +22,7 @@ export default function Result(props: ResultProps) {
       ? guesses.length
       : null;
     return getShareableText(id, guessCount, targetGuessCounts);
-  }, [targets, guesses]);
+  }, [id, targets, guesses]);
   const parsed = twemoji.parse(shareableText) + "\n";
   const handleCopyToClipboardClick = () => {
     navigator.clipboard

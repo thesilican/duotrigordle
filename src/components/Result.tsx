@@ -112,5 +112,6 @@ function getShareableText(
 
     text.push(row.join(" ") + "\n");
   }
+  text.push("https://duotrigordle.com/");
   return text.join("");
 }

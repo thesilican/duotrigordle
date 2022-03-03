@@ -16,7 +16,7 @@ export default function Result(props: ResultProps) {
     const targetGuessCounts: (number | null)[] = [];
     for (const target of targets) {
       const idx = guesses.indexOf(target);
-      targetGuessCounts.push(idx === -1 ? null : idx);
+      targetGuessCounts.push(idx === -1 ? null : idx + 1);
     }
     const guessCount = allWordsGuessed(guesses, targets)
       ? guesses.length
@@ -47,7 +47,6 @@ export default function Result(props: ResultProps) {
 }
 
 const EMOJI_MAP = [
-  "0️⃣",
   "1️⃣",
   "2️⃣",
   "3️⃣",
@@ -87,7 +86,6 @@ const EMOJI_MAP = [
   "🅰️",
   "🅱️",
   "🆎",
-  "🆎",
   "🆑",
   "🅾️",
   "🆘",
@@ -108,7 +106,7 @@ function getShareableText(
       if (guessCount === null) {
         row.push("🟥");
       } else {
-        row.push(EMOJI_MAP.at(guessCount));
+        row.push(EMOJI_MAP.at(guessCount - 1));
       }
     }
 

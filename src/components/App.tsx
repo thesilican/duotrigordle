@@ -1,5 +1,5 @@
 import cn from "classnames";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
 import {
   allWordsGuessed,
@@ -21,7 +21,7 @@ export default function App() {
   const dispatch = useDispatch();
   const [showPopup, setShowPopup] = useState(false);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     const todaysId = getTodaysId();
     const text = localStorage.getItem("duotrigordle-state");
     const serialized = text && JSON.parse(text);

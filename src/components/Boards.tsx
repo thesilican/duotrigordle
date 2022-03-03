@@ -36,7 +36,7 @@ function Board(props: BoardProps) {
   }, [guesses, target]);
 
   const boardWon = useMemo(
-    () => guesses.indexOf(target) === -1,
+    () => guesses.indexOf(target) !== -1,
     [target, guesses]
   );
   const gameOver = useSelector((s) => s.gameOver);
@@ -93,7 +93,7 @@ function Cell(props: CellProps) {
   const textRed = props.textRed ? "text-red" : "";
   return (
     <div className={cn("cell", color, textRed)}>
-      <span>{props.letter}</span>
+      <span className="letter">{props.letter}</span>
     </div>
   );
 }

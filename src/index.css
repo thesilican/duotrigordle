@@ -121,6 +121,9 @@ button {
   background: var(--guess-black);
   font-size: calc(var(--app-width) / 25);
   line-height: 0.75;
+  user-select: none;
+
+  position: relative;
 }
 .cell.yellow {
   color: var(--black);
@@ -132,6 +135,9 @@ button {
 }
 .cell.text-red {
   color: var(--guess-text-red);
+}
+.letter {
+  position: absolute;
 }
 
 /* Keyboard */

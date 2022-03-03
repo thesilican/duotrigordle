@@ -1,7 +1,7 @@
 import cn from "classnames";
 import { useMemo } from "react";
 import twemoji from "twemoji";
-import { NUM_GUESSES, useSelector } from "../store";
+import { allWordsGuessed, NUM_GUESSES, useSelector } from "../store";
 
 type ResultProps = {
   hidden: boolean;
@@ -13,12 +13,15 @@ export default function Result(props: ResultProps) {
   const guesses = useSelector((s) => s.guesses);
 
   const shareableText = useMemo(() => {
-    const guessCounts: (number | null)[] = [];
+    const targetGuessCounts: (number | null)[] = [];
     for (const target of targets) {
       const idx = guesses.indexOf(target);
-      guessCounts.push(idx === -1 ? null : idx);
+      targetGuessCounts.push(idx === -1 ? null : idx);
     }
-    return getShareableText(id, guesses.length, guessCounts);
+    const guessCount = allWordsGuessed(guesses, targets)
+      ? guesses.length
+      : null;
+    return getShareableText(id, guessCount, targetGuessCounts);
   }, [targets, guesses]);
   const parsed = twemoji.parse(shareableText) + "\n";
   const handleCopyToClipboardClick = () => {
@@ -89,12 +92,12 @@ const EMOJI_MAP = [
 
 function getShareableText(
   id: number,
-  guessCount: number,
+  guessCount: number | null,
   targetGuessCounts: (number | null)[]
 ) {
   const text = [];
   text.push(`Daily Duotrigordle #${id}\n`);
-  text.push(`Guesses: ${guessCount}/${NUM_GUESSES}\n`);
+  text.push(`Guesses: ${guessCount ?? "X"}/${NUM_GUESSES}\n`);
   for (let i = 0; i < 8; i++) {
     const row = [];
     for (let j = 0; j < 4; j++) {

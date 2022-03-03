@@ -102,7 +102,7 @@ export default function Keyboard(props: KeyboardProps) {
 }
 
 type KeyProps = {
-  char: "backspace" | `enter-${1 | 2 | 3}` | string;
+  char: string;
 };
 function Key(props: KeyProps) {
   const dispatch = useDispatch();

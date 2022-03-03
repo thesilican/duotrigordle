@@ -24,12 +24,6 @@ type BoardProps = {
   idx: number;
 };
 function Board(props: BoardProps) {
-  const boardWon = useSelector(
-    (s) => s.guesses.indexOf(s.targets[props.idx]) !== -1
-  );
-  const gameOver = useSelector((s) => s.gameOver);
-  const complete = boardWon && !gameOver ? "complete" : null;
-
   const target = useSelector((s) => s.targets[props.idx]);
   const guesses = useSelector((s) => s.guesses);
   const colors = useMemo(
@@ -41,15 +35,21 @@ function Board(props: BoardProps) {
     return idx === -1 ? null : idx;
   }, [guesses, target]);
 
+  const boardWon = useMemo(
+    () => guesses.indexOf(target) === -1,
+    [target, guesses]
+  );
+  const gameOver = useSelector((s) => s.gameOver);
+  const complete = boardWon && !gameOver;
+
   const input = useSelector((s) => s.input);
 
   return (
-    <div className={cn("board", complete)}>
+    <div className={cn("board", complete && "complete")}>
       {range(NUM_GUESSES).map((i) => {
         if (guessed !== null && i > guessed) {
           return <Word key={i} letters="" />;
-        }
-        if (i === guesses.length) {
+        } else if (i === guesses.length) {
           const textRed = input.length === 5 && !WORDS_VALID.has(input);
           return <Word key={i} letters={input} textRed={textRed} />;
         } else {

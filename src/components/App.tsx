@@ -1,27 +1,27 @@
-import { useEffect } from "react";
-import { WORDS_TARGET } from "../store/consts";
-import { getGuessResult } from "../store/funcs";
+import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import { startGame } from "../store";
+import Boards from "./Boards";
+import Header from "./Header";
+import Keyboard from "./Keyboard";
+import Popup from "./Popup";
 
-function App() {
+export default function App() {
+  const dispatch = useDispatch();
+  const [showPopup, setShowPopup] = useState(false);
+
   useEffect(() => {
-    const randomWords = [];
-    for (let i = 0; i < 1000; i++) {
-      const a = WORDS_TARGET[Math.floor(Math.random() * WORDS_TARGET.length)];
-      const b = WORDS_TARGET[Math.floor(Math.random() * WORDS_TARGET.length)];
-      randomWords.push([a, b]);
-    }
-    console.time();
-    for (const [a, b] of randomWords) {
-      getGuessResult(a, b);
-    }
-    console.timeEnd();
-  }, []);
+    dispatch(startGame({ id: 1 }));
+  }, [dispatch]);
 
   return (
-    <div className="App">
-      <h1>Hello, world!</h1>
-    </div>
+    <>
+      <div className="game">
+        <Header onShowHelp={() => setShowPopup(true)} />
+        <Boards />
+        <Keyboard hidden={false} />
+      </div>
+      <Popup shown={showPopup} onClose={() => setShowPopup(false)} />
+    </>
   );
 }
-
-export default App;

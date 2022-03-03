@@ -2,13 +2,12 @@ import { configureStore, createAction, createReducer } from "@reduxjs/toolkit";
 import { range } from "../util";
 import { NUM_BOARDS, NUM_GUESSES, WORDS_VALID } from "./consts";
 import { allWordsGuessed, getTargetWords } from "./funcs";
-import ReactRedux, { TypedUseSelectorHook } from "react-redux";
 
 export type State = {
   // Daily duotrigordle number (seed for target words)
   id: number;
-  // Current word input (1 character per string)
-  input: string[];
+  // Current word input
+  input: string;
   // List of guesses
   guesses: string[];
   // 32 wordle targets
@@ -19,7 +18,7 @@ export type State = {
 
 const initialState: State = {
   id: 0,
-  input: [],
+  input: "",
   guesses: [],
   targets: range(NUM_BOARDS).map((_) => "AAAAA"),
   gameOver: false,
@@ -43,7 +42,7 @@ const reducer = createReducer(initialState, (builder) => {
         id: action.payload.id,
         targets: getTargetWords(action.payload.id),
         guesses: [],
-        input: [],
+        input: "",
         gameOver: false,
       };
       return newState;
@@ -51,18 +50,18 @@ const reducer = createReducer(initialState, (builder) => {
     .addCase(inputLetter, (state, action) => {
       if (state.gameOver) return;
       if (state.input.length < 5) {
-        state.input.push(action.payload.letter);
+        state.input += action.payload.letter;
       }
     })
     .addCase(inputBackspace, (state, _) => {
       if (state.gameOver) return;
-      state.input.pop();
+      state.input = state.input.substring(0, state.input.length - 1);
     })
     .addCase(inputEnter, (state, _) => {
       if (state.gameOver) return;
 
-      const guess = state.input.join("");
-      state.input = [];
+      const guess = state.input;
+      state.input = "";
       if (!WORDS_VALID.has(guess)) {
         return;
       }

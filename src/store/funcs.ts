@@ -1,5 +1,5 @@
 import { NUM_GUESSES, START_DATE, State } from ".";
-import { mulberry32 } from "../util";
+import { MersenneTwister } from "../util";
 import { NUM_BOARDS, WORDS_TARGET } from "./consts";
 
 // Returns the id for today's duotrigordle
@@ -12,9 +12,9 @@ export function getTodaysId(): number {
 // Given a duotrigordle id, return the corresponding 32 target wordles
 export function getTargetWords(id: number): string[] {
   const targetWords: string[] = [];
-  const randInt = mulberry32(id);
+  const rng = MersenneTwister(id);
   while (targetWords.length < NUM_BOARDS) {
-    const idx = randInt() % WORDS_TARGET.length;
+    const idx = rng.u32() % WORDS_TARGET.length;
     const word = WORDS_TARGET[idx];
     if (!targetWords.includes(word)) {
       targetWords.push(word);
@@ -68,10 +68,13 @@ export function allWordsGuessed(guesses: string[], targets: string[]) {
   return true;
 }
 
+// Save the game state to a serialized form for localStorage
 export type Serialized = {
   id: number;
   guesses: string[];
 };
+
+// Verify that a serialized object is in the right format
 export function isSerialized(obj: any): obj is Serialized {
   try {
     if (typeof obj !== "object") {
@@ -93,12 +96,16 @@ export function isSerialized(obj: any): obj is Serialized {
     return false;
   }
 }
+
+// Serialize a game state
 export function serialize(state: State): Serialized {
   return {
     id: state.id,
     guesses: state.guesses,
   };
 }
+
+// Deserialize a serialized game state
 export function deserialize(serialized: Serialized): State {
   const targets = getTargetWords(serialized.id);
   const gameOver =

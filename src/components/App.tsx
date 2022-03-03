@@ -25,7 +25,6 @@ export default function App() {
     const todaysId = getTodaysId();
     const text = localStorage.getItem("duotrigordle-state");
     const serialized = text && JSON.parse(text);
-    console.log(todaysId, serialized);
     if (isSerialized(serialized) && serialized.id === todaysId) {
       dispatch(loadState({ serialized }));
     } else {

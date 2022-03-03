@@ -173,6 +173,7 @@ button {
 .result {
   display: grid;
   grid-template-columns: 1fr auto;
+  column-gap: calc(var(--app-width) / 75);
   padding: calc(var(--app-width) / 75);
   font-size: calc(var(--app-width) / 30);
 }
@@ -181,20 +182,26 @@ button {
 }
 
 .share {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: 1fr auto;
+  row-gap: calc(var(--app-width) / 75);
 }
-
-.text .emoji {
-  width: calc(var(--app-width) / 35);
-}
-
 .text {
-  padding: 0px calc(var(--app-width) / 75);
-  margin-bottom: calc(var(--app-width) / 75);
-}
+  text-align: center;
+  background-color: var(--black);
+  color: white;
+  border: 1px solid;
+  font-size: calc(var(--app-width) / 50);
 
+  margin: 0;
+}
+.text .emoji {
+  width: calc(var(--app-width) / 50);
+}
 .words {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  column-gap: calc(var(--app-width) / 75);
   text-align: center;
 }
 

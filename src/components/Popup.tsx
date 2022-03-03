@@ -1,12 +1,12 @@
 import cn from "classnames";
 
 type PopupProps = {
-  shown: boolean;
+  hidden: boolean;
   onClose: () => void;
 };
 export default function Popup(props: PopupProps) {
   return (
-    <div className={cn("popup-wrapper", !props.shown && "hidden")}>
+    <div className={cn("popup-wrapper", props.hidden && "hidden")}>
       <div className="popup">
         <p>Duotrigordle by Bryan Chen</p>
         <p>

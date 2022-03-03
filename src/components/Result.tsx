@@ -1,0 +1,112 @@
+import { NUM_GUESSES, useSelector } from "../store";
+import cn from "classnames";
+import { range } from "../util";
+import { useMemo } from "react";
+import twemoji from "twemoji";
+
+type ResultProps = {
+  hidden: boolean;
+};
+export default function Result(props: ResultProps) {
+  const id = useSelector((s) => s.id);
+
+  const targets = useSelector((s) => s.targets);
+  const guesses = useSelector((s) => s.guesses);
+
+  const shareableText = useMemo(() => {
+    const guessCounts: (number | null)[] = [];
+    for (const target of targets) {
+      const idx = guesses.indexOf(target);
+      guessCounts.push(idx === -1 ? null : idx);
+    }
+    return getShareableText(id, guesses.length, guessCounts);
+  }, [targets, guesses]);
+  const parsed = twemoji.parse(shareableText) + "\n";
+  const handleCopyToClipboardClick = () => {
+    navigator.clipboard.writeText(shareableText);
+  };
+
+  return (
+    <div className={cn("result", props.hidden && "hidden")}>
+      <div className="share">
+        <pre className="text" dangerouslySetInnerHTML={{ __html: parsed }} />
+        <button onClick={handleCopyToClipboardClick}>copy to clipboard</button>
+      </div>
+      <div className="words">
+        {targets.map((target, i) => (
+          <p key={i}>{target}</p>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+const EMOJI_MAP = [
+  "0️⃣",
+  "1️⃣",
+  "2️⃣",
+  "3️⃣",
+  "4️⃣",
+  "5️⃣",
+  "6️⃣",
+  "7️⃣",
+  "8️⃣",
+  "9️⃣",
+  "🔟",
+  "🇦",
+  "🇧",
+  "🇨",
+  "🇩",
+  "🇪",
+  "🇫",
+  "🇬",
+  "🇭",
+  "🇮",
+  "🇯",
+  "🇰",
+  "🇱",
+  "🇲",
+  "🇳",
+  "🇴",
+  "🇵",
+  "🇶",
+  "🇷",
+  "🇸",
+  "🇹",
+  "🇺",
+  "🇻",
+  "🇼",
+  "🇽",
+  "🇾",
+  "🇿",
+  "🅰️",
+  "🅱️",
+  "🆎",
+  "🆑",
+  "🅾️",
+  "🆘",
+];
+
+function getShareableText(
+  id: number,
+  guessCount: number,
+  targetGuessCounts: (number | null)[]
+) {
+  const text = [];
+  text.push(`Daily Duotrigordle #${id}\n`);
+  text.push(`Guesses: ${guessCount}/${NUM_GUESSES}\n`);
+  for (let i = 0; i < 8; i++) {
+    const row = [];
+    for (let j = 0; j < 4; j++) {
+      const guessCount = targetGuessCounts[i * 4 + j];
+      if (guessCount === null) {
+        row.push("🟥");
+      } else {
+        row.push(EMOJI_MAP.at(guessCount));
+      }
+    }
+
+    text.push(row.join(" ") + "\n");
+  }
+  return text.join("");
+}

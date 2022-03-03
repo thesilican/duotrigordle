@@ -1,20 +1,45 @@
+import cn from "classnames";
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
-import { allWordsGuessed, NUM_GUESSES, startGame, useSelector } from "../store";
+import {
+  allWordsGuessed,
+  getTodaysId,
+  isSerialized,
+  loadState,
+  NUM_GUESSES,
+  serialize,
+  startGame,
+  useSelector,
+} from "../store";
 import Boards from "./Boards";
 import Header from "./Header";
 import Keyboard from "./Keyboard";
 import Popup from "./Popup";
 import Result from "./Result";
-import cn from "classnames";
 
 export default function App() {
   const dispatch = useDispatch();
   const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
-    dispatch(startGame({ id: 1 }));
+    const todaysId = getTodaysId();
+    const text = localStorage.getItem("duotrigordle-state");
+    const serialized = text && JSON.parse(text);
+    console.log(todaysId, serialized);
+    if (isSerialized(serialized) && serialized.id === todaysId) {
+      dispatch(loadState({ serialized }));
+    } else {
+      dispatch(startGame({ id: todaysId }));
+    }
   }, [dispatch]);
+
+  const state = useSelector((s) => s);
+  useEffect(() => {
+    localStorage.setItem(
+      "duotrigordle-state",
+      JSON.stringify(serialize(state))
+    );
+  }, [state]);
 
   const guessesUsedUp = useSelector((s) => s.guesses.length === NUM_GUESSES);
   const targets = useSelector((s) => s.targets);

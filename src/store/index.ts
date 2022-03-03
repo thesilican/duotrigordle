@@ -1,7 +1,12 @@
 import { configureStore, createAction, createReducer } from "@reduxjs/toolkit";
 import { range } from "../util";
 import { NUM_BOARDS, NUM_GUESSES, WORDS_VALID } from "./consts";
-import { allWordsGuessed, getTargetWords } from "./funcs";
+import {
+  allWordsGuessed,
+  deserialize,
+  getTargetWords,
+  Serialized,
+} from "./funcs";
 
 export type State = {
   // Daily duotrigordle number (seed for target words)
@@ -25,7 +30,7 @@ const initialState: State = {
 };
 
 // Actions
-export const loadState = createAction<{ state: State }>("load-state");
+export const loadState = createAction<{ serialized: Serialized }>("load-state");
 export const startGame = createAction<{ id: number }>("start-game");
 export const inputLetter = createAction<{ letter: string }>("input-letter");
 export const inputBackspace = createAction("input-backspace");
@@ -35,13 +40,13 @@ export const inputEnter = createAction("input-enter");
 const reducer = createReducer(initialState, (builder) => {
   builder
     .addCase(loadState, (_, action) => {
-      return action.payload.state;
+      return deserialize(action.payload.serialized);
     })
     .addCase(startGame, (_, action) => {
       const newState: State = {
         id: action.payload.id,
         targets: getTargetWords(action.payload.id),
-        guesses: getTargetWords(action.payload.id).slice(0, -1),
+        guesses: [],
         input: "",
         gameOver: false,
       };
@@ -58,6 +63,7 @@ const reducer = createReducer(initialState, (builder) => {
       state.input = state.input.substring(0, state.input.length - 1);
     })
     .addCase(inputEnter, (state, _) => {
+      allWordsGuessed(state.guesses, state.targets);
       if (state.gameOver) return;
 
       const guess = state.input;

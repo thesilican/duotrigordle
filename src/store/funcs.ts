@@ -1,4 +1,4 @@
-import { START_DATE } from ".";
+import { START_DATE, State } from ".";
 import { mulberry32 } from "../util";
 import { NUM_BOARDS, WORDS_TARGET } from "./consts";
 
@@ -60,10 +60,56 @@ export function allWordsGuessed(guesses: string[], targets: string[]) {
   if (guesses.length < targets.length) {
     return false;
   }
-  for (const guess of guesses) {
-    if (targets.indexOf(guess) === -1) {
+  for (const target of targets) {
+    if (guesses.indexOf(target) === -1) {
       return false;
     }
   }
   return true;
+}
+
+export type Serialized = {
+  id: number;
+  guesses: string[];
+  gameOver: boolean;
+};
+export function isSerialized(obj: any): obj is Serialized {
+  try {
+    if (typeof obj !== "object") {
+      return false;
+    }
+    if (typeof obj.id !== "number") {
+      return false;
+    }
+    if (!Array.isArray(obj.guesses)) {
+      return false;
+    }
+    for (const guess of obj.guesses) {
+      if (typeof guess !== "string") {
+        return false;
+      }
+    }
+    if (typeof obj.gameOver !== "boolean") {
+      return false;
+    }
+    return true;
+  } catch {
+    return false;
+  }
+}
+export function serialize(state: State): Serialized {
+  return {
+    id: state.id,
+    guesses: state.guesses,
+    gameOver: state.gameOver,
+  };
+}
+export function deserialize(serialized: Serialized): State {
+  return {
+    id: serialized.id,
+    input: "",
+    targets: getTargetWords(serialized.id),
+    guesses: serialized.guesses,
+    gameOver: serialized.gameOver,
+  };
 }

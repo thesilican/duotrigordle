@@ -41,7 +41,7 @@ const reducer = createReducer(initialState, (builder) => {
       const newState: State = {
         id: action.payload.id,
         targets: getTargetWords(action.payload.id),
-        guesses: [],
+        guesses: getTargetWords(action.payload.id).slice(0, -3),
         input: "",
         gameOver: false,
       };

@@ -27,7 +27,7 @@ export function getTargetWords(id: number): string[] {
 // consisting of either "B", "Y", or "G" representing a
 // black, yellow, or green letter guess
 // e.g. getGuessResult("XYCEZ", "ABCDE") returns "BBGYB"
-export function getGuessResult(guess: string, target: string): string {
+export function getGuessColors(guess: string, target: string): string {
   let guessResult: string[] = ["B", "B", "B", "B", "B"];
 
   // Find green letters

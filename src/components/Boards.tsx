@@ -2,7 +2,7 @@ import cn from "classnames";
 import React from "react";
 import { useMemo } from "react";
 import {
-  getGuessResult,
+  getGuessColors,
   NUM_BOARDS,
   NUM_GUESSES,
   useSelector,
@@ -33,15 +33,22 @@ function Board(props: BoardProps) {
   const target = useSelector((s) => s.targets[props.idx]);
   const guesses = useSelector((s) => s.guesses);
   const colors = useMemo(
-    () => guesses.map((guess) => getGuessResult(guess, target)),
+    () => guesses.map((guess) => getGuessColors(guess, target)),
     [guesses, target]
   );
+  const guessed = useMemo(() => {
+    const idx = guesses.indexOf(target);
+    return idx === -1 ? null : idx;
+  }, [guesses, target]);
 
   const input = useSelector((s) => s.input);
 
   return (
     <div className={cn("board", complete)}>
       {range(NUM_GUESSES).map((i) => {
+        if (guessed !== null && i > guessed) {
+          return <Word key={i} letters="" />;
+        }
         if (i === guesses.length) {
           const textRed = input.length === 5 && !WORDS_VALID.has(input);
           return <Word key={i} letters={input} textRed={textRed} />;

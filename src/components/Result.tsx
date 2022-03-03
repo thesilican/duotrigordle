@@ -1,8 +1,7 @@
-import { NUM_GUESSES, useSelector } from "../store";
 import cn from "classnames";
-import { range } from "../util";
 import { useMemo } from "react";
 import twemoji from "twemoji";
+import { NUM_GUESSES, useSelector } from "../store";
 
 type ResultProps = {
   hidden: boolean;
@@ -23,7 +22,10 @@ export default function Result(props: ResultProps) {
   }, [targets, guesses]);
   const parsed = twemoji.parse(shareableText) + "\n";
   const handleCopyToClipboardClick = () => {
-    navigator.clipboard.writeText(shareableText);
+    navigator.clipboard
+      .writeText(shareableText)
+      .then(() => alert("Copied results to clipboard!"))
+      .catch(() => alert("There was an error copying text to the clipboard"));
   };
 
   return (

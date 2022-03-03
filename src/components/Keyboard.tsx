@@ -220,7 +220,6 @@ function generateStyles(
     .map((i) => `0% calc(100%*${i}/7)`)
     .join(",");
 
-  console.log(backgroundImage.join(","));
   return {
     backgroundImage: backgroundImage.join(","),
     backgroundSize,

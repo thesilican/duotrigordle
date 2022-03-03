@@ -6,7 +6,6 @@ import {
   inputBackspace,
   inputEnter,
   inputLetter,
-  NUM_BOARDS,
   useSelector,
 } from "../store";
 import { range } from "../util";

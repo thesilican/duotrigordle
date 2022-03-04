@@ -47,48 +47,16 @@ export default function Result(props: ResultProps) {
 }
 
 const EMOJI_MAP = [
-  "1️⃣",
-  "2️⃣",
-  "3️⃣",
-  "4️⃣",
-  "5️⃣",
-  "6️⃣",
-  "7️⃣",
-  "8️⃣",
-  "9️⃣",
-  "🔟",
-  "🇦",
-  "🇧",
-  "🇨",
-  "🇩",
-  "🇪",
-  "🇫",
-  "🇬",
-  "🇭",
-  "🇮",
-  "🇯",
-  "🇰",
-  "🇱",
-  "🇲",
-  "🇳",
-  "🇴",
-  "🇵",
-  "🇶",
-  "🇷",
-  "🇸",
-  "🇹",
-  "🇺",
-  "🇻",
-  "🇼",
-  "🇽",
-  "🇾",
-  "🇿",
-  "🅰️",
-  "🅱️",
-  "🆎",
-  "🆑",
-  "🅾️",
-  "🆘",
+  ["0", "0️⃣"],
+  ["1", "1️⃣"],
+  ["2", "2️⃣"],
+  ["3", "3️⃣"],
+  ["4", "4️⃣"],
+  ["5", "5️⃣"],
+  ["6", "6️⃣"],
+  ["7", "7️⃣"],
+  ["8", "8️⃣"],
+  ["9", "9️⃣"],
 ];
 
 function getShareableText(
@@ -104,9 +72,13 @@ function getShareableText(
     for (let j = 0; j < 4; j++) {
       const guessCount = targetGuessCounts[i * 4 + j];
       if (guessCount === null) {
-        row.push("🟥");
+        row.push("🟥🟥");
       } else {
-        row.push(EMOJI_MAP.at(guessCount - 1));
+        let text = guessCount.toString().padStart(2, "0");
+        for (const [num, emoji] of EMOJI_MAP) {
+          text = text.replaceAll(num, emoji);
+        }
+        row.push(text);
       }
     }
 

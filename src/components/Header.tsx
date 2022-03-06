@@ -1,6 +1,23 @@
 import { useEffect, useMemo, useState } from "react";
 import { NUM_BOARDS, NUM_GUESSES, useSelector } from "../store";
 
+// Declare typescript definitions for safari fullscreen stuff
+declare global {
+  interface Document {
+    webkitFullscreenElement: Element | null;
+    webkitExitFullscreen: () => void;
+  }
+  interface HTMLElement {
+    webkitRequestFullscreen: () => void;
+  }
+}
+
+function isFullscreen() {
+  const element =
+    document.fullscreenElement || document.webkitFullscreenElement;
+  return Boolean(element);
+}
+
 type HeaderProps = {
   onShowHelp: () => void;
 };
@@ -17,19 +34,32 @@ export default function Header(props: HeaderProps) {
   );
   const numGuesses = guesses.length;
 
-  const [fullscreen, setFullscreen] = useState(false);
+  const [fullscreen, setFullscreen] = useState(isFullscreen);
   useEffect(() => {
     const handler = () => {
-      setFullscreen(document.fullscreenElement !== null);
+      setFullscreen(isFullscreen);
     };
     document.addEventListener("fullscreenchange", handler);
-    return () => document.removeEventListener("fullscreenchange", handler);
+    document.addEventListener("webkitfullscreenchange", handler);
+    return () => {
+      document.removeEventListener("fullscreenchange", handler);
+      document.removeEventListener("webkitfullscreenchange", handler);
+    };
   }, []);
   const handleFullscreenClick = () => {
-    if (fullscreen) {
-      document.exitFullscreen();
+    if (isFullscreen()) {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
     } else {
-      document.documentElement.requestFullscreen();
+      const element = document.documentElement;
+      if (element.requestFullscreen) {
+        element.requestFullscreen();
+      } else if (element.webkitRequestFullscreen) {
+        element.webkitRequestFullscreen();
+      }
     }
   };
 

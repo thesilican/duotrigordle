@@ -53,9 +53,7 @@ function Board(props: BoardProps) {
           const textRed = input.length === 5 && !WORDS_VALID.has(input);
           return <Word key={i} letters={input} textRed={textRed} />;
         } else {
-          return (
-            <Word key={i} letters={guesses.at(i) ?? ""} colors={colors.at(i)} />
-          );
+          return <Word key={i} letters={guesses[i] ?? ""} colors={colors[i]} />;
         }
       })}
     </div>
@@ -73,9 +71,9 @@ const Word = React.memo(function (props: WordProps) {
       {range(5).map((i) => (
         <Cell
           key={i}
-          letter={props.letters.at(i) ?? ""}
+          letter={props.letters[i] ?? ""}
           textRed={props.textRed}
-          color={props.colors?.at(i) as "B"}
+          color={props.colors ? (props.colors[i] as "B") : undefined}
         />
       ))}
     </>

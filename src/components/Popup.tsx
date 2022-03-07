@@ -6,7 +6,6 @@ function getHoursRemaining() {
   const now = new Date();
   const diff = now.getTime() - START_DATE.getTime();
   const hoursRemaining = 24 - ((diff / 1000 / 60 / 60) % 24);
-  console.log(diff, hoursRemaining);
   if (hoursRemaining > 0.95) {
     return hoursRemaining.toFixed(0);
   } else {

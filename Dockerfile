@@ -5,5 +5,5 @@ RUN npm ci
 COPY . /app/
 RUN npm run build
 
-FROM httpd:2.4
-COPY --from=builder /app/build /usr/local/apache2/htdocs/
+FROM nginx:alpine
+COPY --from=builder /app/build /usr/share/nginx/html

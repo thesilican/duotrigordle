@@ -86,6 +86,9 @@ export function isSerialized(obj: any): obj is Serialized {
     if (!Array.isArray(obj.guesses)) {
       return false;
     }
+    if (obj.guesses.length > NUM_GUESSES) {
+      return false;
+    }
     for (const guess of obj.guesses) {
       if (typeof guess !== "string") {
         return false;

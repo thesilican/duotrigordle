@@ -1,6 +1,6 @@
 export const NUM_BOARDS = 32;
 
-export const NUM_GUESSES = 40;
+export const NUM_GUESSES = 37;
 
 export const START_DATE = new Date("2022-03-03T00:00:00");
 

@@ -30,7 +30,7 @@ export default function Popup(props: PopupProps) {
   return (
     <div className={cn("popup-wrapper", props.hidden && "hidden")}>
       <div className="popup">
-        <p>Guess all 32 Duotrigordle words in 40 tries!</p>
+        <p>Guess all 32 Duotrigordle words in 37 tries!</p>
         <p>
           A new Daily Duotrigordle will be available in {hoursRemaining} hour
           {hoursRemaining === "1" ? "" : "s"}.

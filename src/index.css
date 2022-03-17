@@ -77,9 +77,6 @@ button {
   text-align: center;
   font-size: calc(var(--app-width) / 18.5);
 }
-.spacer {
-  width: calc(var(--app-width) / 18.5);
-}
 .help,
 .fullscreen {
   cursor: pointer;

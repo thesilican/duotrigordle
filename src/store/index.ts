@@ -19,6 +19,8 @@ export type State = {
   targets: string[];
   // Whether or not the game is finished
   gameOver: boolean;
+  // Whether or not the game is in practice mode
+  practice: boolean;
 };
 
 const initialState: State = {
@@ -27,11 +29,13 @@ const initialState: State = {
   guesses: [],
   targets: range(NUM_BOARDS).map((_) => "AAAAA"),
   gameOver: false,
+  practice: true,
 };
 
 // Actions
 export const loadState = createAction<{ serialized: Serialized }>("load-state");
-export const startGame = createAction<{ id: number }>("start-game");
+export const startGame =
+  createAction<{ id: number; practice: boolean }>("start-game");
 export const inputLetter = createAction<{ letter: string }>("input-letter");
 export const inputBackspace = createAction("input-backspace");
 export const inputEnter = createAction("input-enter");
@@ -49,6 +53,7 @@ const reducer = createReducer(initialState, (builder) => {
         guesses: [],
         input: "",
         gameOver: false,
+        practice: action.payload.practice,
       };
       return newState;
     })

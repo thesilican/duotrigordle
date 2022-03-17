@@ -28,16 +28,18 @@ export default function App() {
     if (isSerialized(serialized) && serialized.id === todaysId) {
       dispatch(loadState({ serialized }));
     } else {
-      dispatch(startGame({ id: todaysId }));
+      dispatch(startGame({ id: todaysId, practice: false }));
     }
   }, [dispatch]);
 
   const state = useSelector((s) => s);
   useEffect(() => {
-    localStorage.setItem(
-      "duotrigordle-state",
-      JSON.stringify(serialize(state))
-    );
+    if (!state.practice) {
+      localStorage.setItem(
+        "duotrigordle-state",
+        JSON.stringify(serialize(state))
+      );
+    }
   }, [state]);
 
   const guessesUsedUp = useSelector((s) => s.guesses.length === NUM_GUESSES);

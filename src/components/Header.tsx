@@ -1,5 +1,15 @@
-import { useEffect, useMemo, useState } from "react";
-import { NUM_BOARDS, NUM_GUESSES, useSelector } from "../store";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { useDispatch } from "react-redux";
+import {
+  getTodaysId,
+  isSerialized,
+  loadState,
+  NUM_BOARDS,
+  NUM_GUESSES,
+  startGame,
+  useSelector,
+} from "../store";
+import { MersenneTwister } from "../util";
 
 // Declare typescript definitions for safari fullscreen stuff
 declare global {
@@ -22,6 +32,7 @@ type HeaderProps = {
   onShowHelp: () => void;
 };
 export default function Header(props: HeaderProps) {
+  const dispatch = useDispatch();
   const id = useSelector((s) => s.id);
   const targets = useSelector((s) => s.targets);
   const guesses = useSelector((s) => s.guesses);
@@ -33,6 +44,47 @@ export default function Header(props: HeaderProps) {
     [targets, guesses]
   );
   const numGuesses = guesses.length;
+  const practice = useSelector((s) => s.practice);
+  const title = practice
+    ? `Practice Duotrigordle`
+    : `Daily Duotrigordle #${id}`;
+
+  // Refs so that the buttons are blurred on press
+  // so that pressing enter again does not cause the
+  // button to be activated again
+  const practiceRef = useRef<HTMLButtonElement>(null);
+  const newRef = useRef<HTMLButtonElement>(null);
+  const backRef = useRef<HTMLButtonElement>(null);
+  const handlePracticeClick = () => {
+    practiceRef.current?.blur();
+    const id = MersenneTwister().u32();
+    dispatch(startGame({ id, practice: true }));
+  };
+  const handleNewClick = () => {
+    newRef.current?.blur();
+    const res = window.confirm(
+      "Are you sure you want to start a new practice duotrigordle?\n" +
+        "(Your current progress will be lost)"
+    );
+    if (!res) return;
+    const id = MersenneTwister().u32();
+    dispatch(startGame({ id, practice: true }));
+  };
+  const handleBackClick = () => {
+    backRef.current?.blur();
+    const res = window.confirm(
+      "Are you sure you want to exit practice mode?\n" +
+        "(Your current progress will be lost)"
+    );
+    if (!res) return;
+    const text = localStorage.getItem("duotrigordle-state");
+    const serialized = text && JSON.parse(text);
+    if (isSerialized(serialized)) {
+      dispatch(loadState({ serialized }));
+    } else {
+      dispatch(startGame({ id: getTodaysId(), practice: false }));
+    }
+  };
 
   const [fullscreen, setFullscreen] = useState(isFullscreen);
   useEffect(() => {
@@ -66,9 +118,24 @@ export default function Header(props: HeaderProps) {
   return (
     <div className="header">
       <div className="row-1">
-        <div className="spacer"></div>
-        <div className="spacer"></div>
-        <p className="title">Daily Duotrigordle #{id}</p>
+        {practice ? (
+          <>
+            <button ref={backRef} onClick={handleBackClick}>
+              Back
+            </button>
+            <button ref={newRef} onClick={handleNewClick}>
+              New
+            </button>
+          </>
+        ) : (
+          <>
+            <button ref={practiceRef} onClick={handlePracticeClick}>
+              Practice
+            </button>
+            <div></div>
+          </>
+        )}
+        <p className="title">{title}</p>
         <img
           className="help"
           src="help.svg"

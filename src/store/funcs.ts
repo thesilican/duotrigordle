@@ -117,5 +117,6 @@ export function deserialize(serialized: Serialized): State {
     targets,
     guesses: serialized.guesses,
     gameOver,
+    practice: false,
   };
 }

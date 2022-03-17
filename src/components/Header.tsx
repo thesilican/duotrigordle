@@ -10,6 +10,9 @@ import {
   useSelector,
 } from "../store";
 import { MersenneTwister } from "../util";
+import helpSvg from "../assets/help.svg";
+import fullscreenSvg from "../assets/fullscreen.svg";
+import fullscreenExitSvg from "../assets/fullscreen-exit.svg";
 
 // Declare typescript definitions for safari fullscreen stuff
 declare global {
@@ -138,13 +141,13 @@ export default function Header(props: HeaderProps) {
         <p className="title">{title}</p>
         <img
           className="help"
-          src="help.svg"
+          src={helpSvg}
           alt="Help"
           onClick={props.onShowHelp}
         />
         <img
           className="fullscreen"
-          src={fullscreen ? "fullscreen-exit.svg" : "fullscreen.svg"}
+          src={fullscreen ? fullscreenSvg : fullscreenExitSvg}
           alt="Go Fullscreen"
           onClick={handleFullscreenClick}
         />

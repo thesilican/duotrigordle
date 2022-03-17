@@ -1,4 +1,4 @@
-# duotrigordle
+# Duotrigordle
 
 https://duotrigordle.com
 

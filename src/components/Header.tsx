@@ -147,7 +147,7 @@ export default function Header(props: HeaderProps) {
         />
         <img
           className="fullscreen"
-          src={fullscreen ? fullscreenSvg : fullscreenExitSvg}
+          src={fullscreen ? fullscreenExitSvg : fullscreenSvg}
           alt="Go Fullscreen"
           onClick={handleFullscreenClick}
         />

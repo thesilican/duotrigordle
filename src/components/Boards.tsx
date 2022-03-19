@@ -1,13 +1,8 @@
 import cn from "classnames";
-import React from "react";
-import { useMemo } from "react";
-import {
-  getGuessColors,
-  NUM_BOARDS,
-  NUM_GUESSES,
-  useSelector,
-  WORDS_VALID,
-} from "../store";
+import React, { useMemo } from "react";
+import { NUM_BOARDS, NUM_GUESSES, WORDS_VALID } from "../consts";
+import { getGuessColors } from "../funcs";
+import { useSelector } from "../store";
 import { range } from "../util";
 
 export default function Boards() {
@@ -24,8 +19,8 @@ type BoardProps = {
   idx: number;
 };
 function Board(props: BoardProps) {
-  const target = useSelector((s) => s.targets[props.idx]);
-  const guesses = useSelector((s) => s.guesses);
+  const target = useSelector((s) => s.game.targets[props.idx]);
+  const guesses = useSelector((s) => s.game.guesses);
   const colors = useMemo(
     () => guesses.map((guess) => getGuessColors(guess, target)),
     [guesses, target]
@@ -39,10 +34,10 @@ function Board(props: BoardProps) {
     () => guesses.indexOf(target) !== -1,
     [target, guesses]
   );
-  const gameOver = useSelector((s) => s.gameOver);
+  const gameOver = useSelector((s) => s.game.gameOver);
   const complete = boardWon && !gameOver;
 
-  const input = useSelector((s) => s.input);
+  const input = useSelector((s) => s.game.input);
 
   return (
     <div className={cn("board", complete && "complete")}>

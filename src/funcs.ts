@@ -1,6 +1,13 @@
-import { NUM_GUESSES, START_DATE, State } from ".";
-import { MersenneTwister } from "../util";
-import { NUM_BOARDS, WORDS_TARGET } from "./consts";
+import { Dispatch } from "@reduxjs/toolkit";
+import { NUM_BOARDS, NUM_GUESSES, START_DATE, WORDS_TARGET } from "./consts";
+import {
+  GameState,
+  loadGame,
+  SettingsState,
+  startGame,
+  updateSettings,
+} from "./store";
+import { MersenneTwister } from "./util";
 
 // Returns the id for today's duotrigordle
 export function getTodaysId(): number {
@@ -68,48 +75,40 @@ export function allWordsGuessed(guesses: string[], targets: string[]) {
   return true;
 }
 
-// Save the game state to a serialized form for localStorage
-export type Serialized = {
+// Serialization for local storage
+export type GameSerialized = {
   id: number;
   guesses: string[];
 };
-
-// Verify that a serialized object is in the right format
-export function isSerialized(obj: any): obj is Serialized {
-  try {
-    if (typeof obj !== "object") {
-      return false;
-    }
-    if (typeof obj.id !== "number") {
-      return false;
-    }
-    if (!Array.isArray(obj.guesses)) {
-      return false;
-    }
-    if (obj.guesses.length > NUM_GUESSES) {
-      return false;
-    }
-    for (const guess of obj.guesses) {
-      if (typeof guess !== "string") {
-        return false;
-      }
-    }
-    return true;
-  } catch {
+export function isGameSerialized(obj: any): obj is GameSerialized {
+  // Check the shape of the object just in case a previous invalid version of
+  // the object was stored in local storage
+  if (typeof obj !== "object" || obj === null) {
     return false;
   }
+  if (typeof obj.id !== "number") {
+    return false;
+  }
+  if (!Array.isArray(obj.guesses)) {
+    return false;
+  }
+  if (obj.guesses.length > NUM_GUESSES) {
+    return false;
+  }
+  for (const guess of obj.guesses) {
+    if (typeof guess !== "string") {
+      return false;
+    }
+  }
+  return true;
 }
-
-// Serialize a game state
-export function serialize(state: State): Serialized {
+export function serializeGame(state: GameState): GameSerialized {
   return {
     id: state.id,
     guesses: state.guesses,
   };
 }
-
-// Deserialize a serialized game state
-export function deserialize(serialized: Serialized): State {
+export function deserializeGame(serialized: GameSerialized): GameState {
   const targets = getTargetWords(serialized.id);
   const gameOver =
     serialized.guesses.length === NUM_GUESSES ||
@@ -122,4 +121,40 @@ export function deserialize(serialized: Serialized): State {
     gameOver,
     practice: false,
   };
+}
+export function loadGameFromLocalStorage(dispatch: Dispatch) {
+  const todaysId = getTodaysId();
+  const text = localStorage.getItem("duotrigordle-state");
+  const serialized = text && JSON.parse(text);
+  if (isGameSerialized(serialized) && serialized.id === todaysId) {
+    dispatch(loadGame({ game: deserializeGame(serialized) }));
+  } else {
+    dispatch(startGame({ id: todaysId, practice: false }));
+  }
+}
+export function saveGameToLocalStorage(state: GameState) {
+  localStorage.setItem(
+    "duotrigordle-state",
+    JSON.stringify(serializeGame(state))
+  );
+}
+
+// Serialization for settings
+export function isSettingsState(obj: any): obj is SettingsState {
+  // Check the shape of the object just in case a previous invalid version of
+  // the object was stored in local storage
+  if (typeof obj !== "object" || obj === null) {
+    return false;
+  }
+  return true;
+}
+export function loadSettingsFromLocalStorage(dispatch: Dispatch) {
+  const text = localStorage.getItem("duotrigordle-settings");
+  const settings = text && JSON.parse(text);
+  if (isSettingsState(settings)) {
+    dispatch(updateSettings({ settings }));
+  }
+}
+export function saveSettingsToLocalStorage(state: SettingsState) {
+  localStorage.setItem("duotrigordle-settings", JSON.stringify(state));
 }

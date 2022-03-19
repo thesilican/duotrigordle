@@ -11,18 +11,19 @@ export function range(min: number, max?: number): number[] {
   return array;
 }
 
+// Simple seeded RNG
 // https://gist.github.com/miyaokamarina/0a8660363095bb5b5d5d7677ed5be9b0
-const next = (mt: Uint32Array, i: number, j: number, k: number) => {
-  j = (mt[i]! & 0x80000000) | (mt[j]! & 0x7fffffff);
-  mt[i] = mt[k]! ^ (j >>> 1) ^ (-(j & 0x1) & 0x9908b0df);
-};
-const twist = (mt: Uint32Array) => {
-  let i = 0;
-  while (i < 227) next(mt, i++, i, i + 396);
-  while (i < 623) next(mt, i++, i, i - 228);
-  next(mt, 623, 0, 396);
-};
-export const MersenneTwister = (seed = Date.now() as number | Uint32Array) => {
+export function MersenneTwister(seed = Date.now() as number | Uint32Array) {
+  const next = (mt: Uint32Array, i: number, j: number, k: number) => {
+    j = (mt[i]! & 0x80000000) | (mt[j]! & 0x7fffffff);
+    mt[i] = mt[k]! ^ (j >>> 1) ^ (-(j & 0x1) & 0x9908b0df);
+  };
+  const twist = (mt: Uint32Array) => {
+    let i = 0;
+    while (i < 227) next(mt, i++, i, i + 396);
+    while (i < 623) next(mt, i++, i, i - 228);
+    next(mt, 623, 0, 396);
+  };
   let i = 1;
   let mt = new Uint32Array(624);
   const u32 = () => {
@@ -62,4 +63,4 @@ export const MersenneTwister = (seed = Date.now() as number | Uint32Array) => {
     mt.set(seed.slice(1));
   }
   return { u32, f32_ii, f32_ix, f32_xx, u53, f64_ix, save };
-};
+}

@@ -1,18 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
-import {
-  getTodaysId,
-  isSerialized,
-  loadState,
-  NUM_BOARDS,
-  NUM_GUESSES,
-  startGame,
-  useSelector,
-} from "../store";
+import { loadGame, startGame, useSelector } from "../store";
 import { MersenneTwister } from "../util";
 import helpSvg from "../assets/help.svg";
 import fullscreenSvg from "../assets/fullscreen.svg";
 import fullscreenExitSvg from "../assets/fullscreen-exit.svg";
+import { loadGameFromLocalStorage } from "../funcs";
+import { NUM_BOARDS, NUM_GUESSES } from "../consts";
 
 // Declare typescript definitions for safari fullscreen stuff
 declare global {
@@ -24,11 +18,25 @@ declare global {
     webkitRequestFullscreen: () => void;
   }
 }
-
 function isFullscreen() {
   const element =
     document.fullscreenElement || document.webkitFullscreenElement;
   return Boolean(element);
+}
+function enterFullscreen() {
+  const element = document.documentElement;
+  if (element.requestFullscreen) {
+    element.requestFullscreen();
+  } else if (element.webkitRequestFullscreen) {
+    element.webkitRequestFullscreen();
+  }
+}
+function exitFullscreen() {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
+  }
 }
 
 type HeaderProps = {
@@ -36,9 +44,9 @@ type HeaderProps = {
 };
 export default function Header(props: HeaderProps) {
   const dispatch = useDispatch();
-  const id = useSelector((s) => s.id);
-  const targets = useSelector((s) => s.targets);
-  const guesses = useSelector((s) => s.guesses);
+  const id = useSelector((s) => s.game.id);
+  const targets = useSelector((s) => s.game.targets);
+  const guesses = useSelector((s) => s.game.guesses);
   const boardsCompleted = useMemo(
     () =>
       targets
@@ -47,7 +55,7 @@ export default function Header(props: HeaderProps) {
     [targets, guesses]
   );
   const numGuesses = guesses.length;
-  const practice = useSelector((s) => s.practice);
+  const practice = useSelector((s) => s.game.practice);
   const title = practice
     ? `Practice Duotrigordle`
     : `Daily Duotrigordle #${id}`;
@@ -80,15 +88,10 @@ export default function Header(props: HeaderProps) {
         "(Your current progress will be lost)"
     );
     if (!res) return;
-    const text = localStorage.getItem("duotrigordle-state");
-    const serialized = text && JSON.parse(text);
-    if (isSerialized(serialized)) {
-      dispatch(loadState({ serialized }));
-    } else {
-      dispatch(startGame({ id: getTodaysId(), practice: false }));
-    }
+    loadGameFromLocalStorage(dispatch);
   };
 
+  // Fullscreen
   const [fullscreen, setFullscreen] = useState(isFullscreen);
   useEffect(() => {
     const handler = () => {
@@ -103,18 +106,9 @@ export default function Header(props: HeaderProps) {
   }, []);
   const handleFullscreenClick = () => {
     if (isFullscreen()) {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-      }
+      exitFullscreen();
     } else {
-      const element = document.documentElement;
-      if (element.requestFullscreen) {
-        element.requestFullscreen();
-      } else if (element.webkitRequestFullscreen) {
-        element.webkitRequestFullscreen();
-      }
+      enterFullscreen();
     }
   };
 

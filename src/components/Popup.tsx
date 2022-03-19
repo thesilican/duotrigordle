@@ -1,6 +1,6 @@
 import cn from "classnames";
 import { useEffect, useState } from "react";
-import { START_DATE } from "../store";
+import { START_DATE } from "../consts";
 
 function getHoursRemaining() {
   const now = new Date();

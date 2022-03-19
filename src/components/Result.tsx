@@ -1,16 +1,17 @@
 import cn from "classnames";
 import { useMemo } from "react";
 import twemoji from "twemoji";
-import { allWordsGuessed, NUM_GUESSES, useSelector } from "../store";
+import { NUM_BOARDS, NUM_GUESSES } from "../consts";
+import { allWordsGuessed } from "../funcs";
+import { useSelector } from "../store";
 
 type ResultProps = {
   hidden: boolean;
 };
 export default function Result(props: ResultProps) {
-  const id = useSelector((s) => s.id);
-
-  const targets = useSelector((s) => s.targets);
-  const guesses = useSelector((s) => s.guesses);
+  const id = useSelector((s) => s.game.id);
+  const targets = useSelector((s) => s.game.targets);
+  const guesses = useSelector((s) => s.game.guesses);
 
   const shareableText = useMemo(() => {
     const targetGuessCounts: (number | null)[] = [];
@@ -67,10 +68,14 @@ function getShareableText(
   const text = [];
   text.push(`Daily Duotrigordle #${id}\n`);
   text.push(`Guesses: ${guessCount ?? "X"}/${NUM_GUESSES}\n`);
-  for (let i = 0; i < 8; i++) {
+  const cols = 4;
+  const rows = Math.ceil(NUM_BOARDS / cols);
+  for (let i = 0; i < rows; i++) {
     const row = [];
-    for (let j = 0; j < 4; j++) {
-      const guessCount = targetGuessCounts[i * 4 + j];
+    for (let j = 0; j < cols; j++) {
+      const idx = i * cols + j;
+      if (idx > NUM_BOARDS) continue;
+      const guessCount = targetGuessCounts[idx];
       if (guessCount === null) {
         row.push("🟥🟥");
       } else {

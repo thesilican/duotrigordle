@@ -1,13 +1,8 @@
 import cn from "classnames";
 import { CSSProperties, useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
-import {
-  getGuessColors,
-  inputBackspace,
-  inputEnter,
-  inputLetter,
-  useSelector,
-} from "../store";
+import { getGuessColors } from "../funcs";
+import { inputBackspace, inputEnter, inputLetter, useSelector } from "../store";
 import { range } from "../util";
 
 const ALPHABET = new Set([
@@ -122,8 +117,8 @@ function Key(props: KeyProps) {
       ? () => dispatch(inputEnter())
       : () => dispatch(inputLetter({ letter: props.char }));
 
-  const targets = useSelector((s) => s.targets);
-  const guesses = useSelector((s) => s.guesses);
+  const targets = useSelector((s) => s.game.targets);
+  const guesses = useSelector((s) => s.game.guesses);
 
   const styles = useMemo(
     () => generateStyles(char, targets, guesses),

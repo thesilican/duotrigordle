@@ -1,16 +1,13 @@
 import cn from "classnames";
 import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { useDispatch } from "react-redux";
+import { NUM_GUESSES } from "../consts";
 import {
   allWordsGuessed,
-  getTodaysId,
-  isSerialized,
-  loadState,
-  NUM_GUESSES,
-  serialize,
-  startGame,
-  useSelector,
-} from "../store";
+  loadGameFromLocalStorage,
+  saveGameToLocalStorage,
+} from "../funcs";
+import { useSelector } from "../store";
 import Boards from "./Boards";
 import Header from "./Header";
 import Keyboard from "./Keyboard";
@@ -22,34 +19,25 @@ export default function App() {
   const [showPopup, setShowPopup] = useState(false);
 
   useLayoutEffect(() => {
-    const todaysId = getTodaysId();
-    const text = localStorage.getItem("duotrigordle-state");
-    const serialized = text && JSON.parse(text);
-    if (isSerialized(serialized) && serialized.id === todaysId) {
-      dispatch(loadState({ serialized }));
-    } else {
-      dispatch(startGame({ id: todaysId, practice: false }));
-    }
+    loadGameFromLocalStorage(dispatch);
   }, [dispatch]);
 
-  const state = useSelector((s) => s);
+  const game = useSelector((s) => s.game);
   useEffect(() => {
-    if (!state.practice) {
-      localStorage.setItem(
-        "duotrigordle-state",
-        JSON.stringify(serialize(state))
-      );
+    if (!game.practice) {
+      saveGameToLocalStorage(game);
     }
-  }, [state]);
+  }, [game]);
 
-  const guessesUsedUp = useSelector((s) => s.guesses.length === NUM_GUESSES);
-  const targets = useSelector((s) => s.targets);
-  const guesses = useSelector((s) => s.guesses);
+  const guessesUsedUp = useSelector(
+    (s) => s.game.guesses.length === NUM_GUESSES
+  );
+  const targets = useSelector((s) => s.game.targets);
+  const guesses = useSelector((s) => s.game.guesses);
   const gameWin = useMemo(
     () => allWordsGuessed(guesses, targets),
     [guesses, targets]
   );
-
   const gameOver = guessesUsedUp || gameWin;
   const gameLose = guessesUsedUp && !gameWin;
 

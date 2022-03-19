@@ -1,7 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { NUM_BOARDS, NUM_GUESSES, WORDS_VALID } from "../consts";
-import { allWordsGuessed, getTargetWords } from "../funcs";
-import { range } from "../util";
+import { allWordsGuessed, getTargetWords, range } from "../funcs";
 
 // Don't forget to update corresponding shape checks in funcs.ts
 // if you add/remove fields

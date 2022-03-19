@@ -1,9 +1,8 @@
 import cn from "classnames";
 import { CSSProperties, useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
-import { getGuessColors } from "../funcs";
+import { getGuessColors, range } from "../funcs";
 import { inputBackspace, inputEnter, inputLetter, useSelector } from "../store";
-import { range } from "../util";
 
 const ALPHABET = new Set([
   "A",

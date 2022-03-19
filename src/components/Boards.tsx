@@ -1,9 +1,8 @@
 import cn from "classnames";
 import React, { useMemo } from "react";
 import { NUM_BOARDS, NUM_GUESSES, WORDS_VALID } from "../consts";
-import { getGuessColors } from "../funcs";
+import { getGuessColors, range } from "../funcs";
 import { useSelector } from "../store";
-import { range } from "../util";
 
 export default function Boards() {
   return (

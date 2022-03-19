@@ -1,12 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
-import { loadGame, startGame, useSelector } from "../store";
-import { MersenneTwister } from "../util";
-import helpSvg from "../assets/help.svg";
-import fullscreenSvg from "../assets/fullscreen.svg";
 import fullscreenExitSvg from "../assets/fullscreen-exit.svg";
-import { loadGameFromLocalStorage } from "../funcs";
+import fullscreenSvg from "../assets/fullscreen.svg";
+import helpSvg from "../assets/help.svg";
 import { NUM_BOARDS, NUM_GUESSES } from "../consts";
+import { loadGameFromLocalStorage, MersenneTwister } from "../funcs";
+import { startGame, useSelector } from "../store";
 
 // Declare typescript definitions for safari fullscreen stuff
 declare global {

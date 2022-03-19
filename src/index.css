@@ -241,3 +241,8 @@ button {
 .close {
   margin-top: calc(var(--app-width) / 30);
 }
+
+/* Settings */
+.group label {
+  margin-left: calc(var(--app-width) / 75);
+}

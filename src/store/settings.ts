@@ -1,21 +1,20 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-// Don't forget to update corresponding shape checks in funcs.ts
-// if you add/remove fields
-export type SettingsState = {};
-const initialState: SettingsState = {};
+export type SettingsState = {
+  hideKeyboard: boolean;
+};
+const initialState: SettingsState = {
+  hideKeyboard: false,
+};
 
 const settingsSlice = createSlice({
   name: "settings",
   initialState,
   reducers: {
-    updateSettings: (
-      state,
-      action: PayloadAction<{ settings: Partial<SettingsState> }>
-    ) => {
+    updateSettings: (state, action: PayloadAction<Partial<SettingsState>>) => {
       return {
         ...state,
-        ...action.payload.settings,
+        ...action.payload,
       };
     },
   },

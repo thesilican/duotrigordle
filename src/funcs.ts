@@ -202,19 +202,11 @@ export function saveGameToLocalStorage(state: GameState) {
 }
 
 // Serialization for settings
-export function isSettingsState(obj: any): obj is SettingsState {
-  // Check the shape of the object just in case a previous invalid version of
-  // the object was stored in local storage
-  if (typeof obj !== "object" || obj === null) {
-    return false;
-  }
-  return true;
-}
 export function loadSettingsFromLocalStorage(dispatch: Dispatch) {
   const text = localStorage.getItem("duotrigordle-settings");
   const settings = text && JSON.parse(text);
-  if (isSettingsState(settings)) {
-    dispatch(updateSettings({ settings }));
+  if (settings) {
+    dispatch(updateSettings(settings));
   }
 }
 export function saveSettingsToLocalStorage(state: SettingsState) {

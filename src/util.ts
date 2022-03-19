@@ -1,14 +1,14 @@
-// Similar to python range()
-export function range(min: number, max?: number): number[] {
-  if (max === undefined) {
-    max = min;
-    min = 0;
+// Generate integers 0 <= i < max
+const rangeMemo = new Map<number, number[]>();
+export function range(max: number): number[] {
+  if (!rangeMemo.has(max)) {
+    const array = [];
+    for (let i = 0; i < max; i++) {
+      array.push(i);
+    }
+    rangeMemo.set(max, array);
   }
-  const array = [];
-  for (let i = min; i < max; i++) {
-    array.push(i);
-  }
-  return array;
+  return rangeMemo.get(max)!;
 }
 
 // Simple seeded RNG

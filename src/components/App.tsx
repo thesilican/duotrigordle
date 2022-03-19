@@ -11,12 +11,12 @@ import { useSelector } from "../store";
 import Boards from "./Boards";
 import Header from "./Header";
 import Keyboard from "./Keyboard";
-import Popup from "./Popup";
+import About from "./About";
 import Result from "./Result";
 
 export default function App() {
   const dispatch = useDispatch();
-  const [showPopup, setShowPopup] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
 
   useLayoutEffect(() => {
     loadGameFromLocalStorage(dispatch);
@@ -44,12 +44,12 @@ export default function App() {
   return (
     <>
       <div className={cn("game", gameWin && "win", gameLose && "lose")}>
-        <Header onShowHelp={() => setShowPopup(true)} />
+        <Header onShowAbout={() => setShowAbout(true)} />
         <Boards />
         <Keyboard hidden={gameOver} />
         <Result hidden={!gameOver} />
       </div>
-      <Popup hidden={!showPopup} onClose={() => setShowPopup(false)} />
+      <About hidden={!showAbout} onClose={() => setShowAbout(false)} />
     </>
   );
 }

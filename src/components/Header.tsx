@@ -39,7 +39,7 @@ function exitFullscreen() {
 }
 
 type HeaderProps = {
-  onShowHelp: () => void;
+  onShowAbout: () => void;
 };
 export default function Header(props: HeaderProps) {
   const dispatch = useDispatch();
@@ -133,10 +133,10 @@ export default function Header(props: HeaderProps) {
         )}
         <p className="title">{title}</p>
         <img
-          className="help"
+          className="about"
           src={helpSvg}
           alt="Help"
-          onClick={props.onShowHelp}
+          onClick={props.onShowAbout}
         />
         <img
           className="fullscreen"

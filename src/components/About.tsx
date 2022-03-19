@@ -13,11 +13,11 @@ function getHoursRemaining() {
   }
 }
 
-type PopupProps = {
+type AboutProps = {
   hidden: boolean;
   onClose: () => void;
 };
-export default function Popup(props: PopupProps) {
+export default function About(props: AboutProps) {
   const [hoursRemaining, setHoursRemaining] = useState(getHoursRemaining);
 
   useEffect(() => {

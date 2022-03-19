@@ -3,7 +3,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 // Don't forget to update corresponding shape checks in funcs.ts
 // if you add/remove fields
 export type SettingsState = {};
-const initialState = {};
+const initialState: SettingsState = {};
 
 const settingsSlice = createSlice({
   name: "settings",

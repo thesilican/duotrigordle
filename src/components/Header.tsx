@@ -3,9 +3,15 @@ import { useDispatch } from "react-redux";
 import fullscreenExitSvg from "../assets/fullscreen-exit.svg";
 import fullscreenSvg from "../assets/fullscreen.svg";
 import helpSvg from "../assets/help.svg";
+import settingsSvg from "../assets/settings.svg";
 import { NUM_BOARDS, NUM_GUESSES } from "../consts";
 import { loadGameFromLocalStorage, MersenneTwister } from "../funcs";
-import { startGame, useSelector } from "../store";
+import {
+  showAboutPopup,
+  showSettingsPopup,
+  startGame,
+  useSelector,
+} from "../store";
 
 // Declare typescript definitions for safari fullscreen stuff
 declare global {
@@ -38,10 +44,7 @@ function exitFullscreen() {
   }
 }
 
-type HeaderProps = {
-  onShowAbout: () => void;
-};
-export default function Header(props: HeaderProps) {
+export default function Header() {
   const dispatch = useDispatch();
   const id = useSelector((s) => s.game.id);
   const targets = useSelector((s) => s.game.targets);
@@ -133,13 +136,19 @@ export default function Header(props: HeaderProps) {
         )}
         <p className="title">{title}</p>
         <img
-          className="about"
-          src={helpSvg}
-          alt="Help"
-          onClick={props.onShowAbout}
+          className="icon"
+          src={settingsSvg}
+          alt="Settings"
+          onClick={() => dispatch(showSettingsPopup())}
         />
         <img
-          className="fullscreen"
+          className="icon"
+          src={helpSvg}
+          alt="Help"
+          onClick={() => dispatch(showAboutPopup())}
+        />
+        <img
+          className="icon"
           src={fullscreen ? fullscreenExitSvg : fullscreenSvg}
           alt="Go Fullscreen"
           onClick={handleFullscreenClick}

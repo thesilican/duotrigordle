@@ -13,10 +13,10 @@ import Header from "./Header";
 import Keyboard from "./Keyboard";
 import About from "./About";
 import Result from "./Result";
+import { Settings } from "./Settings";
 
 export default function App() {
   const dispatch = useDispatch();
-  const [showAbout, setShowAbout] = useState(false);
 
   useLayoutEffect(() => {
     loadGameFromLocalStorage(dispatch);
@@ -44,12 +44,13 @@ export default function App() {
   return (
     <>
       <div className={cn("game", gameWin && "win", gameLose && "lose")}>
-        <Header onShowAbout={() => setShowAbout(true)} />
+        <Header />
         <Boards />
         <Keyboard hidden={gameOver} />
         <Result hidden={!gameOver} />
       </div>
-      <About hidden={!showAbout} onClose={() => setShowAbout(false)} />
+      <About />
+      <Settings />
     </>
   );
 }

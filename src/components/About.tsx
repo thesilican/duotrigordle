@@ -1,6 +1,8 @@
 import cn from "classnames";
 import { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { START_DATE } from "../consts";
+import { hidePopups, useSelector } from "../store";
 
 function getHoursRemaining() {
   const now = new Date();
@@ -12,23 +14,20 @@ function getHoursRemaining() {
     return hoursRemaining.toFixed(1);
   }
 }
-
-type AboutProps = {
-  hidden: boolean;
-  onClose: () => void;
-};
-export default function About(props: AboutProps) {
+export default function About() {
+  const dispatch = useDispatch();
   const [hoursRemaining, setHoursRemaining] = useState(getHoursRemaining);
+  const shown = useSelector((s) => s.popups.about);
 
   useEffect(() => {
     // Update hoursRemaining every time popup is opened
-    if (!props.hidden) {
+    if (shown) {
       setHoursRemaining(getHoursRemaining);
     }
-  }, [props.hidden]);
+  }, [shown]);
 
   return (
-    <div className={cn("popup-wrapper", props.hidden && "hidden")}>
+    <div className={cn("popup-wrapper", !shown && "hidden")}>
       <div className="popup">
         <p>Guess all 32 Duotrigordle words in 37 tries!</p>
         <p>
@@ -92,7 +91,7 @@ export default function About(props: AboutProps) {
             by Josh Wardle
           </li>
         </ul>
-        <button className="close" onClick={props.onClose}>
+        <button className="close" onClick={() => dispatch(hidePopups())}>
           close
         </button>
       </div>

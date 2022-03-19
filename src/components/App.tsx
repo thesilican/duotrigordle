@@ -5,7 +5,9 @@ import { NUM_GUESSES } from "../consts";
 import {
   allWordsGuessed,
   loadGameFromLocalStorage,
+  loadSettingsFromLocalStorage,
   saveGameToLocalStorage,
+  saveSettingsToLocalStorage,
 } from "../funcs";
 import { useSelector } from "../store";
 import Boards from "./Boards";
@@ -20,6 +22,7 @@ export default function App() {
 
   useLayoutEffect(() => {
     loadGameFromLocalStorage(dispatch);
+    loadSettingsFromLocalStorage(dispatch);
   }, [dispatch]);
 
   const game = useSelector((s) => s.game);
@@ -28,6 +31,11 @@ export default function App() {
       saveGameToLocalStorage(game);
     }
   }, [game]);
+
+  const settings = useSelector((s) => s.settings);
+  useEffect(() => {
+    saveSettingsToLocalStorage(settings);
+  }, [settings]);
 
   const guessesUsedUp = useSelector(
     (s) => s.game.guesses.length === NUM_GUESSES

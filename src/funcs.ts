@@ -9,16 +9,12 @@ import {
 } from "./store";
 
 // Generate integers 0 <= i < max
-const rangeMemo = new Map<number, number[]>();
 export function range(max: number): number[] {
-  if (!rangeMemo.has(max)) {
-    const array = [];
-    for (let i = 0; i < max; i++) {
-      array.push(i);
-    }
-    rangeMemo.set(max, array);
+  const array = [];
+  for (let i = 0; i < max; i++) {
+    array.push(i);
   }
-  return rangeMemo.get(max)!;
+  return array;
 }
 
 // Simple seeded RNG

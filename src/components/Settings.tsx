@@ -8,6 +8,7 @@ export function Settings() {
   return (
     <div className={cn("popup-wrapper", !shown && "hidden")}>
       <div className="popup">
+        <p>Coming soon...</p>
         <button className="close" onClick={() => dispatch(hidePopups())}>
           close
         </button>

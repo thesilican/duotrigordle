@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type SettingsState = {
-  hideKeyboard: boolean;
+  colorBlindMode: boolean;
 };
 const initialState: SettingsState = {
-  hideKeyboard: false,
+  colorBlindMode: false,
 };
 
 const settingsSlice = createSlice({

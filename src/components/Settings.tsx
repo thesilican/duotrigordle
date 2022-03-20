@@ -5,7 +5,7 @@ import { hidePopups, updateSettings, useSelector } from "../store";
 export function Settings() {
   const dispatch = useDispatch();
   const shown = useSelector((s) => s.popups.settings);
-  const hideKeyboard = useSelector((s) => s.settings.hideKeyboard);
+  const colorBlindMode = useSelector((s) => s.settings.colorBlindMode);
 
   return (
     <div className={cn("popup-wrapper", !shown && "hidden")}>
@@ -14,12 +14,12 @@ export function Settings() {
           <input
             type="checkbox"
             id="hide-keyboard"
-            checked={hideKeyboard}
+            checked={colorBlindMode}
             onChange={(e) =>
-              dispatch(updateSettings({ hideKeyboard: e.target.checked }))
+              dispatch(updateSettings({ colorBlindMode: e.target.checked }))
             }
           />
-          <label htmlFor="hide-keyboard">Hide on-screen keyboard</label>
+          <label htmlFor="hide-keyboard">Colorblind mode</label>
         </div>
         <button className="close" onClick={() => dispatch(hidePopups())}>
           close

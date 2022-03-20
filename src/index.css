@@ -58,6 +58,10 @@ button {
 .game.lose {
   background-color: var(--app-red);
 }
+.game.color-blind {
+  --guess-yellow: rgb(96, 165, 250);
+  --guess-green: rgb(251, 146, 60);
+}
 
 /* Header */
 .header {

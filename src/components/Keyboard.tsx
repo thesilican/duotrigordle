@@ -38,7 +38,6 @@ type KeyboardProps = {
 };
 export default function Keyboard(props: KeyboardProps) {
   const dispatch = useDispatch();
-  const hideKeyboard = useSelector((s) => s.settings.hideKeyboard);
 
   useEffect(() => {
     const handler = (k: KeyboardEvent) => {
@@ -59,10 +58,6 @@ export default function Keyboard(props: KeyboardProps) {
       window.removeEventListener("keydown", handler);
     };
   }, [dispatch]);
-
-  if (hideKeyboard) {
-    return <div />;
-  }
 
   return (
     <div className={cn("keyboard", props.hidden && "hidden")}>

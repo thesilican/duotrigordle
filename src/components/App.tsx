@@ -48,10 +48,18 @@ export default function App() {
   );
   const gameOver = guessesUsedUp || gameWin;
   const gameLose = guessesUsedUp && !gameWin;
+  const colorBlindMode = useSelector((s) => s.settings.colorBlindMode);
 
   return (
     <>
-      <div className={cn("game", gameWin && "win", gameLose && "lose")}>
+      <div
+        className={cn(
+          "game",
+          gameWin && "win",
+          gameLose && "lose",
+          colorBlindMode && "color-blind"
+        )}
+      >
         <Header />
         <Boards />
         <Keyboard hidden={gameOver} />

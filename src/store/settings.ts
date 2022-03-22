@@ -3,10 +3,12 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 export type SettingsState = {
   colorBlindMode: boolean;
   showTimer: boolean;
+  wideMode: boolean;
 };
 const initialState: SettingsState = {
   colorBlindMode: false,
   showTimer: false,
+  wideMode: false,
 };
 
 const settingsSlice = createSlice({

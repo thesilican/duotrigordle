@@ -49,6 +49,7 @@ export default function App() {
   const gameOver = guessesUsedUp || gameWin;
   const gameLose = guessesUsedUp && !gameWin;
   const colorBlindMode = useSelector((s) => s.settings.colorBlindMode);
+  const wideMode = useSelector((s) => s.settings.wideMode);
 
   return (
     <>
@@ -57,7 +58,8 @@ export default function App() {
           "game",
           gameWin && "win",
           gameLose && "lose",
-          colorBlindMode && "color-blind"
+          colorBlindMode && "color-blind",
+          wideMode && "wide"
         )}
       >
         <Header />

@@ -67,7 +67,11 @@ export default function Header() {
     ? `Practice Duotrigordle`
     : `Daily Duotrigordle #${id}`;
   const gameOver = useSelector((s) => s.game.gameOver);
-  const cannotWin = numGuesses - boardsCompleted > NUM_GUESSES - NUM_BOARDS;
+  const extraGuessesNum =
+    NUM_GUESSES - NUM_BOARDS - (numGuesses - boardsCompleted);
+  const cannotWin = extraGuessesNum < 0;
+  const extraGuesses =
+    extraGuessesNum > 0 ? "+" + extraGuessesNum : extraGuessesNum;
 
   // Refs so that the buttons are blurred on press
   // so that pressing enter again does not cause the
@@ -167,7 +171,7 @@ export default function Header() {
         </p>
         <Timer />
         <p className={cn(cannotWin && !gameOver && "cannot-win")}>
-          Guesses Used: {numGuesses}/{NUM_GUESSES}
+          Guesses Used: {numGuesses}/{NUM_GUESSES} ({extraGuesses})
         </p>
       </div>
     </div>

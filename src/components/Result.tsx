@@ -84,7 +84,7 @@ function getShareableText(
   }
   text.push(`Guesses: ${guessCount ?? "X"}/${NUM_GUESSES}\n`);
   if (timeElapsed !== null) {
-    text.push(`Time: ${formatTimeElapsed(timeElapsed)}`);
+    text.push(`Time: ${formatTimeElapsed(timeElapsed)}\n`);
   }
   const cols = 4;
   const rows = Math.ceil(NUM_BOARDS / cols);

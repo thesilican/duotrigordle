@@ -1,5 +1,5 @@
 import cn from "classnames";
-import { useEffect, useLayoutEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { NUM_GUESSES } from "../consts";
 import {
@@ -10,10 +10,10 @@ import {
   saveSettingsToLocalStorage,
 } from "../funcs";
 import { useSelector } from "../store";
+import About from "./About";
 import Boards from "./Boards";
 import Header from "./Header";
 import Keyboard from "./Keyboard";
-import About from "./About";
 import Result from "./Result";
 import { Settings } from "./Settings";
 

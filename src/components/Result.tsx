@@ -32,7 +32,7 @@ export default function Result(props: ResultProps) {
       targetGuessCounts,
       showTimer ? timeElapsed : null
     );
-  }, [practice, id, targets, guesses, showTimer]);
+  }, [practice, id, targets, guesses, showTimer, timeElapsed]);
   const parsed = twemoji.parse(shareableText) + "\n";
   const handleCopyToClipboardClick = () => {
     navigator.clipboard

@@ -21,5 +21,5 @@ export const useSelector: TypedUseSelectorHook<RootState> = useSelectorOriginal;
 
 // Reexports
 export * from "./game";
-export * from "./settings";
 export * from "./popups";
+export * from "./settings";

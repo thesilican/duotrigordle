@@ -1,3 +1,4 @@
+import cn from "classnames";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import fullscreenExitSvg from "../assets/fullscreen-exit.svg";
@@ -16,7 +17,6 @@ import {
   startGame,
   useSelector,
 } from "../store";
-import cn from "classnames";
 
 // Declare typescript definitions for safari fullscreen stuff
 declare global {
@@ -189,7 +189,7 @@ function Timer() {
     } else {
       return formatTimeElapsed(new Date().getTime() - startTime);
     }
-  }, [startTime, endTime, hasFirstGuess, flipFlop]);
+  }, [startTime, endTime, hasFirstGuess, flipFlop, gameOver]);
   useEffect(() => {
     if (!showTimer) return;
     const interval = setInterval(() => {

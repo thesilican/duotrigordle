@@ -89,6 +89,9 @@ button {
   display: flex;
   justify-content: space-between;
 }
+.timer {
+  font-family: monospace;
+}
 
 /* Boards */
 .boards {

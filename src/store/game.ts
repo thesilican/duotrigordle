@@ -17,6 +17,10 @@ export type GameState = {
   gameOver: boolean;
   // Whether or not the game is in practice mode
   practice: boolean;
+  // Start timestamp (milliseconds from unix epoch)
+  startTime: number;
+  // End timestamp (milliseconds from unix epoch)
+  endTime: number;
 };
 const initialState: GameState = {
   id: 0,
@@ -25,6 +29,8 @@ const initialState: GameState = {
   targets: range(NUM_BOARDS).map((_) => "AAAAA"),
   gameOver: false,
   practice: true,
+  startTime: 0,
+  endTime: 0,
 };
 
 const gameSlice = createSlice({
@@ -45,6 +51,8 @@ const gameSlice = createSlice({
         input: "",
         gameOver: false,
         practice: action.payload.practice,
+        startTime: 0,
+        endTime: 0,
       };
     },
     inputLetter: (state, action: PayloadAction<{ letter: string }>) => {
@@ -57,7 +65,7 @@ const gameSlice = createSlice({
       if (state.gameOver) return;
       state.input = state.input.substring(0, state.input.length - 1);
     },
-    inputEnter: (state) => {
+    inputEnter: (state, action: PayloadAction<{ timestamp: number }>) => {
       if (state.gameOver) return;
 
       const guess = state.input;
@@ -66,12 +74,17 @@ const gameSlice = createSlice({
         return;
       }
       state.guesses.push(guess);
+      // Start timer on first guess
+      if (state.guesses.length === 1) {
+        state.startTime = action.payload.timestamp;
+      }
 
       if (
         state.guesses.length === NUM_GUESSES ||
         allWordsGuessed(state.guesses, state.targets)
       ) {
         state.gameOver = true;
+        state.endTime = action.payload.timestamp;
       }
     },
   },

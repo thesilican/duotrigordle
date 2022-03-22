@@ -48,7 +48,7 @@ export default function Keyboard(props: KeyboardProps) {
       if (key === "BACKSPACE") {
         dispatch(inputBackspace());
       } else if (key === "ENTER") {
-        dispatch(inputEnter());
+        dispatch(inputEnter({ timestamp: new Date().getTime() }));
       } else if (ALPHABET.has(key)) {
         dispatch(inputLetter({ letter: key }));
       }
@@ -113,7 +113,7 @@ function Key(props: KeyProps) {
     props.char === "backspace"
       ? () => dispatch(inputBackspace())
       : props.char.startsWith("enter-")
-      ? () => dispatch(inputEnter())
+      ? () => dispatch(inputEnter({ timestamp: new Date().getTime() }))
       : () => dispatch(inputLetter({ letter: props.char }));
 
   const targets = useSelector((s) => s.game.targets);

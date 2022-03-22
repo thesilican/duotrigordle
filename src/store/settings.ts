@@ -2,9 +2,11 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 export type SettingsState = {
   colorBlindMode: boolean;
+  showTimer: boolean;
 };
 const initialState: SettingsState = {
   colorBlindMode: false,
+  showTimer: false,
 };
 
 const settingsSlice = createSlice({

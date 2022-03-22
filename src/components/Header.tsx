@@ -5,7 +5,11 @@ import fullscreenSvg from "../assets/fullscreen.svg";
 import helpSvg from "../assets/help.svg";
 import settingsSvg from "../assets/settings.svg";
 import { NUM_BOARDS, NUM_GUESSES } from "../consts";
-import { loadGameFromLocalStorage, MersenneTwister } from "../funcs";
+import {
+  formatTimeElapsed,
+  loadGameFromLocalStorage,
+  MersenneTwister,
+} from "../funcs";
 import {
   showAboutPopup,
   showSettingsPopup,
@@ -158,10 +162,41 @@ export default function Header() {
         <p className="status">
           Boards Complete: {boardsCompleted}/{NUM_BOARDS}
         </p>
+        <Timer />
         <p>
           Guesses Used: {numGuesses}/{NUM_GUESSES}
         </p>
       </div>
     </div>
   );
+}
+
+function Timer() {
+  const [flipFlop, setFlipFlop] = useState(false);
+  const showTimer = useSelector((s) => s.settings.showTimer);
+  const startTime = useSelector((s) => s.game.startTime);
+  const endTime = useSelector((s) => s.game.endTime);
+  const gameOver = useSelector((s) => s.game.gameOver);
+  const hasFirstGuess = useSelector((s) => s.game.guesses.length > 0);
+  const timeElapsed = useMemo(() => {
+    if (gameOver) {
+      return formatTimeElapsed(endTime - startTime);
+    } else if (!hasFirstGuess) {
+      return formatTimeElapsed(0);
+    } else {
+      return formatTimeElapsed(new Date().getTime() - startTime);
+    }
+  }, [startTime, endTime, hasFirstGuess, flipFlop]);
+  useEffect(() => {
+    if (!showTimer) return;
+    const interval = setInterval(() => {
+      setFlipFlop((x) => !x);
+    }, 25);
+    return () => clearInterval(interval);
+  }, [showTimer, flipFlop]);
+
+  if (!showTimer) {
+    return <></>;
+  }
+  return <p className="timer">{timeElapsed}</p>;
 }

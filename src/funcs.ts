@@ -71,6 +71,21 @@ export function MersenneTwister(seed = Date.now() as number | Uint32Array) {
   return { u32, f32_ii, f32_ix, f32_xx, u53, f64_ix, save };
 }
 
+// Format time elapsed in 00:00.00 format
+export function formatTimeElapsed(miliseconds: number) {
+  miliseconds = Math.max(miliseconds, 0);
+  const minutes = Math.floor(miliseconds / 1000 / 60);
+  const seconds = Math.floor(miliseconds / 1000) % 60;
+  const hundreds = Math.floor(miliseconds / 10) % 100;
+  return (
+    minutes.toString().padStart(2, "0") +
+    ":" +
+    seconds.toString().padStart(2, "0") +
+    "." +
+    hundreds.toString().padStart(2, "0")
+  );
+}
+
 // Returns the id for today's duotrigordle
 export function getTodaysId(): number {
   const today = new Date();
@@ -141,33 +156,47 @@ export function allWordsGuessed(guesses: string[], targets: string[]) {
 export type GameSerialized = {
   id: number;
   guesses: string[];
+  startTime: number;
+  endTime: number;
 };
 export function isGameSerialized(obj: any): obj is GameSerialized {
   // Check the shape of the object just in case a previous invalid version of
   // the object was stored in local storage
-  if (typeof obj !== "object" || obj === null) {
-    return false;
-  }
-  if (typeof obj.id !== "number") {
-    return false;
-  }
-  if (!Array.isArray(obj.guesses)) {
-    return false;
-  }
-  if (obj.guesses.length > NUM_GUESSES) {
-    return false;
-  }
-  for (const guess of obj.guesses) {
-    if (typeof guess !== "string") {
+  try {
+    if (typeof obj !== "object" || obj === null) {
       return false;
     }
+    if (typeof obj.id !== "number") {
+      return false;
+    }
+    if (!Array.isArray(obj.guesses)) {
+      return false;
+    }
+    if (obj.guesses.length > NUM_GUESSES) {
+      return false;
+    }
+    for (const guess of obj.guesses) {
+      if (typeof guess !== "string") {
+        return false;
+      }
+    }
+    if (typeof obj.startTime !== "number") {
+      return false;
+    }
+    if (typeof obj.endTime !== "number") {
+      return false;
+    }
+    return true;
+  } catch {
+    return false;
   }
-  return true;
 }
 export function serializeGame(state: GameState): GameSerialized {
   return {
     id: state.id,
     guesses: state.guesses,
+    startTime: state.startTime,
+    endTime: state.endTime,
   };
 }
 export function deserializeGame(serialized: GameSerialized): GameState {
@@ -182,6 +211,8 @@ export function deserializeGame(serialized: GameSerialized): GameState {
     guesses: serialized.guesses,
     gameOver,
     practice: false,
+    startTime: serialized.startTime,
+    endTime: serialized.endTime,
   };
 }
 export function loadGameFromLocalStorage(dispatch: Dispatch) {

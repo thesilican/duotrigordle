@@ -5,12 +5,14 @@ export type SettingsState = {
   showTimer: boolean;
   wideMode: boolean;
   hideCompletedBoards: boolean;
+  hideKeyboard: boolean;
 };
 const initialState: SettingsState = {
   colorBlindMode: false,
   showTimer: false,
   wideMode: false,
   hideCompletedBoards: false,
+  hideKeyboard: false,
 };
 
 const settingsSlice = createSlice({

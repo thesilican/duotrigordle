@@ -66,6 +66,7 @@ export default function Header() {
   const title = practice
     ? `Practice Duotrigordle`
     : `Daily Duotrigordle #${id}`;
+  const gameOver = useSelector((s) => s.game.gameOver);
   const cannotWin = numGuesses - boardsCompleted > NUM_GUESSES - NUM_BOARDS;
 
   // Refs so that the buttons are blurred on press
@@ -165,7 +166,7 @@ export default function Header() {
           Boards Complete: {boardsCompleted}/{NUM_BOARDS}
         </p>
         <Timer />
-        <p className={cn(cannotWin && "cannot-win")}>
+        <p className={cn(cannotWin && !gameOver && "cannot-win")}>
           Guesses Used: {numGuesses}/{NUM_GUESSES}
         </p>
       </div>

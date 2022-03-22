@@ -9,6 +9,7 @@ type ResultProps = {
   hidden: boolean;
 };
 export default function Result(props: ResultProps) {
+  const practice = useSelector((s) => s.game.practice);
   const id = useSelector((s) => s.game.id);
   const targets = useSelector((s) => s.game.targets);
   const guesses = useSelector((s) => s.game.guesses);
@@ -22,8 +23,8 @@ export default function Result(props: ResultProps) {
     const guessCount = allWordsGuessed(guesses, targets)
       ? guesses.length
       : null;
-    return getShareableText(id, guessCount, targetGuessCounts);
-  }, [id, targets, guesses]);
+    return getShareableText(practice, id, guessCount, targetGuessCounts);
+  }, [practice, id, targets, guesses]);
   const parsed = twemoji.parse(shareableText) + "\n";
   const handleCopyToClipboardClick = () => {
     navigator.clipboard
@@ -61,12 +62,17 @@ const EMOJI_MAP = [
 ];
 
 function getShareableText(
+  practice: boolean,
   id: number,
   guessCount: number | null,
   targetGuessCounts: (number | null)[]
 ) {
   const text = [];
-  text.push(`Daily Duotrigordle #${id}\n`);
+  if (practice) {
+    text.push(`Practice Duotrigordle\n`);
+  } else {
+    text.push(`Daily Duotrigordle #${id}\n`);
+  }
   text.push(`Guesses: ${guessCount ?? "X"}/${NUM_GUESSES}\n`);
   const cols = 4;
   const rows = Math.ceil(NUM_BOARDS / cols);

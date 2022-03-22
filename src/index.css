@@ -89,6 +89,9 @@ button {
   display: flex;
   justify-content: space-between;
 }
+.cannot-win {
+  color: var(--guess-text-red);
+}
 .timer {
   font-family: monospace;
 }

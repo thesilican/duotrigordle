@@ -16,6 +16,7 @@ import {
   startGame,
   useSelector,
 } from "../store";
+import cn from "classnames";
 
 // Declare typescript definitions for safari fullscreen stuff
 declare global {
@@ -65,6 +66,7 @@ export default function Header() {
   const title = practice
     ? `Practice Duotrigordle`
     : `Daily Duotrigordle #${id}`;
+  const cannotWin = numGuesses - boardsCompleted > NUM_GUESSES - NUM_BOARDS;
 
   // Refs so that the buttons are blurred on press
   // so that pressing enter again does not cause the
@@ -159,11 +161,11 @@ export default function Header() {
         />
       </div>
       <div className="row-2">
-        <p className="status">
+        <p>
           Boards Complete: {boardsCompleted}/{NUM_BOARDS}
         </p>
         <Timer />
-        <p>
+        <p className={cn(cannotWin && "cannot-win")}>
           Guesses Used: {numGuesses}/{NUM_GUESSES}
         </p>
       </div>

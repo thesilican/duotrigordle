@@ -50,6 +50,9 @@ export default function App() {
   const gameLose = guessesUsedUp && !gameWin;
   const colorBlindMode = useSelector((s) => s.settings.colorBlindMode);
   const wideMode = useSelector((s) => s.settings.wideMode);
+  const hideCompletedBoards = useSelector(
+    (s) => s.settings.hideCompletedBoards
+  );
 
   return (
     <>
@@ -59,7 +62,10 @@ export default function App() {
           gameWin && "win",
           gameLose && "lose",
           colorBlindMode && "color-blind",
-          wideMode && "wide"
+          wideMode && "wide",
+          hideCompletedBoards &&
+            !(gameWin || gameLose) &&
+            "hide-completed-boards"
         )}
       >
         <Header />

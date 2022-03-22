@@ -124,6 +124,9 @@ button {
 .board.complete {
   filter: contrast(0.5) brightness(0.5);
 }
+.game.hide-completed-boards .board.complete {
+  display: none;
+}
 
 .cell {
   aspect-ratio: 1/1;

@@ -4,11 +4,13 @@ export type SettingsState = {
   colorBlindMode: boolean;
   showTimer: boolean;
   wideMode: boolean;
+  hideCompletedBoards: boolean;
 };
 const initialState: SettingsState = {
   colorBlindMode: false,
   showTimer: false,
   wideMode: false,
+  hideCompletedBoards: false,
 };
 
 const settingsSlice = createSlice({

@@ -5,9 +5,8 @@ import { hidePopups, updateSettings, useSelector } from "../store";
 export function Settings() {
   const dispatch = useDispatch();
   const shown = useSelector((s) => s.popups.settings);
-  const { colorBlindMode, showTimer, wideMode } = useSelector(
-    (s) => s.settings
-  );
+  const { colorBlindMode, showTimer, wideMode, hideCompletedBoards } =
+    useSelector((s) => s.settings);
 
   return (
     <div className={cn("popup-wrapper", !shown && "hidden")}>
@@ -44,6 +43,19 @@ export function Settings() {
             }
           />
           <label htmlFor="wide-mode">Wide mode</label>
+        </div>
+        <div className="group">
+          <input
+            type="checkbox"
+            id="hide-completed-boards"
+            checked={hideCompletedBoards}
+            onChange={(e) =>
+              dispatch(
+                updateSettings({ hideCompletedBoards: e.target.checked })
+              )
+            }
+          />
+          <label htmlFor="hide-completed-boards">Hide completed boards</label>
         </div>
         <button className="close" onClick={() => dispatch(hidePopups())}>
           close

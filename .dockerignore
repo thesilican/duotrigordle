@@ -1,2 +1,3 @@
-/node_modules/
-/build/
+.git
+node_modules
+build

@@ -101,6 +101,7 @@ type KeyProps = {
 };
 function Key(props: KeyProps) {
   const dispatch = useDispatch();
+  const wideMode = useSelector((s) => s.settings.wideMode);
   const char =
     props.char === "backspace"
       ? "⌫"
@@ -121,8 +122,8 @@ function Key(props: KeyProps) {
   const guesses = useSelector((s) => s.game.guesses);
 
   const styles = useMemo(
-    () => generateStyles(char, targets, guesses),
-    [char, targets, guesses]
+    () => generateStyles(char, targets, guesses, wideMode),
+    [char, targets, guesses, wideMode]
   );
 
   return (
@@ -135,7 +136,8 @@ function Key(props: KeyProps) {
 function generateStyles(
   letter: string,
   targets: string[],
-  guesses: string[]
+  guesses: string[],
+  wideMode: boolean
 ): CSSProperties {
   if (!ALPHABET.has(letter)) {
     return {};
@@ -200,19 +202,22 @@ function generateStyles(
   }
 
   // Generate background image
+
+  const [rows, columns, verticalScale] = wideMode ? [4, 8, 26] : [8, 4, 15]; // Set up vars so that background image lines up with boards regardless of whether wide mode is on
+
   const backgroundImage = [];
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < rows; i++) {
     const row = [];
-    for (let j = 0; j < 4; j++) {
-      const color = colors[i * 4 + j];
-      const cell = `${color} calc(100%*${j}/4), ${color} calc(100%*${j + 1}/4)`;
+    for (let j = 0; j < columns; j++) {
+      const color = colors[i * columns + j];
+      const cell = `${color} calc(100%*${j}/${columns}), ${color} calc(100%*${j + 1}/${columns})`;
       row.push(cell);
     }
     backgroundImage.push(`linear-gradient(90deg,${row.join(",")})`);
   }
-  const backgroundSize = `100% 15%`;
-  const backgroundPosition = range(8)
-    .map((i) => `0% calc(100%*${i}/7 - 1%)`)
+  const backgroundSize = `100% ${verticalScale}%`;
+  const backgroundPosition = range(rows)
+    .map((i) => `0% calc(100%*${i}/${rows - 1} - 1%)`)
     .join(",");
 
   return {

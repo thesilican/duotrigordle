@@ -202,16 +202,16 @@ function generateStyles(
   }
 
   // Generate background image
-
-  const [rows, columns, verticalScale] = wideMode ? [4, 8, 26] : [8, 4, 15]; // Set up vars so that background image lines up with boards regardless of whether wide mode is on
+  // Set up vars so that background image lines up with boards regardless of whether wide mode is on
+  const [rows, columns, verticalScale] = wideMode ? [4, 8, 26] : [8, 4, 15];
 
   const backgroundImage = [];
   for (let i = 0; i < rows; i++) {
     const row = [];
     for (let j = 0; j < columns; j++) {
       const color = colors[i * columns + j];
-      const cell = `${color} calc(100%*${j}/${columns}), ${color} calc(100%*${j + 1}/${columns})`;
-      row.push(cell);
+      row.push(`${color} calc(100%*${j}/${columns})`);
+      row.push(`${color} calc(100%*${j + 1}/${columns})`);
     }
     backgroundImage.push(`linear-gradient(90deg,${row.join(",")})`);
   }

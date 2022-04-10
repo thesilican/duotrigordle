@@ -10,6 +10,7 @@
   --guess-text-red: red;
   --app-width: min(100vw, var(--app-max-width));
   --app-max-width: 600px;
+  --gray: rgb(100,100,100);
 }
 html {
   height: 100%;
@@ -74,7 +75,7 @@ button {
 }
 .row-1 {
   display: grid;
-  grid-template-columns: auto auto 1fr auto auto auto;
+  grid-template-columns: auto auto auto 1fr auto auto auto;
   column-gap: 8px;
   align-items: center;
   justify-content: center;
@@ -155,6 +156,9 @@ button {
   position: absolute;
 }
 
+.gameID {
+ color: var(--gray);
+}
 /* Keyboard */
 .keyboard {
   display: grid;

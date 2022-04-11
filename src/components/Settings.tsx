@@ -97,7 +97,7 @@ export function Settings() {
                 name="custom-input"
                 size={10}
                 min={1}
-                max={429496729}
+                max={4294967295}
                 defaultValue={game.id}
                 //https://stackoverflow.com/questions/48991254/reactjs-input-defaultvalue-is-set-but-not-showing}
                 key = {Math.random()}

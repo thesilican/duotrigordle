@@ -70,15 +70,6 @@ export default function App() {
       >
         <Header />
         <Boards />
-        <div className="gameID">
-        {game.practice ? (
-          <p>
-          GameID = {game.id}
-          </p>
-        ) : (
-          <div></div>
-        )}
-        </div>
         <Keyboard hidden={gameOver} />
         <Result hidden={!gameOver} />
       </div>

@@ -78,7 +78,6 @@ export default function Header() {
   // button to be activated again
   const practiceRef = useRef<HTMLButtonElement>(null);
   const newRef = useRef<HTMLButtonElement>(null);
-  const customRef = useRef<HTMLButtonElement>(null);
   const backRef = useRef<HTMLButtonElement>(null);
   const handlePracticeClick = () => {
     practiceRef.current?.blur();
@@ -94,19 +93,6 @@ export default function Header() {
     if (!res) return;
     const id = MersenneTwister().u32();
     dispatch(startGame({ id, practice: true }));
-  };
-  const handleCustomClick = () => {
-    customRef.current?.blur();
-    const res = window.confirm(
-      "Are you sure you want to start a new custom practice duotrigordle?\n" +
-        "(Your current progress will be lost)"
-    );
-    if (!res) return;
-    const user_chosen_id = window.prompt("Choose ID","0");
-    if (user_chosen_id != null){
-      const id = parseInt(user_chosen_id);
-      dispatch(startGame({id, practice: true }));
-    }
   };
   const handleBackClick = () => {
     backRef.current?.blur();
@@ -150,16 +136,12 @@ export default function Header() {
             <button ref={newRef} onClick={handleNewClick}>
               New
             </button>
-            <button ref={customRef} onClick={handleCustomClick}>
-              Custom
-            </button>
           </>
         ) : (
           <>
             <button ref={practiceRef} onClick={handlePracticeClick}>
               Practice
             </button>
-            <div></div>
             <div></div>
           </>
         )}

@@ -123,8 +123,13 @@ button {
 }
 .board.complete {
   filter: contrast(0.5) brightness(0.5);
+  opacity: 1;
 }
 .game.hide-completed-boards .board.complete {
+  opacity: 0;
+  transition: opacity 1s ease-out;
+}
+.game.hide-completed-boards .board.complete.hidden {
   display: none;
 }
 

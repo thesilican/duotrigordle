@@ -1,5 +1,5 @@
 import cn from "classnames";
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { NUM_BOARDS, NUM_GUESSES, WORDS_VALID } from "../consts";
 import { getGuessColors, range } from "../funcs";
 import { useSelector } from "../store";
@@ -34,19 +34,12 @@ function Board(props: BoardProps) {
     [target, guesses]
   );
   const gameOver = useSelector((s) => s.game.gameOver);
-
-  const [hidden, setHidden] = useState(false);
-
-  const complete = () => {
-    if (boardWon && !gameOver)
-      setTimeout(() => setHidden(true), 1100);
-    return boardWon && !gameOver;
-  };
+  const complete = boardWon && !gameOver;
 
   const input = useSelector((s) => s.game.input);
 
   return (
-    <div className={cn("board", complete() && "complete", hidden && "hidden")}>
+    <div className={cn("board", complete && "complete")}>
       {range(NUM_GUESSES).map((i) => {
         if (guessed !== null && i > guessed) {
           return <Word key={i} letters="" />;

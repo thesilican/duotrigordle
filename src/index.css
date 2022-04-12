@@ -126,11 +126,26 @@ button {
   opacity: 1;
 }
 .game.hide-completed-boards .board.complete {
-  opacity: 0;
-  transition: opacity 1s ease-out;
+  animation-duration: 600ms;
+  animation-name: hide;
+  animation-fill-mode: forwards;
 }
-.game.hide-completed-boards .board.complete.hidden {
-  display: none;
+
+@keyframes hide {
+  0% {
+    opacity: 1;
+  }
+
+  90% {
+    opacity: 0;
+  }
+
+  100% {
+    visibility: hidden;
+    display: block;
+    position: absolute;
+    left: -999em;
+  }
 }
 
 .cell {

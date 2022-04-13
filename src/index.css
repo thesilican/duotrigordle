@@ -121,8 +121,10 @@ button {
   padding: calc(var(--app-width) / 600);
   background: var(--white);
 }
-.board.complete {
+
+.game:not(.game.hide-completed-boards) .board.complete {
   filter: contrast(0.5) brightness(0.5);
+  transition: filter 150ms ease-out;
 }
 
 .game.hide-completed-boards:not(.animate-hiding) .board.complete {
@@ -134,7 +136,8 @@ button {
 }
 
 .game.hide-completed-boards.animate-hiding .board.complete {
-  animation-duration: 600ms;
+  animation-duration: 500ms;
+  animation-timing-function: ease-out;
   animation-name: hide;
   animation-fill-mode: both;
 }
@@ -144,7 +147,8 @@ button {
     opacity: 1;
   }
 
-  99% {
+  99.99% {
+    filter: contrast(0.5) brightness(0.5);
     opacity: 0;
     visibility: initial;
     display: initial;

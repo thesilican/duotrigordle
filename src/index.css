@@ -124,8 +124,36 @@ button {
 .board.complete {
   filter: contrast(0.5) brightness(0.5);
 }
-.game.hide-completed-boards .board.complete {
-  display: none;
+
+.game.hide-completed-boards:not(.animate-hiding) .board.complete {
+  opacity: 0;
+  visibility: hidden;
+  display: block;
+  position: absolute;
+  left: -999em;
+}
+
+.game.hide-completed-boards.animate-hiding .board.complete {
+  animation-duration: 600ms;
+  animation-name: hide;
+  animation-fill-mode: both;
+}
+
+@keyframes hide {
+  0% {
+    opacity: 1
+  }
+
+  99% {
+    opacity: 0;
+  }
+
+  100% {
+    visibility: hidden;
+    display: block;
+    position: absolute;
+    left: -999em;
+  }
 }
 
 .cell {
@@ -268,4 +296,12 @@ button {
 /* Settings */
 .group label {
   margin-left: calc(var(--app-width) / 75);
+}
+
+.group.animate-hiding {
+  margin-left: calc(var(--app-width) / 25);
+}
+
+.group.animate-hiding.active {
+  opacity: 0.5;
 }

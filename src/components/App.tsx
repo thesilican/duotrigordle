@@ -53,6 +53,10 @@ export default function App() {
   const hideCompletedBoards = useSelector(
     (s) => s.settings.hideCompletedBoards
   );
+  const animateHiding = useSelector(
+    (s) => s.settings.animateHiding
+  );
+  
 
   return (
     <>
@@ -65,7 +69,8 @@ export default function App() {
           wideMode && "wide",
           hideCompletedBoards &&
             !(gameWin || gameLose) &&
-            "hide-completed-boards"
+            "hide-completed-boards",
+          animateHiding && "animate-hiding",
         )}
       >
         <Header />

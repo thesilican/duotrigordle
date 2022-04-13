@@ -53,10 +53,7 @@ export default function App() {
   const hideCompletedBoards = useSelector(
     (s) => s.settings.hideCompletedBoards
   );
-  const animateHiding = useSelector(
-    (s) => s.settings.animateHiding
-  );
-  
+  const animateHiding = useSelector((s) => s.settings.animateHiding);
 
   return (
     <>
@@ -70,7 +67,7 @@ export default function App() {
           hideCompletedBoards &&
             !(gameWin || gameLose) &&
             "hide-completed-boards",
-          animateHiding && "animate-hiding",
+          animateHiding && "animate-hiding"
         )}
       >
         <Header />

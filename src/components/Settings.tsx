@@ -63,16 +63,21 @@ export function Settings() {
           />
           <label htmlFor="hide-completed-boards">Hide completed boards</label>
         </div>
-        <div className={cn("group", "animate-hiding", !hideCompletedBoards && "active")}>
+        <div
+          className={cn(
+            "group",
+            "animate-hiding",
+            !hideCompletedBoards && "active"
+          )}
+        >
           <input
             type="checkbox"
             id="animate-hiding"
             checked={animateHiding}
-            onChange={(e) => 
-              dispatch(
-                updateSettings({ animateHiding: e.target.checked})
-              )
+            onChange={(e) =>
+              dispatch(updateSettings({ animateHiding: e.target.checked }))
             }
+            disabled={!hideCompletedBoards}
           />
           <label htmlFor="animate-hiding">Fade out</label>
         </div>

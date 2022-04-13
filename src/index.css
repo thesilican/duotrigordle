@@ -141,11 +141,15 @@ button {
 
 @keyframes hide {
   0% {
-    opacity: 1
+    opacity: 1;
   }
 
   99% {
     opacity: 0;
+    visibility: initial;
+    display: initial;
+    position: initial;
+    left: initial;
   }
 
   100% {

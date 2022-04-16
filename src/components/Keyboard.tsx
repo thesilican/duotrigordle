@@ -101,7 +101,6 @@ type KeyProps = {
 };
 function Key(props: KeyProps) {
   const dispatch = useDispatch();
-  const wideMode = useSelector((s) => s.settings.wideMode);
   const char =
     props.char === "backspace"
       ? "⌫"
@@ -121,9 +120,12 @@ function Key(props: KeyProps) {
   const targets = useSelector((s) => s.game.targets);
   const guesses = useSelector((s) => s.game.guesses);
 
+  const wideMode = useSelector((s) => s.settings.wideMode);
+  const hideCompletedBoards = useSelector((s) => s.settings.hideCompletedBoards);
+
   const styles = useMemo(
-    () => generateStyles(char, targets, guesses, wideMode),
-    [char, targets, guesses, wideMode]
+    () => generateStyles(char, targets, guesses, wideMode, hideCompletedBoards),
+    [char, targets, guesses, wideMode, hideCompletedBoards]
   );
 
   return (
@@ -137,13 +139,14 @@ function generateStyles(
   letter: string,
   targets: string[],
   guesses: string[],
-  wideMode: boolean
+  wideMode: boolean,
+  hideCompletedBoards: boolean
 ): CSSProperties {
   if (!ALPHABET.has(letter)) {
     return {};
   }
-  guesses = guesses.filter((x) => x.includes(letter));
-  if (guesses.length === 0) {
+  const guessesContainingLetter = guesses.filter((x) => x.includes(letter));
+  if (guessesContainingLetter.length === 0) {
     return {};
   }
 
@@ -186,7 +189,7 @@ function generateStyles(
   }
 
   // Otherwise, compute style
-  for (let i = 0; i < targets.length; i++) {
+  for (let i = targets.length - 1; i >= 0; i--) {
     // If complete, replace color with black
     if (completes[i]) {
       colors[i] = "B";
@@ -198,6 +201,14 @@ function generateStyles(
       colors[i] = "var(--guess-yellow)";
     } else if (colors[i] === "G") {
       colors[i] = "var(--guess-green)";
+    }
+
+    // If hideCompletedBoards is true, move the colors for 
+    // completed boards to the back of the arrays so that the 
+    // generated background will compensate for the hidden boards
+    if (hideCompletedBoards && completes[i]) {
+      completes.push(completes.splice(i, 1)[0]);
+      colors.push(colors.splice(i, 1)[0]);
     }
   }
 

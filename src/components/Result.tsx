@@ -53,7 +53,7 @@ export default function Result(props: ResultProps) {
         ))}
       </div>
       <div className="kofi">
-        <span dangerouslySetInnerHTML={{ __html: twemoji.parse("❤️") }} />{" "}
+        <span dangerouslySetInnerHTML={{ __html: twemoji.parse("💛") }} />{" "}
         Duotrigordle?{" "}
         <a target="_blank" href="https://ko-fi.com/H2H0BTKB3">
           Buy me a{" "}

@@ -234,7 +234,7 @@ button {
 .result {
   display: grid;
   grid-template-columns: 1fr auto;
-  column-gap: calc(var(--app-width) / 75);
+  gap: calc(var(--app-width) / 75);
   padding: calc(var(--app-width) / 75);
   font-size: calc(var(--app-width) / 30);
 }
@@ -264,6 +264,14 @@ button {
   grid-template-columns: 1fr 1fr 1fr 1fr;
   column-gap: calc(var(--app-width) / 75);
   text-align: center;
+}
+.kofi {
+  grid-column: 1/3;
+  text-align: center;
+  font-size: calc(var(--app-width) / 50);
+}
+.kofi .emoji {
+  width: calc(var(--app-width) / 50);
 }
 
 .popup-wrapper {

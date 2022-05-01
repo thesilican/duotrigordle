@@ -64,9 +64,8 @@ export default function Header() {
   );
   const numGuesses = guesses.length;
   const mode = useSelector((s) => s.game.mode);
-  const dailyMode = useSelector((s) => s.game.mode === GameMode.Daily);
   const title =
-    dailyMode
+    (mode === GameMode.Daily)
     ? `Daily Duotrigordle #${id}`
     : (mode === GameMode.Practice)
       ? `Practice Duotrigordle`
@@ -139,22 +138,22 @@ export default function Header() {
   return (
     <div className="header">
       <div className="row-1">
-        {dailyMode ? (
-          <>
-            <button ref={practiceRef} onClick={handlePracticeClick}>
-              Practice
-            </button>
-            <button ref={perfectRef} onClick={handlePerfectClick}>
-              Perfect
-            </button>
-          </>
-        ) : (
+        {(mode !== GameMode.Daily) ? (
           <>
             <button ref={backRef} onClick={handleBackClick}>
               Back
             </button>
             <button ref={newRef} onClick={handleNewClick}>
               New
+            </button>
+          </>
+        ) : (
+          <>
+            <button ref={practiceRef} onClick={handlePracticeClick}>
+              Practice
+            </button>
+            <button ref={perfectRef} onClick={handlePerfectClick}>
+              Perfect
             </button>
           </>
         )}

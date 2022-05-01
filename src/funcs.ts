@@ -1,11 +1,12 @@
 import { Dispatch } from "@reduxjs/toolkit";
-import { NUM_BOARDS, NUM_GUESSES, START_DATE, WORDS_TARGET } from "./consts";
+import { NUM_BOARDS, NUM_GUESSES, START_DATE, WORDS_TARGET, REGENERATE_ID_MAX_ATTEMPTS } from "./consts";
 import {
   GameState,
   loadGame,
   SettingsState,
   startGame,
   updateSettings,
+  GameMode,
 } from "./store";
 
 // Generate integers 0 <= i < max
@@ -105,6 +106,19 @@ export function getTargetWords(id: number): string[] {
     }
   }
   return targetWords;
+}
+
+// Given a guess and the previous id, return a new id whose
+// target words will contain that guess
+export function getNewIdContainingGuess(id: number, guess: string): number {
+  let i = 0;
+  let foundIdContainingGuess = false;
+  while (!foundIdContainingGuess && i < REGENERATE_ID_MAX_ATTEMPTS) {
+    if (getTargetWords(id + ++i).includes(guess)) {
+      foundIdContainingGuess = true;
+    }
+  }
+  return id + i;
 }
 
 // Given a guess word and target word, returns a 5-letter string
@@ -210,7 +224,7 @@ export function deserializeGame(serialized: GameSerialized): GameState {
     targets,
     guesses: serialized.guesses,
     gameOver,
-    practice: false,
+    mode: GameMode.Daily,
     startTime: serialized.startTime,
     endTime: serialized.endTime,
   };
@@ -222,7 +236,7 @@ export function loadGameFromLocalStorage(dispatch: Dispatch) {
   if (isGameSerialized(serialized) && serialized.id === todaysId) {
     dispatch(loadGame({ game: deserializeGame(serialized) }));
   } else {
-    dispatch(startGame({ id: todaysId, practice: false }));
+    dispatch(startGame({ id: todaysId, mode: GameMode.Daily }));
   }
 }
 export function saveGameToLocalStorage(state: GameState) {

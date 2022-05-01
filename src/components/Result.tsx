@@ -3,13 +3,13 @@ import { useMemo } from "react";
 import twemoji from "twemoji";
 import { NUM_BOARDS, NUM_GUESSES } from "../consts";
 import { allWordsGuessed, formatTimeElapsed } from "../funcs";
-import { useSelector } from "../store";
+import { useSelector, GameMode } from "../store";
 
 type ResultProps = {
   hidden: boolean;
 };
 export default function Result(props: ResultProps) {
-  const practice = useSelector((s) => s.game.practice);
+  const mode = useSelector((s) => s.game.mode);
   const id = useSelector((s) => s.game.id);
   const targets = useSelector((s) => s.game.targets);
   const guesses = useSelector((s) => s.game.guesses);
@@ -26,13 +26,13 @@ export default function Result(props: ResultProps) {
       ? guesses.length
       : null;
     return getShareableText(
-      practice,
+      mode,
       id,
       guessCount,
       targetGuessCounts,
       showTimer ? timeElapsed : null
     );
-  }, [practice, id, targets, guesses, showTimer, timeElapsed]);
+  }, [mode, id, targets, guesses, showTimer, timeElapsed]);
   const parsed = twemoji.parse(shareableText) + "\n";
   const handleCopyToClipboardClick = () => {
     navigator.clipboard
@@ -78,17 +78,23 @@ const EMOJI_MAP = [
 ];
 
 function getShareableText(
-  practice: boolean,
+  mode: GameMode,
   id: number,
   guessCount: number | null,
   targetGuessCounts: (number | null)[],
   timeElapsed: number | null
 ) {
   const text = [];
-  if (practice) {
-    text.push(`Practice Duotrigordle\n`);
-  } else {
-    text.push(`Daily Duotrigordle #${id}\n`);
+  switch (mode) {
+    case GameMode.Daily:
+      text.push(`Daily Duotrigordle #${id}\n`);
+      break;
+    case GameMode.Practice:
+      text.push(`Practice Duotrigordle\n`);
+      break;
+    case GameMode.Perfect:
+      text.push(`Perfect Duotrigordle\n`);
+      break;
   }
   text.push(`Guesses: ${guessCount ?? "X"}/${NUM_GUESSES}\n`);
   if (timeElapsed !== null) {

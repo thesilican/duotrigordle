@@ -16,6 +16,7 @@ import {
   showSettingsPopup,
   startGame,
   useSelector,
+  GameMode,
 } from "../store";
 
 // Declare typescript definitions for safari fullscreen stuff
@@ -62,10 +63,14 @@ export default function Header() {
     [targets, guesses]
   );
   const numGuesses = guesses.length;
-  const practice = useSelector((s) => s.game.practice);
-  const title = practice
-    ? `Practice Duotrigordle`
-    : `Daily Duotrigordle #${id}`;
+  const mode = useSelector((s) => s.game.mode);
+  const dailyMode = useSelector((s) => s.game.mode === GameMode.Daily);
+  const title =
+    dailyMode
+    ? `Daily Duotrigordle #${id}`
+    : (mode === GameMode.Practice)
+      ? `Practice Duotrigordle`
+      : `Perfect Duotrigordle`;
   const gameOver = useSelector((s) => s.game.gameOver);
   const extraGuessesNum =
     NUM_GUESSES - NUM_BOARDS - (numGuesses - boardsCompleted);
@@ -77,27 +82,33 @@ export default function Header() {
   // so that pressing enter again does not cause the
   // button to be activated again
   const practiceRef = useRef<HTMLButtonElement>(null);
+  const perfectRef = useRef<HTMLButtonElement>(null);
   const newRef = useRef<HTMLButtonElement>(null);
   const backRef = useRef<HTMLButtonElement>(null);
   const handlePracticeClick = () => {
     practiceRef.current?.blur();
     const id = MersenneTwister().u32();
-    dispatch(startGame({ id, practice: true }));
+    dispatch(startGame({ id, mode: GameMode.Practice }));
+  };
+  const handlePerfectClick = () => {
+    perfectRef.current?.blur();
+    const id = MersenneTwister().u32();
+    dispatch(startGame({ id, mode: GameMode.Perfect }));
   };
   const handleNewClick = () => {
     newRef.current?.blur();
     const res = window.confirm(
-      "Are you sure you want to start a new practice duotrigordle?\n" +
+      "Are you sure you want to start a new duotrigordle?\n" +
         "(Your current progress will be lost)"
     );
     if (!res) return;
     const id = MersenneTwister().u32();
-    dispatch(startGame({ id, practice: true }));
+    dispatch(startGame({ id, mode }));
   };
   const handleBackClick = () => {
     backRef.current?.blur();
     const res = window.confirm(
-      "Are you sure you want to exit practice mode?\n" +
+      "Are you sure you want to go back to Daily Mode?\n" +
         "(Your current progress will be lost)"
     );
     if (!res) return;
@@ -128,7 +139,16 @@ export default function Header() {
   return (
     <div className="header">
       <div className="row-1">
-        {practice ? (
+        {dailyMode ? (
+          <>
+            <button ref={practiceRef} onClick={handlePracticeClick}>
+              Practice
+            </button>
+            <button ref={perfectRef} onClick={handlePerfectClick}>
+              Perfect
+            </button>
+          </>
+        ) : (
           <>
             <button ref={backRef} onClick={handleBackClick}>
               Back
@@ -136,13 +156,6 @@ export default function Header() {
             <button ref={newRef} onClick={handleNewClick}>
               New
             </button>
-          </>
-        ) : (
-          <>
-            <button ref={practiceRef} onClick={handlePracticeClick}>
-              Practice
-            </button>
-            <div></div>
           </>
         )}
         <p className="title">{title}</p>
@@ -175,8 +188,8 @@ export default function Header() {
         </p>
       </div>
     </div>
-  );
-}
+  )
+};
 
 function Timer() {
   const [flipFlop, setFlipFlop] = useState(false);

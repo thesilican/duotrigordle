@@ -9,7 +9,7 @@ import {
   saveGameToLocalStorage,
   saveSettingsToLocalStorage,
 } from "../funcs";
-import { useSelector } from "../store";
+import { useSelector, GameMode } from "../store";
 import About from "./About";
 import Boards from "./Boards";
 import Header from "./Header";
@@ -27,7 +27,7 @@ export default function App() {
 
   const game = useSelector((s) => s.game);
   useEffect(() => {
-    if (!game.practice) {
+    if (game.mode === GameMode.Daily) {
       saveGameToLocalStorage(game);
     }
   }, [game]);

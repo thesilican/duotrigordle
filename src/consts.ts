@@ -10,6 +10,8 @@ export const START_DATE = (() => {
   return new Date(utcDate + offset * 60 * 1000);
 })();
 
+export const REGENERATE_ID_MAX_ATTEMPTS = 99999;
+
 export const WORDS_TARGET = [
   "ABACK",
   "ABASE",

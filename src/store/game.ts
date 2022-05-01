@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { NUM_BOARDS, NUM_GUESSES, WORDS_VALID } from "../consts";
-import { allWordsGuessed, getTargetWords, range } from "../funcs";
+import { NUM_BOARDS, NUM_GUESSES, WORDS_VALID, WORDS_TARGET } from "../consts";
+import { allWordsGuessed, getTargetWords, range, getNewIdContainingGuess } from "../funcs";
+import { GameMode } from "./game-mode";
 
 // Don't forget to update corresponding shape checks in funcs.ts
 // if you add/remove fields
@@ -15,8 +16,8 @@ export type GameState = {
   targets: string[];
   // Whether or not the game is finished
   gameOver: boolean;
-  // Whether or not the game is in practice mode
-  practice: boolean;
+  // What the current game mode is
+  mode: GameMode;
   // Start timestamp (milliseconds from unix epoch)
   startTime: number;
   // End timestamp (milliseconds from unix epoch)
@@ -28,7 +29,7 @@ const initialState: GameState = {
   guesses: [],
   targets: range(NUM_BOARDS).map((_) => "AAAAA"),
   gameOver: false,
-  practice: true,
+  mode: GameMode.Practice,
   startTime: 0,
   endTime: 0,
 };
@@ -42,7 +43,7 @@ const gameSlice = createSlice({
     },
     startGame: (
       _,
-      action: PayloadAction<{ id: number; practice: boolean }>
+      action: PayloadAction<{ id: number; mode: GameMode }>
     ) => {
       return {
         id: action.payload.id,
@@ -50,7 +51,7 @@ const gameSlice = createSlice({
         guesses: [],
         input: "",
         gameOver: false,
-        practice: action.payload.practice,
+        mode: action.payload.mode,
         startTime: 0,
         endTime: 0,
       };
@@ -73,6 +74,15 @@ const gameSlice = createSlice({
       if (!WORDS_VALID.has(guess)) {
         return;
       }
+
+      if (state.guesses.length === 0 && state.mode === GameMode.Perfect) {
+        if (!WORDS_TARGET.includes(guess)) {
+          return;
+        }
+        state.id = getNewIdContainingGuess(state.id, guess);
+        state.targets = getTargetWords(state.id);
+      }
+
       state.guesses.push(guess);
       // Start timer on first guess
       if (state.guesses.length === 1) {

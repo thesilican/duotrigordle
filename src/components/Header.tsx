@@ -187,8 +187,8 @@ export default function Header() {
         </p>
       </div>
     </div>
-  )
-};
+  );
+}
 
 function Timer() {
   const [flipFlop, setFlipFlop] = useState(false);

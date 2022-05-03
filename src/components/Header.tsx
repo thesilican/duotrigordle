@@ -6,11 +6,8 @@ import fullscreenSvg from "../assets/fullscreen.svg";
 import helpSvg from "../assets/help.svg";
 import settingsSvg from "../assets/settings.svg";
 import { NUM_BOARDS, NUM_GUESSES } from "../consts";
-import {
-  formatTimeElapsed,
-  loadGameFromLocalStorage,
-  MersenneTwister,
-} from "../funcs";
+import { formatTimeElapsed, MersenneTwister } from "../funcs";
+import { loadGameFromLocalStorage } from "../serialize";
 import {
   showAboutPopup,
   showSettingsPopup,

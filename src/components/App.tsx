@@ -2,13 +2,13 @@ import cn from "classnames";
 import { useEffect, useLayoutEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { NUM_GUESSES } from "../consts";
+import { allWordsGuessed } from "../funcs";
 import {
-  allWordsGuessed,
   loadGameFromLocalStorage,
   loadSettingsFromLocalStorage,
   saveGameToLocalStorage,
   saveSettingsToLocalStorage,
-} from "../funcs";
+} from "../serialize";
 import { useSelector } from "../store";
 import About from "./About";
 import Boards from "./Boards";

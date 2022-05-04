@@ -4,8 +4,10 @@ import { allWordsGuessed, getTargetWords, getTodaysId } from "./funcs";
 import {
   GameState,
   loadGame,
+  loadStats,
   SettingsState,
   startGame,
+  StatsState,
   updateSettings,
 } from "./store";
 
@@ -99,4 +101,16 @@ export function loadSettingsFromLocalStorage(dispatch: Dispatch) {
 }
 export function saveSettingsToLocalStorage(state: SettingsState) {
   localStorage.setItem("duotrigordle-settings", JSON.stringify(state));
+}
+
+// Serialization for stats
+export function loadStatsFromLocalStorage(dispatch: Dispatch) {
+  const text = localStorage.getItem("duotrigordle-stats");
+  const stats = text && JSON.parse(text);
+  if (stats) {
+    dispatch(loadStats(stats));
+  }
+}
+export function saveStatsToLocalStorage(state: StatsState) {
+  localStorage.setItem("duotrigordle-stats", JSON.stringify(state));
 }

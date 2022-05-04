@@ -74,15 +74,18 @@ button {
 }
 .row-1 {
   display: grid;
-  grid-template-columns: auto auto 1fr auto auto auto;
+  grid-template-columns: auto auto 1fr auto auto auto auto;
   column-gap: 8px;
   align-items: center;
   justify-content: center;
 }
+.mode-switch {
+  font-size: calc(var(--app-width) / 40);
+}
 .title {
   margin: 0;
   text-align: center;
-  font-size: calc(var(--app-width) / 18.5);
+  font-size: calc(var(--app-width) / 22);
 }
 .icon {
   cursor: pointer;
@@ -320,4 +323,57 @@ button {
 
 .group.animate-hiding.active {
   opacity: 0.5;
+}
+
+/* Stats */
+.stats-title {
+  text-align: center;
+  font-size: calc(var(--app-width) / 25);
+  margin-bottom: calc(var(--app-width) / 120);
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  text-align: center;
+  margin-bottom: calc(var(--app-width) / 120);
+}
+.stats-grid .value {
+  font-size: calc(var(--app-width) / 15);
+}
+
+.stats-grid .label {
+  font-size: calc(var(--app-width) / 40);
+}
+.stats-chart {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: calc(var(--app-width) / 120);
+  font-size: calc(var(--app-width) / 40);
+  margin-bottom: calc(var(--app-width) / 120);
+}
+.stats-chart .bar-wrapper {
+  position: relative;
+  height: calc(var(--app-width) / 30);
+}
+.stats-chart .bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background: var(--app-green);
+
+  text-align: right;
+  padding-right: calc(var(--app-width) / 120);
+}
+.stats-times {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  column-gap: calc(var(--app-width) / 40);
+  margin-bottom: calc(var(--app-width) / 120);
+}
+.stats-import {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  font-size: calc(var(--app-width) / 40);
+  text-align: center;
 }

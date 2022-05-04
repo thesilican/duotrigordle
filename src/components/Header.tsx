@@ -5,12 +5,14 @@ import fullscreenExitSvg from "../assets/fullscreen-exit.svg";
 import fullscreenSvg from "../assets/fullscreen.svg";
 import helpSvg from "../assets/help.svg";
 import settingsSvg from "../assets/settings.svg";
+import statsSvg from "../assets/stats.svg";
 import { NUM_BOARDS, NUM_GUESSES } from "../consts";
 import { formatTimeElapsed, MersenneTwister } from "../funcs";
 import { loadGameFromLocalStorage } from "../serialize";
 import {
   showAboutPopup,
   showSettingsPopup,
+  showStatsPopup,
   startGame,
   useSelector,
 } from "../store";
@@ -127,16 +129,28 @@ export default function Header() {
       <div className="row-1">
         {practice ? (
           <>
-            <button ref={backRef} onClick={handleBackClick}>
+            <button
+              className="mode-switch"
+              ref={backRef}
+              onClick={handleBackClick}
+            >
               Back
             </button>
-            <button ref={newRef} onClick={handleNewClick}>
+            <button
+              className="mode-switch"
+              ref={newRef}
+              onClick={handleNewClick}
+            >
               New
             </button>
           </>
         ) : (
           <>
-            <button ref={practiceRef} onClick={handlePracticeClick}>
+            <button
+              className="mode-switch"
+              ref={practiceRef}
+              onClick={handlePracticeClick}
+            >
               Practice
             </button>
             <div></div>
@@ -145,15 +159,21 @@ export default function Header() {
         <p className="title">{title}</p>
         <img
           className="icon"
-          src={settingsSvg}
-          alt="Settings"
-          onClick={() => dispatch(showSettingsPopup())}
+          src={statsSvg}
+          alt="Stats"
+          onClick={() => dispatch(showStatsPopup())}
         />
         <img
           className="icon"
           src={helpSvg}
           alt="Help"
           onClick={() => dispatch(showAboutPopup())}
+        />
+        <img
+          className="icon"
+          src={settingsSvg}
+          alt="Settings"
+          onClick={() => dispatch(showSettingsPopup())}
         />
         <img
           className="icon"

@@ -121,7 +121,9 @@ function Key(props: KeyProps) {
   const guesses = useSelector((s) => s.game.guesses);
 
   const wideMode = useSelector((s) => s.settings.wideMode);
-  const hideCompletedBoards = useSelector((s) => s.settings.hideCompletedBoards);
+  const hideCompletedBoards = useSelector(
+    (s) => s.settings.hideCompletedBoards
+  );
 
   const styles = useMemo(
     () => generateStyles(char, targets, guesses, wideMode, hideCompletedBoards),
@@ -203,8 +205,8 @@ function generateStyles(
       colors[i] = "var(--guess-green)";
     }
 
-    // If hideCompletedBoards is true, move the colors for 
-    // completed boards to the back of the arrays so that the 
+    // If hideCompletedBoards is true, move the colors for
+    // completed boards to the back of the arrays so that the
     // generated background will compensate for the hidden boards
     if (hideCompletedBoards && completes[i]) {
       completes.push(completes.splice(i, 1)[0]);

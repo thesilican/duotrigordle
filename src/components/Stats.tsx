@@ -228,7 +228,7 @@ function calculateStatsInfo(stats: StatsState) {
   const guessMax = Math.max(...guessCount);
   const guessStyle = [];
   for (const count of guessCount) {
-    const percent = count / guessMax;
+    const percent = guessMax === 0 ? 0 : count / guessMax;
     const width = Math.max(5, percent * 100);
     const style = `${width.toFixed(0)}%`;
     guessStyle.push(style);

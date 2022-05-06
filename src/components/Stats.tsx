@@ -234,7 +234,7 @@ function calculateStatsInfo(stats: StatsState) {
     guessStyle.push(style);
   }
 
-  const times = history.map((x) => x.time);
+  const times = history.filter((x) => x.guesses !== null).map((x) => x.time);
   let bestTime, avgTime7, avgTimeAll;
   if (times.length === 0) {
     bestTime = avgTime7 = avgTimeAll = formatTimeElapsed(0);

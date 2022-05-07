@@ -54,6 +54,7 @@ export default function Header() {
   const id = useSelector((s) => s.game.id);
   const targets = useSelector((s) => s.game.targets);
   const guesses = useSelector((s) => s.game.guesses);
+  const speedrunMode = useSelector((s) => s.settings.speedrunMode);
   const boardsCompleted = useMemo(
     () =>
       targets
@@ -82,7 +83,7 @@ export default function Header() {
   const handlePracticeClick = () => {
     practiceRef.current?.blur();
     const id = MersenneTwister().u32();
-    dispatch(startGame({ id, practice: true }));
+    dispatch(startGame({ id, practice: true, speedrun: speedrunMode }));
   };
   const handleNewClick = () => {
     newRef.current?.blur();
@@ -92,7 +93,7 @@ export default function Header() {
     );
     if (!res) return;
     const id = MersenneTwister().u32();
-    dispatch(startGame({ id, practice: true }));
+    dispatch(startGame({ id, practice: true, speedrun: speedrunMode }));
   };
   const handleBackClick = () => {
     backRef.current?.blur();

@@ -8,6 +8,7 @@ export function Settings() {
   const {
     colorBlindMode,
     showTimer,
+    speedrunMode,
     wideMode,
     hideCompletedBoards,
     hideKeyboard,
@@ -37,6 +38,17 @@ export function Settings() {
             }
           />
           <label htmlFor="show-timer">Show speedrun timer</label>
+        </div>
+        <div className="group">
+          <input
+            type="checkbox"
+            id="speedrun-mode"
+            checked={speedrunMode}
+            onChange={(e) =>
+              dispatch(updateSettings({ speedrunMode: e.target.checked }))
+            }
+          />
+          <label htmlFor="speedrun-mode">Speedrun mode</label>
         </div>
         <div className="group">
           <input

@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { NUM_BOARDS, NUM_GUESSES, WORDS_VALID } from "../consts";
+import { NUM_BOARDS, NUM_GUESSES, WORDS_VALID, WORDS_TARGET } from "../consts";
 import { allWordsGuessed, getTargetWords, range } from "../funcs";
 
 // Don't forget to update corresponding shape checks in funcs.ts
@@ -17,6 +17,8 @@ export type GameState = {
   gameOver: boolean;
   // Whether or not the game is in practice mode
   practice: boolean;
+  // Whether or not the game is in speedrun mode
+  speedrun: boolean;
   // Start timestamp (milliseconds from unix epoch)
   startTime: number;
   // End timestamp (milliseconds from unix epoch)
@@ -29,6 +31,7 @@ const initialState: GameState = {
   targets: range(NUM_BOARDS).map((_) => "AAAAA"),
   gameOver: false,
   practice: true,
+  speedrun: false,
   startTime: 0,
   endTime: 0,
 };
@@ -42,7 +45,7 @@ const gameSlice = createSlice({
     },
     startGame: (
       _,
-      action: PayloadAction<{ id: number; practice: boolean }>
+      action: PayloadAction<{ id: number; practice: boolean, speedrun: boolean }>
     ) => {
       return {
         id: action.payload.id,
@@ -51,6 +54,7 @@ const gameSlice = createSlice({
         input: "",
         gameOver: false,
         practice: action.payload.practice,
+        speedrun: action.payload.speedrun,
         startTime: 0,
         endTime: 0,
       };
@@ -72,6 +76,9 @@ const gameSlice = createSlice({
       state.input = "";
       if (!WORDS_VALID.has(guess)) {
         return;
+      }
+      if (state.guesses.length === 0 && state.speedrun && WORDS_TARGET.includes(guess)) {
+        state.targets = getTargetWords(state.id, guess);
       }
       state.guesses.push(guess);
       // Start timer on first guess

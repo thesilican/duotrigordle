@@ -6,6 +6,7 @@ export type SettingsState = {
   speedrunMode: boolean;
   wideMode: boolean;
   hideCompletedBoards: boolean;
+  animateHiding: boolean;
   hideKeyboard: boolean;
 };
 const initialState: SettingsState = {
@@ -14,6 +15,7 @@ const initialState: SettingsState = {
   speedrunMode: false,
   wideMode: false,
   hideCompletedBoards: false,
+  animateHiding: true,
   hideKeyboard: false,
 };
 

@@ -106,7 +106,7 @@ button {
 .boards {
   overflow-y: scroll;
   display: grid;
-  grid-template-columns: repeat(4, auto);
+  grid-template-columns: repeat(4, 1fr);
   align-content: start;
   padding: 0 calc(var(--app-width) / 75) calc(var(--app-width) / 25)
     calc(var(--app-width) / 75);
@@ -114,7 +114,7 @@ button {
   row-gap: calc(var(--app-width) / 25);
 }
 .game.wide .boards {
-  grid-template-columns: repeat(8, auto);
+  grid-template-columns: repeat(8, 1fr);
 }
 
 .board {
@@ -131,11 +131,7 @@ button {
 }
 
 .game.hide-completed-boards:not(.animate-hiding) .board.complete {
-  opacity: 0;
-  visibility: hidden;
-  display: block;
-  position: absolute;
-  left: -999em;
+  display: none;
 }
 
 .game.hide-completed-boards.animate-hiding .board.complete {
@@ -156,19 +152,19 @@ button {
     visibility: initial;
     display: initial;
     position: initial;
-    left: initial;
+    top: initial;
   }
 
   100% {
     visibility: hidden;
     display: block;
     position: absolute;
-    left: -999em;
+    top: -10000px;
   }
 }
 
 .cell {
-  aspect-ratio: 1/1;
+  height: calc(var(--app-width) * 0.045);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -178,6 +174,9 @@ button {
   user-select: none;
 
   position: relative;
+}
+.game.wide .cell {
+  height: calc(min(100vw, calc(var(--app-max-width) * 2)) * 0.023);
 }
 .cell.yellow {
   color: var(--black);
@@ -212,7 +211,7 @@ button {
 }
 
 .key {
-  aspect-ratio: 1/1;
+  height: calc(var(--app-width) / 10);
 
   display: flex;
   align-items: center;

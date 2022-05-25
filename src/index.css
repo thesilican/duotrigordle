@@ -76,8 +76,6 @@ button {
   display: grid;
   grid-template-columns: auto auto 1fr auto auto auto auto;
   column-gap: 8px;
-  align-items: center;
-  justify-content: center;
 }
 .mode-switch {
   font-size: calc(var(--app-width) / 40);
@@ -88,7 +86,15 @@ button {
   font-size: calc(var(--app-width) / 22);
 }
 .icon {
-  cursor: pointer;
+  margin: 0;
+  border: none;
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon img {
   width: calc(var(--app-width) / 18.5);
 }
 .row-2 {
@@ -199,7 +205,6 @@ button {
   grid-template-columns: repeat(10, 1fr);
   row-gap: 2px;
   column-gap: 2px;
-  font-size: calc(var(--app-width) / 20);
   padding: 2px;
 }
 .keyboard.hidden {
@@ -217,9 +222,7 @@ button {
   align-items: center;
   justify-content: center;
   border: 1px solid white;
-
-  cursor: pointer;
-  user-select: none;
+  font-size: calc(var(--app-width) / 20);
 }
 .key.enter-1 {
   border-bottom: none;

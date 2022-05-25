@@ -131,9 +131,13 @@ function Key(props: KeyProps) {
   );
 
   return (
-    <div className={cn("key", enterClass)} style={styles} onClick={handleClick}>
+    <button
+      className={cn("key", enterClass)}
+      style={styles}
+      onClick={handleClick}
+    >
       <span>{char}</span>
-    </div>
+    </button>
   );
 }
 

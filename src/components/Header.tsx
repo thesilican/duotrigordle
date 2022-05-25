@@ -157,30 +157,21 @@ export default function Header() {
           </>
         )}
         <p className="title">{title}</p>
-        <img
-          className="icon"
-          src={statsSvg}
-          alt="Stats"
-          onClick={() => dispatch(showStatsPopup())}
-        />
-        <img
-          className="icon"
-          src={helpSvg}
-          alt="Help"
-          onClick={() => dispatch(showAboutPopup())}
-        />
-        <img
-          className="icon"
-          src={settingsSvg}
-          alt="Settings"
-          onClick={() => dispatch(showSettingsPopup())}
-        />
-        <img
-          className="icon"
-          src={fullscreen ? fullscreenExitSvg : fullscreenSvg}
-          alt="Go Fullscreen"
-          onClick={handleFullscreenClick}
-        />
+        <button className="icon" onClick={() => dispatch(showStatsPopup())}>
+          <img src={statsSvg} alt="Stats" />
+        </button>
+        <button className="icon" onClick={() => dispatch(showAboutPopup())}>
+          <img src={helpSvg} alt="Help" />
+        </button>
+        <button className="icon" onClick={() => dispatch(showSettingsPopup())}>
+          <img src={settingsSvg} alt="Settings" />
+        </button>
+        <button className="icon" onClick={handleFullscreenClick}>
+          <img
+            src={fullscreen ? fullscreenExitSvg : fullscreenSvg}
+            alt="Go Fullscreen"
+          />
+        </button>
       </div>
       <div className="row-2">
         <p>

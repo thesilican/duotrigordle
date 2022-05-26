@@ -103,6 +103,32 @@ export default function Header() {
     loadGameFromLocalStorage(dispatch);
   };
 
+  // ctrl/cmd + shift + r keyboard shortcut to reset practice mode quickly
+  const [reset, setReset] = useState(false);
+  useEffect(() => {
+    const handler = (k: KeyboardEvent) => {
+      const useCmdKey = navigator.platform.match(/mac|iphone|ipad/i);
+      if (
+        practice &&
+        k.key === "r" &&
+        !k.shiftKey &&
+        !k.altKey &&
+        ((useCmdKey && !k.ctrlKey && k.metaKey) ||
+          (!useCmdKey && k.ctrlKey && !k.metaKey))
+      ) {
+        k.preventDefault();
+        const id = MersenneTwister().u32();
+        dispatch(startGame({ id, practice: true }));
+        setReset(true);
+        setTimeout(() => setReset(false), 500);
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => {
+      window.removeEventListener("keydown", handler);
+    };
+  }, [dispatch, practice]);
+
   // Fullscreen
   const [fullscreen, setFullscreen] = useState(isFullscreen);
   useEffect(() => {
@@ -177,7 +203,7 @@ export default function Header() {
         <p>
           Boards Complete: {boardsCompleted}/{NUM_BOARDS}
         </p>
-        <Timer />
+        <Timer showResetText={reset} />
         <p className={cn(cannotWin && !gameOver && "cannot-win")}>
           Guesses Used: {numGuesses}/{NUM_GUESSES} ({extraGuesses})
         </p>
@@ -186,7 +212,10 @@ export default function Header() {
   );
 }
 
-function Timer() {
+type TimerProps = {
+  showResetText: boolean;
+};
+function Timer(props: TimerProps) {
   const [flipFlop, setFlipFlop] = useState(false);
   const showTimer = useSelector((s) => s.settings.showTimer);
   const startTime = useSelector((s) => s.game.startTime);
@@ -210,8 +239,11 @@ function Timer() {
     return () => clearInterval(interval);
   }, [showTimer, flipFlop]);
 
+  if (props.showResetText) {
+    return <p className="timer">New Game</p>;
+  }
   if (!showTimer) {
-    return <></>;
+    return <p />;
   }
   return <p className="timer">{timeElapsed}</p>;
 }

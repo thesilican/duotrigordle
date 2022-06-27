@@ -224,6 +224,7 @@ button {
   justify-content: center;
   border: 1px solid white;
   font-size: calc(var(--app-width) / 20);
+  user-select: none;
 }
 .key.enter-1 {
   border-bottom: none;

@@ -132,6 +132,10 @@ button {
   background: var(--white);
 }
 
+.game:not(.game.hide-completed-boards) .board {
+  transform: translateZ(0);
+}
+
 .game:not(.game.hide-completed-boards) .board.complete {
   filter: contrast(0.5) brightness(0.5);
   transition: filter 150ms ease-out;
@@ -139,6 +143,10 @@ button {
 
 .game.hide-completed-boards:not(.animate-hiding) .board.complete {
   display: none;
+}
+
+.game.hide-completed-boards.animate-hiding .board {
+  transform: translateZ(0);
 }
 
 .game.hide-completed-boards.animate-hiding .board.complete {

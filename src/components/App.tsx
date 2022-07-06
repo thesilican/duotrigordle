@@ -88,6 +88,8 @@ export default function App() {
     stats.history,
   ]);
 
+  // Prevent duotrigordle form working in iframes
+  // (looking at you https://dordle.io/duotrigordle)
   if (window.top !== window) {
     return (
       <p>

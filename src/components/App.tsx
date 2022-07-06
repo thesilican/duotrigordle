@@ -88,6 +88,15 @@ export default function App() {
     stats.history,
   ]);
 
+  if (window.top !== window) {
+    return (
+      <p>
+        Play duotrigordle at{" "}
+        <a href="https://duotrigordle.com">https://duotrigordle.com</a>
+      </p>
+    );
+  }
+
   return (
     <>
       <div

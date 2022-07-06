@@ -94,7 +94,9 @@ export default function App() {
     return (
       <p>
         Play duotrigordle at{" "}
-        <a href="https://duotrigordle.com">https://duotrigordle.com</a>
+        <a href="https://duotrigordle.com" target="_blank" rel="noreferrer">
+          https://duotrigordle.com
+        </a>
       </p>
     );
   }

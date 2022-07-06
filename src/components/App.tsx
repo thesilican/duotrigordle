@@ -98,7 +98,7 @@ export default function App() {
           https://duotrigordle.com
         </a>{" "}
         (if you are seeing this message, the website you're playing on probably
-        stole this game and is making ad revenue)
+        stole this game and/or is making ad revenue)
       </p>
     );
   }

@@ -96,7 +96,9 @@ export default function App() {
         Play duotrigordle at{" "}
         <a href="https://duotrigordle.com" target="_blank" rel="noreferrer">
           https://duotrigordle.com
-        </a>
+        </a>{" "}
+        (if you are seeing this message, the website you're playing on probably
+        stole this game and is making ad revenue)
       </p>
     );
   }

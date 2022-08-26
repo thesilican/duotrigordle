@@ -7,64 +7,32 @@ import helpSvg from "../assets/help.svg";
 import settingsSvg from "../assets/settings.svg";
 import statsSvg from "../assets/stats.svg";
 import { NUM_BOARDS, NUM_GUESSES } from "../consts";
-import { formatTimeElapsed, MersenneTwister } from "../funcs";
+import {
+  enterFullscreen,
+  exitFullscreen,
+  formatTimeElapsed,
+  isFullscreen,
+  MersenneTwister,
+} from "../funcs";
 import { showPopup, startGame, useSelector } from "../store";
 import { loadGameFromLocalStorage } from "./LocalStorage";
 
-// Declare typescript definitions for safari fullscreen stuff
-declare global {
-  interface Document {
-    webkitFullscreenElement: Element | null;
-    webkitExitFullscreen: () => void;
-  }
-  interface HTMLElement {
-    webkitRequestFullscreen: () => void;
-  }
-}
-function isFullscreen() {
-  const element =
-    document.fullscreenElement || document.webkitFullscreenElement;
-  return Boolean(element);
-}
-function enterFullscreen() {
-  const element = document.documentElement;
-  if (element.requestFullscreen) {
-    element.requestFullscreen();
-  } else if (element.webkitRequestFullscreen) {
-    element.webkitRequestFullscreen();
-  }
-}
-function exitFullscreen() {
-  if (document.exitFullscreen) {
-    document.exitFullscreen();
-  } else if (document.webkitExitFullscreen) {
-    document.webkitExitFullscreen();
-  }
+export default function Header() {
+  return (
+    <div className="header">
+      <Row1 />
+      <Row2 />
+    </div>
+  );
 }
 
-export default function Header() {
+function Row1() {
   const dispatch = useDispatch();
   const id = useSelector((s) => s.game.id);
-  const targets = useSelector((s) => s.game.targets);
-  const guesses = useSelector((s) => s.game.guesses);
-  const boardsCompleted = useMemo(
-    () =>
-      targets
-        .map((target) => guesses.indexOf(target) !== -1)
-        .reduce((a, v) => a + (v ? 1 : 0), 0),
-    [targets, guesses]
-  );
-  const numGuesses = guesses.length;
   const practice = useSelector((s) => s.game.practice);
   const title = practice
     ? `Practice Duotrigordle`
     : `Daily Duotrigordle #${id}`;
-  const gameOver = useSelector((s) => s.game.gameOver);
-  const extraGuessesNum =
-    NUM_GUESSES - NUM_BOARDS - (numGuesses - boardsCompleted);
-  const cannotWin = extraGuessesNum < 0;
-  const extraGuesses =
-    extraGuessesNum > 0 ? "+" + extraGuessesNum : extraGuessesNum;
 
   // Refs so that the buttons are blurred on press
   // so that pressing enter again does not cause the
@@ -77,6 +45,7 @@ export default function Header() {
     const id = MersenneTwister().u32();
     dispatch(startGame({ id, practice: true }));
   };
+
   const handleNewClick = () => {
     newRef.current?.blur();
     const res = window.confirm(
@@ -87,6 +56,7 @@ export default function Header() {
     const id = MersenneTwister().u32();
     dispatch(startGame({ id, practice: true }));
   };
+
   const handleBackClick = () => {
     backRef.current?.blur();
     const res = window.confirm(
@@ -96,6 +66,132 @@ export default function Header() {
     if (!res) return;
     loadGameFromLocalStorage(dispatch);
   };
+
+  // Fullscreen
+  const [fullscreen, setFullscreen] = useState(isFullscreen);
+  useEffect(() => {
+    const handler = () => setFullscreen(isFullscreen);
+    document.addEventListener("fullscreenchange", handler);
+    document.addEventListener("webkitfullscreenchange", handler);
+    return () => {
+      document.removeEventListener("fullscreenchange", handler);
+      document.removeEventListener("webkitfullscreenchange", handler);
+    };
+  }, []);
+  const handleFullscreenClick = () => {
+    if (isFullscreen()) {
+      exitFullscreen();
+    } else {
+      enterFullscreen();
+    }
+  };
+  return (
+    <div className="row-1">
+      {practice ? (
+        <>
+          <button
+            className="mode-switch"
+            ref={backRef}
+            onClick={handleBackClick}
+          >
+            Back
+          </button>
+          <button className="mode-switch" ref={newRef} onClick={handleNewClick}>
+            New
+          </button>
+        </>
+      ) : (
+        <>
+          <button
+            className="mode-switch"
+            ref={practiceRef}
+            onClick={handlePracticeClick}
+          >
+            Practice
+          </button>
+          <div></div>
+        </>
+      )}
+      <p className="title">{title}</p>
+      <button className="icon" onClick={() => dispatch(showPopup("stats"))}>
+        <img src={statsSvg} alt="Stats" />
+      </button>
+      <button className="icon" onClick={() => dispatch(showPopup("about"))}>
+        <img src={helpSvg} alt="Help" />
+      </button>
+      <button className="icon" onClick={() => dispatch(showPopup("settings"))}>
+        <img src={settingsSvg} alt="Settings" />
+      </button>
+      <button className="icon" onClick={handleFullscreenClick}>
+        <img
+          src={fullscreen ? fullscreenExitSvg : fullscreenSvg}
+          alt="Go Fullscreen"
+        />
+      </button>
+    </div>
+  );
+}
+
+function Row2() {
+  const targets = useSelector((s) => s.game.targets);
+  const guesses = useSelector((s) => s.game.guesses);
+  const boardsCompleted = useMemo(
+    () =>
+      targets
+        .map((target) => guesses.indexOf(target) !== -1)
+        .reduce((a, v) => a + (v ? 1 : 0), 0),
+    [targets, guesses]
+  );
+  const numGuesses = guesses.length;
+  const gameOver = useSelector((s) => s.game.gameOver);
+  const extraGuessesNum =
+    NUM_GUESSES - NUM_BOARDS - (numGuesses - boardsCompleted);
+  const cannotWin = extraGuessesNum < 0;
+  const extraGuesses =
+    extraGuessesNum > 0 ? "+" + extraGuessesNum : extraGuessesNum;
+
+  return (
+    <div className="row-2">
+      <p>
+        Boards Complete: {boardsCompleted}/{NUM_BOARDS}
+      </p>
+      <Timer />
+      <p className={cn(cannotWin && !gameOver && "cannot-win")}>
+        Guesses Used: {numGuesses}/{NUM_GUESSES} ({extraGuesses})
+      </p>
+    </div>
+  );
+}
+
+function Timer() {
+  const dispatch = useDispatch();
+  const showTimer = useSelector((s) => s.settings.showTimer);
+  const startTime = useSelector((s) => s.game.startTime);
+  const endTime = useSelector((s) => s.game.endTime);
+  const gameStarted = useSelector((s) => s.game.guesses.length > 0);
+  const gameOver = useSelector((s) => s.game.gameOver);
+  const practice = useSelector((s) => s.game.practice);
+  const [now, setNow] = useState(() => new Date().getTime());
+
+  const timerText = useMemo(() => {
+    if (!showTimer) {
+      return "";
+    } else if (!gameStarted) {
+      return formatTimeElapsed(0);
+    } else if (gameOver) {
+      return formatTimeElapsed(endTime - startTime);
+    } else {
+      return formatTimeElapsed(now - startTime);
+    }
+  }, [now, showTimer, startTime, endTime, gameStarted, gameOver]);
+
+  useEffect(() => {
+    if (!showTimer) return;
+    const interval = setInterval(() => {
+      setNow(() => new Date().getTime());
+    }, 25);
+    return () => clearInterval(interval);
+  }, [showTimer]);
 
   // ctrl/cmd + shift + r keyboard shortcut to reset practice mode quickly
   const [reset, setReset] = useState(false);
@@ -123,127 +219,5 @@ export default function Header() {
     };
   }, [dispatch, practice]);
 
-  // Fullscreen
-  const [fullscreen, setFullscreen] = useState(isFullscreen);
-  useEffect(() => {
-    const handler = () => {
-      setFullscreen(isFullscreen);
-    };
-    document.addEventListener("fullscreenchange", handler);
-    document.addEventListener("webkitfullscreenchange", handler);
-    return () => {
-      document.removeEventListener("fullscreenchange", handler);
-      document.removeEventListener("webkitfullscreenchange", handler);
-    };
-  }, []);
-  const handleFullscreenClick = () => {
-    if (isFullscreen()) {
-      exitFullscreen();
-    } else {
-      enterFullscreen();
-    }
-  };
-
-  return (
-    <div className="header">
-      <div className="row-1">
-        {practice ? (
-          <>
-            <button
-              className="mode-switch"
-              ref={backRef}
-              onClick={handleBackClick}
-            >
-              Back
-            </button>
-            <button
-              className="mode-switch"
-              ref={newRef}
-              onClick={handleNewClick}
-            >
-              New
-            </button>
-          </>
-        ) : (
-          <>
-            <button
-              className="mode-switch"
-              ref={practiceRef}
-              onClick={handlePracticeClick}
-            >
-              Practice
-            </button>
-            <div></div>
-          </>
-        )}
-        <p className="title">{title}</p>
-        <button className="icon" onClick={() => dispatch(showPopup("stats"))}>
-          <img src={statsSvg} alt="Stats" />
-        </button>
-        <button className="icon" onClick={() => dispatch(showPopup("about"))}>
-          <img src={helpSvg} alt="Help" />
-        </button>
-        <button
-          className="icon"
-          onClick={() => dispatch(showPopup("settings"))}
-        >
-          <img src={settingsSvg} alt="Settings" />
-        </button>
-        <button className="icon" onClick={handleFullscreenClick}>
-          <img
-            src={fullscreen ? fullscreenExitSvg : fullscreenSvg}
-            alt="Go Fullscreen"
-          />
-        </button>
-      </div>
-      <div className="row-2">
-        <p>
-          Boards Complete: {boardsCompleted}/{NUM_BOARDS}
-        </p>
-        <Timer showResetText={reset} />
-        <p className={cn(cannotWin && !gameOver && "cannot-win")}>
-          Guesses Used: {numGuesses}/{NUM_GUESSES} ({extraGuesses})
-        </p>
-      </div>
-    </div>
-  );
-}
-
-type TimerProps = {
-  // Timer also used to show "NEW GAME text when using Ctrl+R"
-  showResetText: boolean;
-};
-function Timer(props: TimerProps) {
-  const showTimer = useSelector((s) => s.settings.showTimer);
-  const startTime = useSelector((s) => s.game.startTime);
-  const endTime = useSelector((s) => s.game.endTime);
-  const gameStarted = useSelector((s) => s.game.guesses.length > 0);
-  const gameOver = useSelector((s) => s.game.gameOver);
-  const [now, setNow] = useState(() => new Date().getTime());
-
-  const timeElapsed = useMemo(() => {
-    if (!gameStarted) {
-      return formatTimeElapsed(0);
-    } else if (gameOver) {
-      return formatTimeElapsed(endTime - startTime);
-    } else {
-      return formatTimeElapsed(now - startTime);
-    }
-  }, [startTime, endTime, gameStarted, now, gameOver]);
-
-  useEffect(() => {
-    if (!showTimer) return;
-    const interval = setInterval(() => {
-      setNow(() => new Date().getTime());
-    }, 25);
-    return () => clearInterval(interval);
-  }, [showTimer]);
-
-  if (props.showResetText) {
-    return <p className="timer">New Game</p>;
-  }
-  if (!showTimer) {
-    return <p />;
-  }
-  return <p className="timer">{timeElapsed}</p>;
+  return <p className="timer">{reset ? "New Game" : timerText}</p>;
 }

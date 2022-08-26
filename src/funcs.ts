@@ -143,3 +143,35 @@ export function allWordsGuessed(guesses: string[], targets: string[]) {
   }
   return true;
 }
+
+// Type declarations for fullscreen stuff
+declare global {
+  interface Document {
+    webkitFullscreenElement: Element | null;
+    webkitExitFullscreen: () => void;
+  }
+  interface HTMLElement {
+    webkitRequestFullscreen: () => void;
+  }
+}
+
+export function isFullscreen() {
+  const element =
+    document.fullscreenElement || document.webkitFullscreenElement;
+  return Boolean(element);
+}
+export function enterFullscreen() {
+  const element = document.documentElement;
+  if (element.requestFullscreen) {
+    element.requestFullscreen();
+  } else if (element.webkitRequestFullscreen) {
+    element.webkitRequestFullscreen();
+  }
+}
+export function exitFullscreen() {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
+  }
+}

@@ -1,10 +1,10 @@
 import cn from "classnames";
 import { useDispatch } from "react-redux";
-import { hidePopups, updateSettings, useSelector } from "../store";
+import { showPopup, updateSettings, useSelector } from "../store";
 
 export function Settings() {
   const dispatch = useDispatch();
-  const shown = useSelector((s) => s.popups.settings);
+  const shown = useSelector((s) => s.ui.popup === "settings");
   const {
     colorBlindMode,
     showTimer,
@@ -92,7 +92,7 @@ export function Settings() {
           />
           <label htmlFor="hide-keyboard">Hide keyboard</label>
         </div>
-        <button className="close" onClick={() => dispatch(hidePopups())}>
+        <button className="close" onClick={() => dispatch(showPopup(null))}>
           close
         </button>
       </div>

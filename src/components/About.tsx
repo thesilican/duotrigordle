@@ -2,7 +2,7 @@ import cn from "classnames";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { START_DATE } from "../consts";
-import { hidePopups, useSelector } from "../store";
+import { showPopup, useSelector } from "../store";
 
 function getHoursRemaining() {
   const now = new Date();
@@ -17,7 +17,7 @@ function getHoursRemaining() {
 export default function About() {
   const dispatch = useDispatch();
   const [hoursRemaining, setHoursRemaining] = useState(getHoursRemaining);
-  const shown = useSelector((s) => s.popups.about);
+  const shown = useSelector((s) => s.ui.popup === "about");
 
   useEffect(() => {
     // Update hoursRemaining every time popup is opened
@@ -92,7 +92,7 @@ export default function About() {
             by Josh Wardle
           </li>
         </ul>
-        <button className="close" onClick={() => dispatch(hidePopups())}>
+        <button className="close" onClick={() => dispatch(showPopup(null))}>
           close
         </button>
       </div>

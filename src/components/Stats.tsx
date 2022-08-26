@@ -5,15 +5,15 @@ import { formatTimeElapsed, range } from "../funcs";
 import {
   addHistory,
   GameHistory,
-  hidePopups,
   removeHistory,
+  showPopup,
   StatsState,
   useSelector,
 } from "../store";
 
 export default function Stats() {
   const dispatch = useDispatch();
-  const shown = useSelector((s) => s.popups.stats);
+  const shown = useSelector((s) => s.ui.popup === "stats");
   const stats = useSelector((s) => s.stats);
   const {
     played,
@@ -186,7 +186,7 @@ export default function Stats() {
             Help
           </a>
         </div>
-        <button className="close" onClick={() => dispatch(hidePopups())}>
+        <button className="close" onClick={() => dispatch(showPopup(null))}>
           close
         </button>
       </div>

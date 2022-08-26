@@ -8,13 +8,7 @@ import settingsSvg from "../assets/settings.svg";
 import statsSvg from "../assets/stats.svg";
 import { NUM_BOARDS, NUM_GUESSES } from "../consts";
 import { formatTimeElapsed, MersenneTwister } from "../funcs";
-import {
-  showAboutPopup,
-  showSettingsPopup,
-  showStatsPopup,
-  startGame,
-  useSelector,
-} from "../store";
+import { showPopup, startGame, useSelector } from "../store";
 import { loadGameFromLocalStorage } from "./LocalStorage";
 
 // Declare typescript definitions for safari fullscreen stuff
@@ -183,13 +177,16 @@ export default function Header() {
           </>
         )}
         <p className="title">{title}</p>
-        <button className="icon" onClick={() => dispatch(showStatsPopup())}>
+        <button className="icon" onClick={() => dispatch(showPopup("stats"))}>
           <img src={statsSvg} alt="Stats" />
         </button>
-        <button className="icon" onClick={() => dispatch(showAboutPopup())}>
+        <button className="icon" onClick={() => dispatch(showPopup("about"))}>
           <img src={helpSvg} alt="Help" />
         </button>
-        <button className="icon" onClick={() => dispatch(showSettingsPopup())}>
+        <button
+          className="icon"
+          onClick={() => dispatch(showPopup("settings"))}
+        >
           <img src={settingsSvg} alt="Settings" />
         </button>
         <button className="icon" onClick={handleFullscreenClick}>

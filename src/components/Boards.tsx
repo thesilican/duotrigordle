@@ -1,15 +1,28 @@
 import cn from "classnames";
-import React, { useMemo } from "react";
-import { NUM_BOARDS, NUM_GUESSES, WORDS_VALID } from "../consts";
+import React from "react";
+import { NUM_BOARDS, WORDS_VALID } from "../consts";
 import { range } from "../funcs";
 import { selectGuessColors, useSelector } from "../store";
 
 export default function Boards() {
+  const input = useSelector((s) => s.game.input);
+  const gameOver = useSelector((s) => s.game.gameOver);
+
   return (
-    <div className="boards">
+    <div className={cn("boards", "show-input-hint")}>
       {range(NUM_BOARDS).map((i) => (
         <Board key={i} idx={i} />
       ))}
+      <div className={cn("input-wrapper", gameOver && "hidden")}>
+        <div className="input">
+          <div className="word">
+            <Word
+              letters={input}
+              textRed={input.length === 5 && !WORDS_VALID.has(input)}
+            />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -18,46 +31,46 @@ type BoardProps = {
   idx: number;
 };
 function Board(props: BoardProps) {
-  const target = useSelector((s) => s.game.targets[props.idx]);
   const guesses = useSelector((s) => s.game.guesses);
-  const colors = useSelector(selectGuessColors)[props.idx];
-  // If target has been guessed, index of guess
-  // otherwise null
-  const guessed = useMemo(() => {
-    const idx = guesses.indexOf(target);
-    return idx === -1 ? null : idx;
-  }, [guesses, target]);
-
-  const boardWon = useMemo(
-    () => guesses.indexOf(target) !== -1,
-    [target, guesses]
-  );
+  const target = useSelector((s) => s.game.targets[props.idx]);
   const gameOver = useSelector((s) => s.game.gameOver);
-  const complete = boardWon && !gameOver;
+  const colors = useSelector(selectGuessColors)[props.idx];
 
-  const input = useSelector((s) => s.game.input);
+  const complete =
+    guesses.indexOf(target) !== -1 && !gameOver ? "complete" : null;
 
   return (
-    <div className={cn("board", complete && "complete")}>
-      {range(NUM_GUESSES).map((i) => {
-        if (guessed !== null && i > guessed) {
-          return <Word key={i} letters="" />;
-        } else if (i === guesses.length) {
-          const textRed = input.length === 5 && !WORDS_VALID.has(input);
-          return <Word key={i} letters={input} textRed={textRed} input />;
-        } else {
-          return <Word key={i} letters={guesses[i] ?? ""} colors={colors[i]} />;
-        }
-      })}
+    <div className={cn("board", complete)}>
+      <Words guesses={guesses} target={target} colors={colors} />
     </div>
   );
 }
 
+type WordsProps = {
+  guesses: string[];
+  target: string;
+  colors: string[];
+};
+const Words = React.memo(function (props: WordsProps) {
+  const { guesses, target, colors } = props;
+  const guessedAt = guesses.indexOf(target);
+  const complete = guessedAt !== -1;
+  const guessCount = complete ? guessedAt + 1 : guesses.length;
+  return (
+    <>
+      {range(guessCount).map((i) => (
+        <Word key={i} letters={guesses[i]} colors={colors[i]} />
+      ))}
+      {guessCount === 0 && <Word letters="" />}
+    </>
+  );
+});
+
 type WordProps = {
   letters: string;
-  input?: boolean;
   colors?: string;
   textRed?: boolean;
+  inputId?: number;
 };
 const Word = React.memo(function (props: WordProps) {
   return (
@@ -65,8 +78,8 @@ const Word = React.memo(function (props: WordProps) {
       {range(5).map((i) => (
         <Cell
           key={i}
-          input={props.input}
-          letter={props.letters[i] ?? ""}
+          inputId={i === 0 ? props.inputId : undefined}
+          char={props.letters[i] ?? ""}
           textRed={props.textRed}
           color={props.colors ? (props.colors[i] as "B") : undefined}
         />
@@ -76,10 +89,10 @@ const Word = React.memo(function (props: WordProps) {
 });
 
 type CellProps = {
-  letter: string;
-  input?: boolean;
-  textRed?: boolean;
+  char: string;
   color?: "B" | "Y" | "G";
+  inputId?: number;
+  textRed?: boolean;
 };
 function Cell(props: CellProps) {
   const color =
@@ -90,11 +103,12 @@ function Cell(props: CellProps) {
       : props.color === "B"
       ? "gray"
       : null;
-  const filled = props.letter && props.input ? "filled" : null;
   const textRed = props.textRed ? "text-red" : null;
+  const id =
+    props.inputId !== undefined ? `input-${props.inputId + 1}` : undefined;
   return (
-    <div className={cn("cell", color, filled, textRed)}>
-      <span className="letter">{props.letter}</span>
+    <div id={id} className={cn("cell", color, textRed)}>
+      <span className="letter">{props.char}</span>
     </div>
   );
 }

@@ -43,7 +43,6 @@ button {
   background-color: var(--black);
   border: 1px solid white;
   border-radius: 4px;
-  transition: background-color 0.1s ease;
   cursor: pointer;
 }
 
@@ -123,13 +122,13 @@ button {
 
 /* Boards */
 .boards {
-  overflow-y: scroll;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  align-content: start;
-  padding: calc(var(--app-width) / 75);
-  column-gap: calc(var(--app-width) / 75);
-  row-gap: calc(var(--app-width) / 25);
+  align-items: flex-start;
+  padding: 8px 2px 8px;
+  column-gap: 8px;
+  row-gap: 24px;
+  overflow-y: scroll;
 }
 .game.wide .boards {
   grid-template-columns: repeat(8, 1fr);
@@ -138,8 +137,8 @@ button {
 .board {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: calc(var(--app-width) / 600);
-  padding: calc(var(--app-width) / 600);
+  gap: 1px;
+  padding: 1px;
   transition: box-shadow 0.1s ease, background-color 0.1s ease;
 }
 
@@ -204,30 +203,52 @@ button {
   line-height: 0.75;
   user-select: none;
   background: var(--guess-black);
-  transition: none;
   position: relative;
 }
 .cell.gray {
   background: var(--guess-gray);
-  transition: background-color 0.1s ease, color 0.1s ease;
 }
 .cell.yellow {
   color: var(--black);
   background: var(--guess-yellow);
-  transition: background-color 0.1s ease, color 0.1s ease;
 }
 .cell.green {
   color: var(--black);
   background: var(--guess-green);
-  transition: background-color 0.1s ease, color 0.1s ease;
 }
 .cell.text-red {
   color: var(--guess-text-red);
-  transition: background-color 0.1s ease, color 0.1s ease;
 }
 
 .letter {
   position: absolute;
+}
+
+.input-wrapper {
+  position: sticky;
+  bottom: 0px;
+  grid-column: 1/5;
+
+  display: flex;
+  justify-content: center;
+}
+.input-wrapper.hidden {
+  display: none;
+}
+.game.wide .input-wrapper {
+  grid-column: 1/9;
+}
+
+.input {
+  background-color: var(--white);
+  box-shadow: 0px 0px 4px var(--white);
+  padding: 1px;
+}
+
+.input .word {
+  display: grid;
+  gap: 1px;
+  grid-template-columns: repeat(5, calc(var(--app-width) * 0.045));
 }
 
 /* Keyboard */

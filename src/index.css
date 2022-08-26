@@ -233,10 +233,9 @@ button {
 /* Keyboard */
 .keyboard {
   display: grid;
+  height: calc(var(--app-width) * 0.325);
   grid-template-columns: repeat(10, 1fr);
-  row-gap: 2px;
-  column-gap: 2px;
-  padding: 2px;
+  padding: 1px;
 }
 .keyboard.hidden {
   display: none;
@@ -247,8 +246,6 @@ button {
 }
 
 .key {
-  height: calc(var(--app-width) / 10);
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -256,16 +253,19 @@ button {
   font-size: calc(var(--app-width) / 20);
   user-select: none;
   transition: background-color 0.1s ease, color 0.1s ease;
+  margin: 1px;
 }
 .key.enter-1 {
   border-bottom: none;
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
+  margin-bottom: -2px;
 }
 .key.enter-2 {
   border-right: none;
   border-top-right-radius: 0;
   border-bottom-right-radius: 0;
+  margin-right: -2px;
 }
 .key.enter-3 {
   border-top: none;

@@ -63,6 +63,8 @@ button {
   --guess-green: rgb(251, 146, 60);
 }
 .game.wide {
+  --app-width: var(--app-max-width);
+  width: calc(var(--app-max-width) * 2);
   max-width: calc(var(--app-max-width) * 2);
 }
 
@@ -187,11 +189,6 @@ button {
   font-size: calc(var(--app-width) / 25);
   line-height: 0.75;
   user-select: none;
-
-  position: relative;
-}
-.game.wide .cell {
-  height: min(calc(2.3vw), calc(var(--app-max-width) * 0.046));
 }
 .cell.yellow {
   color: var(--black);
@@ -203,9 +200,6 @@ button {
 }
 .cell.text-red {
   color: var(--guess-text-red);
-}
-.letter {
-  position: absolute;
 }
 
 /* Keyboard */

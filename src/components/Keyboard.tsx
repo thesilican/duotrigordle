@@ -1,37 +1,15 @@
 import cn from "classnames";
 import { CSSProperties, useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
-import { getGuessColors, range } from "../funcs";
-import { inputBackspace, inputEnter, inputLetter, useSelector } from "../store";
-
-const ALPHABET = new Set([
-  "A",
-  "B",
-  "C",
-  "D",
-  "E",
-  "F",
-  "G",
-  "H",
-  "I",
-  "J",
-  "K",
-  "L",
-  "M",
-  "N",
-  "O",
-  "P",
-  "Q",
-  "R",
-  "S",
-  "T",
-  "U",
-  "V",
-  "W",
-  "X",
-  "Y",
-  "Z",
-]);
+import { ALPHABET } from "../consts";
+import { range } from "../funcs";
+import {
+  inputBackspace,
+  inputEnter,
+  inputLetter,
+  selectGuessColors,
+  useSelector,
+} from "../store";
 
 type KeyboardProps = {
   hidden: boolean;
@@ -40,6 +18,7 @@ export default function Keyboard(props: KeyboardProps) {
   const dispatch = useDispatch();
   const hideKeyboard = useSelector((s) => s.settings.hideKeyboard);
 
+  // Listen to keyboard events
   useEffect(() => {
     const handler = (k: KeyboardEvent) => {
       if (k.ctrlKey || k.metaKey || k.altKey) {
@@ -119,15 +98,23 @@ function Key(props: KeyProps) {
 
   const targets = useSelector((s) => s.game.targets);
   const guesses = useSelector((s) => s.game.guesses);
-
+  const guessColors = useSelector(selectGuessColors);
   const wideMode = useSelector((s) => s.settings.wideMode);
   const hideCompletedBoards = useSelector(
     (s) => s.settings.hideCompletedBoards
   );
 
   const styles = useMemo(
-    () => generateStyles(char, targets, guesses, wideMode, hideCompletedBoards),
-    [char, targets, guesses, wideMode, hideCompletedBoards]
+    () =>
+      generateStyles(
+        char,
+        targets,
+        guesses,
+        guessColors,
+        wideMode,
+        hideCompletedBoards
+      ),
+    [char, targets, guesses, guessColors, wideMode, hideCompletedBoards]
   );
 
   return (
@@ -142,102 +129,103 @@ function Key(props: KeyProps) {
 }
 
 function generateStyles(
-  letter: string,
+  char: string,
   targets: string[],
   guesses: string[],
+  guessColors: string[][],
   wideMode: boolean,
   hideCompletedBoards: boolean
 ): CSSProperties {
-  if (!ALPHABET.has(letter)) {
-    return {};
-  }
-  const guessesContainingLetter = guesses.filter((x) => x.includes(letter));
-  if (guessesContainingLetter.length === 0) {
+  // Don't generate style for backspace & enter keys
+  if (!ALPHABET.has(char)) {
     return {};
   }
 
+  // Don't generate style if letter isn't in any guesses yet
+  if (!guesses.find((x) => x.includes(char))) {
+    return {};
+  }
+
+  // For board i, colors[i]
+  // is B if the letter is wrong, or the board is completed
+  // is Y if any guess has Y (but no G)
+  // is G if any guess has G
   const colors = [];
-  const completes = [];
+  // Pad count if hideCompletedBoards is on
+  let pad = 0;
   for (let i = 0; i < targets.length; i++) {
     const target = targets[i];
+    const complete = guesses.includes(target);
+    // Check if board is complete
+    if (complete) {
+      if (hideCompletedBoards) {
+        pad++;
+      } else {
+        colors.push("B");
+      }
+      continue;
+    }
+    // Push best color
     let bestColor = "B";
-    let complete = false;
-    for (const guess of guesses) {
-      const results = getGuessColors(guess, target);
-      for (let j = 0; j < 5; j++) {
-        if (guess[j] !== letter) continue;
-        const color = results[j];
+    for (let j = 0; j < guesses.length; j++) {
+      const guess = guesses[j];
+      const results = guessColors[i][j];
+      for (let k = 0; k < 5; k++) {
+        if (guess[k] !== char) continue;
+        const color = results[k];
         if (bestColor === "B" || color === "G") {
           bestColor = color;
         }
       }
-      if (guess === target) {
-        complete = true;
-        break;
-      }
     }
     colors.push(bestColor);
-    completes.push(complete);
+  }
+  for (let i = 0; i < pad; i++) {
+    colors.push("B");
   }
 
-  // If all complete or B, then fade style
-  let all = true;
-  for (let i = 0; i < targets.length; i++) {
-    if (!completes[i] && colors[i] !== "B") {
-      all = false;
-    }
-  }
-  if (all) {
+  // If all B, then fade style
+  if (!colors.find((x) => x !== "B")) {
     return {
       background: "var(--guess-gray)",
       filter: "contrast(0.5) brightness(0.5)",
     };
   }
 
-  // Otherwise, compute style
-  for (let i = targets.length - 1; i >= 0; i--) {
-    // If complete, replace color with black
-    if (completes[i]) {
-      colors[i] = "B";
-    }
-    // Replace with vars
-    if (colors[i] === "B") {
-      colors[i] = "var(--guess-gray)";
-    } else if (colors[i] === "Y") {
-      colors[i] = "var(--guess-yellow)";
-    } else if (colors[i] === "G") {
-      colors[i] = "var(--guess-green)";
-    }
-
-    // If hideCompletedBoards is true, move the colors for
-    // completed boards to the back of the arrays so that the
-    // generated background will compensate for the hidden boards
-    if (hideCompletedBoards && completes[i]) {
-      completes.push(completes.splice(i, 1)[0]);
-      colors.push(colors.splice(i, 1)[0]);
-    }
-  }
-
   // Generate background image
-  // Set up vars so that background image lines up with boards regardless of whether wide mode is on
-  const [rows, columns, verticalScale] = wideMode ? [4, 8, 26] : [8, 4, 15];
+  return wideMode
+    ? generateBackgroundGrid(colors, 4, 8)
+    : generateBackgroundGrid(colors, 8, 4);
+}
 
+function generateBackgroundGrid(
+  colors: string[],
+  rows: number,
+  columns: number
+): CSSProperties {
   const backgroundImage = [];
   for (let i = 0; i < rows; i++) {
     const row = [];
     for (let j = 0; j < columns; j++) {
       const color = colors[i * columns + j];
-      row.push(`${color} calc(100%*${j}/${columns})`);
-      row.push(`${color} calc(100%*${j + 1}/${columns})`);
+      const colorVal =
+        color === "Y"
+          ? "var(--guess-yellow)"
+          : color === "G"
+          ? "var(--guess-green)"
+          : "transparent";
+      row.push(`${colorVal} calc(100%*${j}/${columns})`);
+      row.push(`${colorVal} calc(100%*${j + 1}/${columns})`);
     }
     backgroundImage.push(`linear-gradient(90deg,${row.join(",")})`);
   }
-  const backgroundSize = `100% ${verticalScale}%`;
+  const backgroundSize = `100% calc(100%/${rows})`;
   const backgroundPosition = range(rows)
-    .map((i) => `0% calc(100%*${i}/${rows - 1} - 1%)`)
+    .map((i) => `0% calc(100%*${i}/${rows - 1})`)
     .join(",");
 
   return {
+    backgroundColor: "var(--guess-gray)",
     backgroundImage: backgroundImage.join(","),
     backgroundSize,
     backgroundPosition,

@@ -3,26 +3,43 @@ import {
   TypedUseSelectorHook,
   useSelector as useSelectorOriginal,
 } from "react-redux";
-import { gameReducer } from "./game";
-import { popupsReducer } from "./popups";
-import { settingsReducer } from "./settings";
-import { statsReducer } from "./stats";
+import { gameInitialState, gameReducer, GameState } from "./slice/game";
+import { popupsInitialState, popupsReducer, PopupsState } from "./slice/popups";
+import {
+  settingsInitialState,
+  settingsReducer,
+  SettingsState,
+} from "./slice/settings";
+import { statsInitialState, statsReducer, StatsState } from "./slice/stats";
 
-export const store = configureStore({
-  reducer: {
-    game: gameReducer,
-    settings: settingsReducer,
-    popups: popupsReducer,
-    stats: statsReducer,
-  },
+export type RootState = {
+  game: GameState;
+  settings: SettingsState;
+  popups: PopupsState;
+  stats: StatsState;
+};
+export const initialState: RootState = {
+  game: gameInitialState,
+  settings: settingsInitialState,
+  popups: popupsInitialState,
+  stats: statsInitialState,
+};
+
+// Create root reducer by reducing reducers
+// (I don't really want to use https://github.com/redux-utilities/reduce-reducers)
+const reducers = [gameReducer, settingsReducer, popupsReducer, statsReducer];
+
+export const store = configureStore<RootState>({
+  reducer: (state, action) => reducers.reduce((s, r) => r(s, action), state)!,
 });
-export type RootState = ReturnType<typeof store.getState>;
 
 // Partially monomorphise useSelector with State
 export const useSelector: TypedUseSelectorHook<RootState> = useSelectorOriginal;
 
 // Reexports
-export * from "./game";
-export * from "./popups";
-export * from "./settings";
-export * from "./stats";
+export * from "./debug";
+export * from "./selector";
+export * from "./slice/game";
+export * from "./slice/popups";
+export * from "./slice/settings";
+export * from "./slice/stats";

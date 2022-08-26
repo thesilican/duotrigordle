@@ -1,6 +1,8 @@
 import { Dispatch } from "@reduxjs/toolkit";
-import { NUM_GUESSES } from "./consts";
-import { allWordsGuessed, getTargetWords, getTodaysId } from "./funcs";
+import { Fragment, useEffect, useLayoutEffect } from "react";
+import { useDispatch } from "react-redux";
+import { NUM_GUESSES } from "../consts";
+import { allWordsGuessed, getTargetWords, getTodaysId } from "../funcs";
 import {
   GameState,
   loadGame,
@@ -9,7 +11,36 @@ import {
   startGame,
   StatsState,
   updateSettings,
-} from "./store";
+  useSelector,
+} from "../store";
+
+// This component doesn't actually render anything, but it manages
+// saving & loading state from local storage
+export default function LocalStorage() {
+  const dispatch = useDispatch();
+  useLayoutEffect(() => {
+    loadGameFromLocalStorage(dispatch);
+    loadSettingsFromLocalStorage(dispatch);
+    loadStatsFromLocalStorage(dispatch);
+  }, [dispatch]);
+
+  const game = useSelector((s) => s.game);
+  useEffect(() => {
+    if (!game.practice) {
+      saveGameToLocalStorage(game);
+    }
+  }, [game]);
+  const settings = useSelector((s) => s.settings);
+  useEffect(() => {
+    saveSettingsToLocalStorage(settings);
+  }, [settings]);
+  const stats = useSelector((s) => s.stats);
+  useEffect(() => {
+    saveStatsToLocalStorage(stats);
+  }, [stats]);
+
+  return <Fragment />;
+}
 
 // Serialization for game
 type GameSerialized = {
@@ -84,7 +115,7 @@ export function loadGameFromLocalStorage(dispatch: Dispatch) {
     dispatch(startGame({ id: todaysId, practice: false }));
   }
 }
-export function saveGameToLocalStorage(state: GameState) {
+function saveGameToLocalStorage(state: GameState) {
   localStorage.setItem(
     "duotrigordle-state",
     JSON.stringify(serializeGame(state))
@@ -92,25 +123,25 @@ export function saveGameToLocalStorage(state: GameState) {
 }
 
 // Serialization for settings
-export function loadSettingsFromLocalStorage(dispatch: Dispatch) {
+function loadSettingsFromLocalStorage(dispatch: Dispatch) {
   const text = localStorage.getItem("duotrigordle-settings");
   const settings = text && JSON.parse(text);
   if (settings) {
     dispatch(updateSettings(settings));
   }
 }
-export function saveSettingsToLocalStorage(state: SettingsState) {
+function saveSettingsToLocalStorage(state: SettingsState) {
   localStorage.setItem("duotrigordle-settings", JSON.stringify(state));
 }
 
 // Serialization for stats
-export function loadStatsFromLocalStorage(dispatch: Dispatch) {
+function loadStatsFromLocalStorage(dispatch: Dispatch) {
   const text = localStorage.getItem("duotrigordle-stats");
   const stats = text && JSON.parse(text);
   if (stats) {
     dispatch(loadStats(stats));
   }
 }
-export function saveStatsToLocalStorage(state: StatsState) {
+function saveStatsToLocalStorage(state: StatsState) {
   localStorage.setItem("duotrigordle-stats", JSON.stringify(state));
 }

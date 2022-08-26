@@ -63,6 +63,8 @@ button {
   --guess-green: rgb(251, 146, 60);
 }
 .game.wide {
+  --app-width: var(--app-max-width);
+  width: calc(var(--app-max-width) * 2);
   max-width: calc(var(--app-max-width) * 2);
 }
 
@@ -187,11 +189,6 @@ button {
   font-size: calc(var(--app-width) / 25);
   line-height: 0.75;
   user-select: none;
-
-  position: relative;
-}
-.game.wide .cell {
-  height: calc(min(100vw, calc(var(--app-max-width) * 2)) * 0.023);
 }
 .cell.yellow {
   color: var(--black);
@@ -203,9 +200,6 @@ button {
 }
 .cell.text-red {
   color: var(--guess-text-red);
-}
-.letter {
-  position: absolute;
 }
 
 /* Keyboard */
@@ -388,4 +382,13 @@ button {
   grid-template-columns: repeat(4, 1fr);
   font-size: calc(var(--app-width) / 40);
   text-align: center;
+}
+.stats-import .link {
+  background: none;
+  font-size: calc(var(--app-width) / 40);
+  border: none;
+  padding: 0;
+  color: var(--white);
+  text-decoration: underline;
+  cursor: pointer;
 }

@@ -49,20 +49,20 @@ export default function App() {
   }
 
   return (
-    <>
-      <div
-        className={cn(
-          "game",
-          gameWin && "win",
-          gameLose && "lose",
-          colorBlindMode && "color-blind",
-          wideMode && "wide",
-          hideCompletedBoards &&
-            !(gameWin || gameLose) &&
-            "hide-completed-boards",
-          animateHiding && "animate-hiding"
-        )}
-      >
+    <div
+      className={cn(
+        "game",
+        gameWin && "win",
+        gameLose && "lose",
+        colorBlindMode && "color-blind",
+        wideMode && "wide",
+        hideCompletedBoards &&
+          !(gameWin || gameLose) &&
+          "hide-completed-boards",
+        animateHiding && "animate-hiding"
+      )}
+    >
+      <div className="main">
         <Header />
         <Boards />
         <Keyboard hidden={gameOver} />
@@ -72,6 +72,6 @@ export default function App() {
       <Settings />
       <Stats />
       <LocalStorage />
-    </>
+    </div>
   );
 }

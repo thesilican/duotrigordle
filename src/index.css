@@ -1,13 +1,16 @@
 :root {
-  --white: white;
-  --black: rgb(24, 26, 27);
-  --app-red: red;
-  --app-green: green;
-  --guess-black: rgb(24, 26, 27);
-  --guess-gray: rgb(145, 145, 145);
-  --guess-yellow: rgb(255, 204, 0);
-  --guess-green: rgb(0, 204, 136);
-  --guess-text-red: red;
+  --white: #f8f9fa;
+  --black: #000;
+  --app-red: #dc3545;
+  --app-green: #198754;
+  --guess-black: #212529;
+  --guess-gray: #495057;
+  --guess-yellow: #ffcd39;
+  --guess-green: #4dd4ac;
+  --guess-text-red: #dc3545;
+  --keyboard-gray: #6c757d;
+  --keyboard-yellow: #ffcd39;
+  --keyboard-green: #4dd4ac;
   --app-width: min(100vw, var(--app-max-width));
   --app-max-width: 600px;
 }
@@ -38,13 +41,18 @@ button {
   padding: calc(var(--app-width) / 75);
   color: var(--white);
   background-color: var(--black);
-  border: none;
-  border-style: double;
+  border: 1px solid white;
+  border-radius: 4px;
+  transition: background-color 0.1s ease;
   cursor: pointer;
 }
 
 /* Game */
 .game {
+  height: 100%;
+  transition: background-color 0.1s ease;
+}
+.main {
   max-width: var(--app-max-width);
   height: 100%;
   margin: auto;
@@ -56,13 +64,15 @@ button {
   background: var(--app-green);
 }
 .game.lose {
-  background-color: var(--app-red);
+  background: var(--app-red);
 }
-.game.color-blind {
+.game.color-blind .main {
   --guess-yellow: rgb(96, 165, 250);
   --guess-green: rgb(251, 146, 60);
+  --keyboard-yellow: rgb(96, 165, 250);
+  --keyboard-green: rgb(251, 146, 60);
 }
-.game.wide {
+.game.wide .main {
   --app-width: var(--app-max-width);
   width: calc(var(--app-max-width) * 2);
   max-width: calc(var(--app-max-width) * 2);
@@ -70,7 +80,7 @@ button {
 
 /* Header */
 .header {
-  padding: 4px;
+  padding: 4px 4px 0px 4px;
   display: grid;
   grid-template-rows: auto auto;
 }
@@ -117,8 +127,7 @@ button {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   align-content: start;
-  padding: 0 calc(var(--app-width) / 75) calc(var(--app-width) / 25)
-    calc(var(--app-width) / 75);
+  padding: calc(var(--app-width) / 75);
   column-gap: calc(var(--app-width) / 75);
   row-gap: calc(var(--app-width) / 25);
 }
@@ -131,7 +140,7 @@ button {
   grid-template-columns: repeat(5, 1fr);
   gap: calc(var(--app-width) / 600);
   padding: calc(var(--app-width) / 600);
-  background: var(--white);
+  transition: box-shadow 0.1s ease, background-color 0.1s ease;
 }
 
 .game:not(.game.hide-completed-boards) .board {
@@ -139,8 +148,8 @@ button {
 }
 
 .game:not(.game.hide-completed-boards) .board.complete {
-  filter: contrast(0.5) brightness(0.5);
-  transition: filter 150ms ease-out;
+  filter: contrast(0.5) brightness(0.25);
+  transition: box-shadow 0.1s ease, background-color 0.1s ease, filter 0.1s ease;
 }
 
 .game.hide-completed-boards:not(.animate-hiding) .board.complete {
@@ -180,6 +189,11 @@ button {
   }
 }
 
+.board.highlight {
+  background-color: var(--white);
+  box-shadow: 0px 0px 10px var(--white);
+}
+
 .cell {
   height: calc(var(--app-width) * 0.045);
   display: flex;
@@ -189,17 +203,31 @@ button {
   font-size: calc(var(--app-width) / 25);
   line-height: 0.75;
   user-select: none;
+  background: var(--guess-black);
+  transition: none;
+  position: relative;
+}
+.cell.gray {
+  background: var(--guess-gray);
+  transition: background-color 0.1s ease, color 0.1s ease;
 }
 .cell.yellow {
   color: var(--black);
   background: var(--guess-yellow);
+  transition: background-color 0.1s ease, color 0.1s ease;
 }
 .cell.green {
   color: var(--black);
   background: var(--guess-green);
+  transition: background-color 0.1s ease, color 0.1s ease;
 }
 .cell.text-red {
   color: var(--guess-text-red);
+  transition: background-color 0.1s ease, color 0.1s ease;
+}
+
+.letter {
+  position: absolute;
 }
 
 /* Keyboard */
@@ -224,19 +252,26 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1px solid white;
+  border: 1px solid var(--white);
   font-size: calc(var(--app-width) / 20);
   user-select: none;
+  transition: background-color 0.1s ease, color 0.1s ease;
 }
 .key.enter-1 {
   border-bottom: none;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 }
 .key.enter-2 {
   border-right: none;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
 }
 .key.enter-3 {
   border-top: none;
+  border-top-right-radius: 0;
   border-left: none;
+  border-bottom-left-radius: 0;
 }
 
 /* Result */
@@ -290,7 +325,7 @@ button {
   left: 0;
   right: 0;
 
-  background: rgba(20, 20, 20, 0.6);
+  background: rgba(0, 0, 0, 0.6);
 
   display: flex;
   flex-direction: column;
@@ -302,7 +337,8 @@ button {
 }
 .popup {
   background-color: var(--black);
-  border: 1px solid white;
+  border: 1px solid var(--white);
+  border-radius: 8px;
 
   width: min(calc(var(--app-max-width) * 0.75), 100vw);
   padding: calc(var(--app-width) / 20);

@@ -187,7 +187,6 @@ function generateStyles(
   // If all B, then fade style
   if (!colors.find((x) => x !== "B")) {
     return {
-      background: "var(--guess-gray)",
       filter: "contrast(0.5) brightness(0.5)",
     };
   }
@@ -210,22 +209,22 @@ function generateBackgroundGrid(
       const color = colors[i * columns + j];
       const colorVal =
         color === "Y"
-          ? "var(--guess-yellow)"
+          ? "var(--keyboard-yellow)"
           : color === "G"
-          ? "var(--guess-green)"
+          ? "var(--keyboard-green)"
           : "transparent";
       row.push(`${colorVal} calc(100%*${j}/${columns})`);
       row.push(`${colorVal} calc(100%*${j + 1}/${columns})`);
     }
     backgroundImage.push(`linear-gradient(90deg,${row.join(",")})`);
   }
-  const backgroundSize = `100% calc(100%/${rows})`;
+  const backgroundSize = `100% calc(110%/${rows})`;
   const backgroundPosition = range(rows)
-    .map((i) => `0% calc(100%*${i}/${rows - 1})`)
+    .map((i) => `0% calc(${i}/${rows - 1}*100%)`)
     .join(",");
 
   return {
-    backgroundColor: "var(--guess-gray)",
+    backgroundColor: "var(--keyboard-gray)",
     backgroundImage: backgroundImage.join(","),
     backgroundSize,
     backgroundPosition,

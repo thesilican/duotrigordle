@@ -44,7 +44,7 @@ function Board(props: BoardProps) {
           return <Word key={i} letters="" />;
         } else if (i === guesses.length) {
           const textRed = input.length === 5 && !WORDS_VALID.has(input);
-          return <Word key={i} letters={input} textRed={textRed} />;
+          return <Word key={i} letters={input} textRed={textRed} input />;
         } else {
           return <Word key={i} letters={guesses[i] ?? ""} colors={colors[i]} />;
         }
@@ -55,6 +55,7 @@ function Board(props: BoardProps) {
 
 type WordProps = {
   letters: string;
+  input?: boolean;
   colors?: string;
   textRed?: boolean;
 };
@@ -64,6 +65,7 @@ const Word = React.memo(function (props: WordProps) {
       {range(5).map((i) => (
         <Cell
           key={i}
+          input={props.input}
           letter={props.letters[i] ?? ""}
           textRed={props.textRed}
           color={props.colors ? (props.colors[i] as "B") : undefined}
@@ -75,15 +77,23 @@ const Word = React.memo(function (props: WordProps) {
 
 type CellProps = {
   letter: string;
+  input?: boolean;
   textRed?: boolean;
   color?: "B" | "Y" | "G";
 };
 function Cell(props: CellProps) {
   const color =
-    props.color === "Y" ? "yellow" : props.color === "G" ? "green" : null;
-  const textRed = props.textRed ? "text-red" : "";
+    props.color === "Y"
+      ? "yellow"
+      : props.color === "G"
+      ? "green"
+      : props.color === "B"
+      ? "gray"
+      : null;
+  const filled = props.letter && props.input ? "filled" : null;
+  const textRed = props.textRed ? "text-red" : null;
   return (
-    <div className={cn("cell", color, textRed)}>
+    <div className={cn("cell", color, filled, textRed)}>
       <span className="letter">{props.letter}</span>
     </div>
   );

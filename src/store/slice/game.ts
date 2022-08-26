@@ -62,13 +62,16 @@ export const gameReducer = createReducer(
         };
       })
       .addCase(inputLetter, (state, action) => {
-        if (state.game.gameOver) return;
-        if (state.game.input.length < 5) {
-          state.game.input += action.payload.letter;
+        const game = state.game;
+        if (game.gameOver) return;
+        if (game.input.length < 5) {
+          game.input += action.payload.letter;
         }
       })
       .addCase(inputBackspace, (state, _) => {
-        if (state.game.gameOver) return;
+        const game = state.game;
+        if (game.gameOver) return;
+        game.input = game.input.substring(0, game.input.length - 1);
       })
       .addCase(inputEnter, (state, action) => {
         const game = state.game;

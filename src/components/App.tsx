@@ -1,9 +1,8 @@
 import cn from "classnames";
 import { useEffect, useMemo } from "react";
-import { useDispatch } from "react-redux";
 import { NUM_GUESSES } from "../consts";
 import { allWordsGuessed } from "../funcs";
-import { addHistory, useSelector } from "../store";
+import { addDebugHooks, useSelector } from "../store";
 import About from "./About";
 import Boards from "./Boards";
 import Header from "./Header";
@@ -14,8 +13,6 @@ import { Settings } from "./Settings";
 import Stats from "./Stats";
 
 export default function App() {
-  const dispatch = useDispatch();
-
   const targets = useSelector((s) => s.game.targets);
   const guesses = useSelector((s) => s.game.guesses);
   const guessesUsedUp = guesses.length === NUM_GUESSES;
@@ -31,36 +28,10 @@ export default function App() {
     (s) => s.settings.hideCompletedBoards
   );
   const animateHiding = useSelector((s) => s.settings.animateHiding);
-  const stats = useSelector((s) => s.stats);
-  const game = useSelector((s) => s.game);
 
-  // Add to stat history if game over and not already in history
   useEffect(() => {
-    if (
-      gameOver &&
-      !game.practice &&
-      !stats.history.find((v) => v.id === game.id)
-    ) {
-      let guesses;
-      if (gameWin) {
-        guesses = game.guesses.length;
-      } else {
-        guesses = null;
-      }
-      const time = game.endTime - game.startTime;
-      dispatch(addHistory({ id: game.id, guesses, time }));
-    }
-  }, [
-    dispatch,
-    game.endTime,
-    game.startTime,
-    game.guesses.length,
-    game.id,
-    game.practice,
-    gameOver,
-    gameWin,
-    stats.history,
-  ]);
+    addDebugHooks();
+  }, []);
 
   // Prevent duotrigordle form working in iframes
   // (looking at you https://dordle.io/duotrigordle)

@@ -138,7 +138,6 @@ function loadSettingsFromLocalStorage(dispatch: Dispatch) {
 }
 function saveSettingsToLocalStorage(state: SettingsState) {
   localStorage.setItem("duotrigordle-settings", JSON.stringify(state));
-  console.log(state, localStorage.getItem("duotrigordle-settings"));
 }
 
 // Serialization for stats

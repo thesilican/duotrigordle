@@ -213,31 +213,34 @@ export default function Header() {
 }
 
 type TimerProps = {
+  // Timer also used to show "NEW GAME text when using Ctrl+R"
   showResetText: boolean;
 };
 function Timer(props: TimerProps) {
-  const [flipFlop, setFlipFlop] = useState(false);
   const showTimer = useSelector((s) => s.settings.showTimer);
   const startTime = useSelector((s) => s.game.startTime);
   const endTime = useSelector((s) => s.game.endTime);
+  const gameStarted = useSelector((s) => s.game.guesses.length > 0);
   const gameOver = useSelector((s) => s.game.gameOver);
-  const hasFirstGuess = useSelector((s) => s.game.guesses.length > 0);
+  const [now, setNow] = useState(() => new Date().getTime());
+
   const timeElapsed = useMemo(() => {
-    if (gameOver) {
-      return formatTimeElapsed(endTime - startTime);
-    } else if (!hasFirstGuess) {
+    if (!gameStarted) {
       return formatTimeElapsed(0);
+    } else if (gameOver) {
+      return formatTimeElapsed(endTime - startTime);
     } else {
-      return formatTimeElapsed(new Date().getTime() - startTime);
+      return formatTimeElapsed(now - startTime);
     }
-  }, [startTime, endTime, hasFirstGuess, flipFlop, gameOver]);
+  }, [startTime, endTime, gameStarted, now, gameOver]);
+
   useEffect(() => {
     if (!showTimer) return;
     const interval = setInterval(() => {
-      setFlipFlop((x) => !x);
+      setNow(() => new Date().getTime());
     }, 25);
     return () => clearInterval(interval);
-  }, [showTimer, flipFlop]);
+  }, [showTimer]);
 
   if (props.showResetText) {
     return <p className="timer">New Game</p>;

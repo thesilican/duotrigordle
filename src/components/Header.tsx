@@ -8,7 +8,6 @@ import settingsSvg from "../assets/settings.svg";
 import statsSvg from "../assets/stats.svg";
 import { NUM_BOARDS, NUM_GUESSES } from "../consts";
 import { formatTimeElapsed, MersenneTwister } from "../funcs";
-import { loadGameFromLocalStorage } from "../serialize";
 import {
   showAboutPopup,
   showSettingsPopup,
@@ -16,6 +15,7 @@ import {
   startGame,
   useSelector,
 } from "../store";
+import { loadGameFromLocalStorage } from "./LocalStorage";
 
 // Declare typescript definitions for safari fullscreen stuff
 declare global {

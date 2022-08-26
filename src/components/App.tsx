@@ -1,48 +1,20 @@
 import cn from "classnames";
-import { useEffect, useLayoutEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { NUM_GUESSES } from "../consts";
 import { allWordsGuessed } from "../funcs";
-import {
-  loadGameFromLocalStorage,
-  loadSettingsFromLocalStorage,
-  loadStatsFromLocalStorage,
-  saveGameToLocalStorage,
-  saveSettingsToLocalStorage,
-  saveStatsToLocalStorage,
-} from "../serialize";
 import { addHistory, useSelector } from "../store";
 import About from "./About";
 import Boards from "./Boards";
 import Header from "./Header";
 import Keyboard from "./Keyboard";
+import LocalStorage from "./LocalStorage";
 import Result from "./Result";
 import { Settings } from "./Settings";
 import Stats from "./Stats";
 
 export default function App() {
   const dispatch = useDispatch();
-
-  useLayoutEffect(() => {
-    loadGameFromLocalStorage(dispatch);
-    loadSettingsFromLocalStorage(dispatch);
-    loadStatsFromLocalStorage(dispatch);
-  }, [dispatch]);
-
-  const game = useSelector((s) => s.game);
-  useEffect(() => {
-    if (!game.practice) {
-      saveGameToLocalStorage(game);
-    }
-  }, [game]);
-  const settings = useSelector((s) => s.settings);
-  useEffect(() => {
-    saveSettingsToLocalStorage(settings);
-  }, [settings]);
-  const stats = useSelector((s) => s.stats);
-  useEffect(() => {
-    saveStatsToLocalStorage(stats);
-  }, [stats]);
 
   const targets = useSelector((s) => s.game.targets);
   const guesses = useSelector((s) => s.game.guesses);
@@ -59,6 +31,8 @@ export default function App() {
     (s) => s.settings.hideCompletedBoards
   );
   const animateHiding = useSelector((s) => s.settings.animateHiding);
+  const stats = useSelector((s) => s.stats);
+  const game = useSelector((s) => s.game);
 
   // Add to stat history if game over and not already in history
   useEffect(() => {
@@ -126,6 +100,7 @@ export default function App() {
       <About />
       <Settings />
       <Stats />
+      <LocalStorage />
     </>
   );
 }

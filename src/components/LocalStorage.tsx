@@ -1,5 +1,5 @@
 import { Dispatch } from "@reduxjs/toolkit";
-import { Fragment, useEffect, useLayoutEffect } from "react";
+import { Fragment, useEffect, useLayoutEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { NUM_GUESSES } from "../consts";
 import { allWordsGuessed, getTargetWords, getTodaysId } from "../funcs";
@@ -17,27 +17,33 @@ import {
 // This component doesn't actually render anything, but it manages
 // saving & loading state from local storage
 export default function LocalStorage() {
+  const [loaded, setLoaded] = useState(false);
   const dispatch = useDispatch();
   useLayoutEffect(() => {
     loadGameFromLocalStorage(dispatch);
     loadSettingsFromLocalStorage(dispatch);
     loadStatsFromLocalStorage(dispatch);
+    setLoaded(true);
   }, [dispatch]);
 
   const game = useSelector((s) => s.game);
   useEffect(() => {
-    if (!game.practice) {
+    if (loaded && !game.practice) {
       saveGameToLocalStorage(game);
     }
-  }, [game]);
+  }, [game, loaded]);
   const settings = useSelector((s) => s.settings);
   useEffect(() => {
-    saveSettingsToLocalStorage(settings);
-  }, [settings]);
+    if (loaded) {
+      saveSettingsToLocalStorage(settings);
+    }
+  }, [settings, loaded]);
   const stats = useSelector((s) => s.stats);
   useEffect(() => {
-    saveStatsToLocalStorage(stats);
-  }, [stats]);
+    if (loaded) {
+      saveStatsToLocalStorage(stats);
+    }
+  }, [stats, loaded]);
 
   return <Fragment />;
 }
@@ -132,6 +138,7 @@ function loadSettingsFromLocalStorage(dispatch: Dispatch) {
 }
 function saveSettingsToLocalStorage(state: SettingsState) {
   localStorage.setItem("duotrigordle-settings", JSON.stringify(state));
+  console.log(state, localStorage.getItem("duotrigordle-settings"));
 }
 
 // Serialization for stats

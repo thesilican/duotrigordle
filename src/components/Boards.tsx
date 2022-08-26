@@ -1,8 +1,8 @@
 import cn from "classnames";
 import React, { useMemo } from "react";
 import { NUM_BOARDS, NUM_GUESSES, WORDS_VALID } from "../consts";
-import { getGuessColors, range } from "../funcs";
-import { useSelector } from "../store";
+import { range } from "../funcs";
+import { selectGuessColors, useSelector } from "../store";
 
 export default function Boards() {
   return (
@@ -20,10 +20,9 @@ type BoardProps = {
 function Board(props: BoardProps) {
   const target = useSelector((s) => s.game.targets[props.idx]);
   const guesses = useSelector((s) => s.game.guesses);
-  const colors = useMemo(
-    () => guesses.map((guess) => getGuessColors(guess, target)),
-    [guesses, target]
-  );
+  const colors = useSelector(selectGuessColors)[props.idx];
+  // If target has been guessed, index of guess
+  // otherwise null
   const guessed = useMemo(() => {
     const idx = guesses.indexOf(target);
     return idx === -1 ? null : idx;

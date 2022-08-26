@@ -3,7 +3,13 @@ import { CSSProperties, useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { ALPHABET } from "../consts";
 import { getGuessColors, range } from "../funcs";
-import { inputBackspace, inputEnter, inputLetter, useSelector } from "../store";
+import {
+  inputBackspace,
+  inputEnter,
+  inputLetter,
+  selectGuessColors,
+  useSelector,
+} from "../store";
 
 type KeyboardProps = {
   hidden: boolean;
@@ -92,14 +98,23 @@ function Key(props: KeyProps) {
 
   const targets = useSelector((s) => s.game.targets);
   const guesses = useSelector((s) => s.game.guesses);
+  const guessColors = useSelector(selectGuessColors);
   const wideMode = useSelector((s) => s.settings.wideMode);
   const hideCompletedBoards = useSelector(
     (s) => s.settings.hideCompletedBoards
   );
 
   const styles = useMemo(
-    () => generateStyles(char, targets, guesses, wideMode, hideCompletedBoards),
-    [char, targets, guesses, wideMode, hideCompletedBoards]
+    () =>
+      generateStyles(
+        char,
+        targets,
+        guesses,
+        guessColors,
+        wideMode,
+        hideCompletedBoards
+      ),
+    [char, targets, guesses, guessColors, wideMode, hideCompletedBoards]
   );
 
   return (
@@ -117,6 +132,7 @@ function generateStyles(
   char: string,
   targets: string[],
   guesses: string[],
+  guessColors: string[][],
   wideMode: boolean,
   hideCompletedBoards: boolean
 ): CSSProperties {
@@ -151,11 +167,12 @@ function generateStyles(
     }
     // Push best color
     let bestColor = "B";
-    for (const guess of guesses) {
-      const results = getGuessColors(guess, target);
-      for (let j = 0; j < 5; j++) {
-        if (guess[j] !== char) continue;
-        const color = results[j];
+    for (let j = 0; j < guesses.length; j++) {
+      const guess = guesses[j];
+      const results = guessColors[i][j];
+      for (let k = 0; k < 5; k++) {
+        if (guess[k] !== char) continue;
+        const color = results[k];
         if (bestColor === "B" || color === "G") {
           bestColor = color;
         }

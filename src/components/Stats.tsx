@@ -169,18 +169,19 @@ export default function Stats() {
           <p>{avgTimeAll}</p>
         </div>
         <div className="stats-import">
-          <a href="#" onClick={handleAddClick}>
+          <button className="link" onClick={handleAddClick}>
             Add
-          </a>
-          <a href="#" onClick={handleRemoveClick}>
+          </button>
+          <button className="link" onClick={handleRemoveClick}>
             Remove
-          </a>
-          <a href="#" onClick={handleListClick}>
+          </button>
+          <button className="link" onClick={handleListClick}>
             List
-          </a>
+          </button>
           <a
             href="https://github.com/thesilican/duotrigordle/tree/main/docs/Inputting_Stats.md"
             target="_blank"
+            rel="noreferrer"
           >
             Help
           </a>

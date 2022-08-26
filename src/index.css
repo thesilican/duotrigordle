@@ -191,7 +191,7 @@ button {
   position: relative;
 }
 .game.wide .cell {
-  height: calc(min(100vw, calc(var(--app-max-width) * 2)) * 0.023);
+  height: min(calc(2.3vw), calc(var(--app-max-width) * 0.046));
 }
 .cell.yellow {
   color: var(--black);
@@ -388,4 +388,13 @@ button {
   grid-template-columns: repeat(4, 1fr);
   font-size: calc(var(--app-width) / 40);
   text-align: center;
+}
+.stats-import .link {
+  background: none;
+  font-size: calc(var(--app-width) / 40);
+  border: none;
+  padding: 0;
+  color: var(--white);
+  text-decoration: underline;
+  cursor: pointer;
 }

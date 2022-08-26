@@ -37,9 +37,9 @@ export const store = configureStore<RootState>({
 export const useSelector: TypedUseSelectorHook<RootState> = useSelectorOriginal;
 
 // Reexports
+export * from "./debug";
+export * from "./selector";
 export * from "./slice/game";
 export * from "./slice/popups";
 export * from "./slice/settings";
 export * from "./slice/stats";
-export * from "./debug";
-export * from "./selector";

@@ -2,7 +2,7 @@ import cn from "classnames";
 import { CSSProperties, useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { ALPHABET } from "../consts";
-import { getGuessColors, range } from "../funcs";
+import { range } from "../funcs";
 import {
   inputBackspace,
   inputEnter,

@@ -11,7 +11,8 @@ export function range(max: number): number[] {
 
 // Simple seeded RNG
 // https://gist.github.com/miyaokamarina/0a8660363095bb5b5d5d7677ed5be9b0
-export function MersenneTwister(seed = Date.now() as number | Uint32Array) {
+export function MersenneTwister(seed?: number | Uint32Array) {
+  if (!seed) seed = Date.now();
   const next = (mt: Uint32Array, i: number, j: number, k: number) => {
     j = (mt[i]! & 0x80000000) | (mt[j]! & 0x7fffffff);
     mt[i] = mt[k]! ^ (j >>> 1) ^ (-(j & 0x1) & 0x9908b0df);
@@ -63,6 +64,10 @@ export function MersenneTwister(seed = Date.now() as number | Uint32Array) {
   return { u32, f32_ii, f32_ix, f32_xx, u53, f64_ix, save };
 }
 
+export function randU32() {
+  return MersenneTwister().u32();
+}
+
 // Format time elapsed in 00:00.00 format
 export function formatTimeElapsed(miliseconds: number) {
   miliseconds = Math.max(miliseconds, 0);
@@ -103,7 +108,7 @@ export function getTargetWords(id: number): string[] {
 // consisting of either "B", "Y", or "G" representing a
 // black, yellow, or green letter guess
 // e.g. getGuessResult("XYCEZ", "ABCDE") returns "BBGYB"
-export function getGuessColors(guess: string, target: string): string {
+export function getGuessColors(target: string, guess: string): string {
   let guessResult: string[] = ["B", "B", "B", "B", "B"];
 
   // Find green letters
@@ -131,17 +136,17 @@ export function getGuessColors(guess: string, target: string): string {
   return guessResult.join("");
 }
 
+// Return all boards that are completed
+export function getCompletedBoards(
+  targets: string[],
+  guesses: string[]
+): boolean[] {
+  return targets.map((target) => guesses.includes(target));
+}
+
 // Check if every target word has been guessed
-export function allWordsGuessed(guesses: string[], targets: string[]) {
-  if (guesses.length < targets.length) {
-    return false;
-  }
-  for (const target of targets) {
-    if (guesses.indexOf(target) === -1) {
-      return false;
-    }
-  }
-  return true;
+export function getAllWordsGuessed(targets: string[], guesses: string[]) {
+  return getCompletedBoards(targets, guesses).indexOf(false) === -1;
 }
 
 // Type declarations for fullscreen stuff

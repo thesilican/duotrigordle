@@ -12,6 +12,7 @@ export function Settings() {
     hideCompletedBoards,
     animateHiding,
     hideKeyboard,
+    showFloatingInput,
   } = useSelector((s) => s.settings);
 
   return (
@@ -38,6 +39,17 @@ export function Settings() {
             }
           />
           <label htmlFor="show-timer">Show speedrun timer</label>
+        </div>
+        <div className="group">
+          <input
+            type="checkbox"
+            id="show-floating-input"
+            checked={showFloatingInput}
+            onChange={(e) =>
+              dispatch(updateSettings({ showFloatingInput: e.target.checked }))
+            }
+          />
+          <label htmlFor="show-floating-input">Show floating input</label>
         </div>
         <div className="group">
           <input

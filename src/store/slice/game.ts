@@ -1,7 +1,12 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
 import { initialState } from "..";
 import { NUM_BOARDS, NUM_GUESSES, WORDS_VALID } from "../../consts";
-import { allWordsGuessed, getTargetWords, range } from "../../funcs";
+import {
+  getAllWordsGuessed,
+  getCompletedBoards,
+  getTargetWords,
+  range,
+} from "../../funcs";
 
 export type GameState = {
   // Daily duotrigordle number (seed for target words)
@@ -48,6 +53,7 @@ export const gameReducer = createReducer(
     builder
       .addCase(loadGame, (state, action) => {
         state.game = action.payload.game;
+        state.ui.highlightedBoard = null;
       })
       .addCase(startGame, (state, action) => {
         state.game = {
@@ -60,6 +66,7 @@ export const gameReducer = createReducer(
           startTime: 0,
           endTime: 0,
         };
+        state.ui.highlightedBoard = null;
       })
       .addCase(inputLetter, (state, action) => {
         const game = state.game;
@@ -90,10 +97,12 @@ export const gameReducer = createReducer(
 
         if (
           game.guesses.length === NUM_GUESSES ||
-          allWordsGuessed(game.guesses, game.targets)
+          getAllWordsGuessed(game.targets, game.guesses)
         ) {
+          // Game over
           game.gameOver = true;
           game.endTime = action.payload.timestamp;
+
           // Add stat to game history
           const idx = state.stats.history.findIndex((v) => v.id === game.id);
           if (idx !== -1) {
@@ -105,6 +114,25 @@ export const gameReducer = createReducer(
             time: game.endTime - game.startTime,
           });
           state.stats.history.sort((a, b) => a.id - b.id);
+
+          // Clear board highlights
+          state.ui.highlightedBoard = null;
+        } else {
+          // Check if highlighted board is invalid, then shift right until it isn't
+          if (state.ui.highlightedBoard === null) return;
+          const completedBoards = getCompletedBoards(
+            game.targets,
+            game.guesses
+          );
+          let i = state.ui.highlightedBoard;
+          const start = i;
+          while (completedBoards[i]) {
+            i = (i + 1) % completedBoards.length;
+            if (i === start) {
+              break;
+            }
+          }
+          state.ui.highlightedBoard = i;
         }
       })
 );

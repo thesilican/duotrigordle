@@ -1,6 +1,6 @@
 import { batch } from "react-redux";
 import { inputEnter, inputLetter, startGame, store } from ".";
-import { getTodaysId, MersenneTwister } from "../funcs";
+import { getTodaysId, randU32 } from "../funcs";
 
 // Debugging purposes
 declare global {
@@ -14,7 +14,7 @@ export function addDebugHooks() {
     window.resetGame = () => {
       const state = store.getState();
       const practice = state.game.practice;
-      const id = practice ? MersenneTwister().u32() : getTodaysId();
+      const id = practice ? randU32() : getTodaysId();
       store.dispatch(startGame({ id, practice }));
     };
     window.solveGame = () => {

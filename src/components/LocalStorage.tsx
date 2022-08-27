@@ -2,7 +2,7 @@ import { Dispatch } from "@reduxjs/toolkit";
 import { Fragment, useEffect, useLayoutEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { NUM_GUESSES } from "../consts";
-import { allWordsGuessed, getTargetWords, getTodaysId } from "../funcs";
+import { getAllWordsGuessed, getTargetWords, getTodaysId } from "../funcs";
 import {
   GameState,
   loadGame,
@@ -17,14 +17,17 @@ import {
 // This component doesn't actually render anything, but it manages
 // saving & loading state from local storage
 export default function LocalStorage() {
-  const [loaded, setLoaded] = useState(false);
   const dispatch = useDispatch();
+  const [loaded, setLoaded] = useState(false);
+
   useLayoutEffect(() => {
-    loadGameFromLocalStorage(dispatch);
-    loadSettingsFromLocalStorage(dispatch);
-    loadStatsFromLocalStorage(dispatch);
-    setLoaded(true);
-  }, [dispatch]);
+    if (!loaded) {
+      setLoaded(true);
+      loadGameFromLocalStorage(dispatch);
+      loadSettingsFromLocalStorage(dispatch);
+      loadStatsFromLocalStorage(dispatch);
+    }
+  }, [dispatch, loaded]);
 
   const game = useSelector((s) => s.game);
   useEffect(() => {
@@ -99,7 +102,7 @@ function deserializeGame(serialized: GameSerialized): GameState {
   const targets = getTargetWords(serialized.id);
   const gameOver =
     serialized.guesses.length === NUM_GUESSES ||
-    allWordsGuessed(serialized.guesses, targets);
+    getAllWordsGuessed(targets, serialized.guesses);
   return {
     id: serialized.id,
     input: "",

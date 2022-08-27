@@ -2,7 +2,7 @@ import cn from "classnames";
 import { useMemo } from "react";
 import twemoji from "twemoji";
 import { NUM_BOARDS, NUM_GUESSES } from "../consts";
-import { allWordsGuessed, formatTimeElapsed } from "../funcs";
+import { getAllWordsGuessed, formatTimeElapsed } from "../funcs";
 import { useSelector } from "../store";
 
 type ResultProps = {
@@ -22,7 +22,7 @@ export default function Result(props: ResultProps) {
       const idx = guesses.indexOf(target);
       targetGuessCounts.push(idx === -1 ? null : idx + 1);
     }
-    const guessCount = allWordsGuessed(guesses, targets)
+    const guessCount = getAllWordsGuessed(targets, guesses)
       ? guesses.length
       : null;
     return getShareableText(

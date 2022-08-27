@@ -1,5 +1,5 @@
 import cn from "classnames";
-import { CSSProperties, useEffect, useMemo } from "react";
+import { CSSProperties, Fragment, useEffect, useMemo } from "react";
 import { useDispatch } from "react-redux";
 import { ALPHABET } from "../consts";
 import { range } from "../funcs";
@@ -7,6 +7,7 @@ import {
   inputBackspace,
   inputEnter,
   inputLetter,
+  selectCompletedBoards,
   selectGuessColors,
   useSelector,
 } from "../store";
@@ -15,8 +16,50 @@ type KeyboardProps = {
   hidden: boolean;
 };
 export default function Keyboard(props: KeyboardProps) {
-  const dispatch = useDispatch();
   const hideKeyboard = useSelector((s) => s.settings.hideKeyboard);
+  const hidden = props.hidden || hideKeyboard ? "hidden" : null;
+
+  return (
+    <>
+      <KeydownListener />
+      <div className={cn("keyboard", hidden)}>
+        <Key char="Q" />
+        <Key char="W" />
+        <Key char="E" />
+        <Key char="R" />
+        <Key char="T" />
+        <Key char="Y" />
+        <Key char="U" />
+        <Key char="I" />
+        <Key char="O" />
+        <Key char="P" />
+        <Key char="A" />
+        <Key char="S" />
+        <Key char="D" />
+        <Key char="F" />
+        <Key char="G" />
+        <Key char="H" />
+        <Key char="J" />
+        <Key char="K" />
+        <Key char="L" />
+        <Key char="enter-1" />
+        <Key char="backspace" />
+        <Key char="Z" />
+        <Key char="X" />
+        <Key char="C" />
+        <Key char="V" />
+        <Key char="B" />
+        <Key char="N" />
+        <Key char="M" />
+        <Key char="enter-2" />
+        <Key char="enter-3" />
+      </div>
+    </>
+  );
+}
+
+function KeydownListener() {
+  const dispatch = useDispatch();
 
   // Listen to keyboard events
   useEffect(() => {
@@ -39,40 +82,7 @@ export default function Keyboard(props: KeyboardProps) {
     };
   }, [dispatch]);
 
-  return (
-    <div className={cn("keyboard", (props.hidden || hideKeyboard) && "hidden")}>
-      <Key char="Q" />
-      <Key char="W" />
-      <Key char="E" />
-      <Key char="R" />
-      <Key char="T" />
-      <Key char="Y" />
-      <Key char="U" />
-      <Key char="I" />
-      <Key char="O" />
-      <Key char="P" />
-      <Key char="A" />
-      <Key char="S" />
-      <Key char="D" />
-      <Key char="F" />
-      <Key char="G" />
-      <Key char="H" />
-      <Key char="J" />
-      <Key char="K" />
-      <Key char="L" />
-      <Key char="enter-1" />
-      <Key char="backspace" />
-      <Key char="Z" />
-      <Key char="X" />
-      <Key char="C" />
-      <Key char="V" />
-      <Key char="B" />
-      <Key char="N" />
-      <Key char="M" />
-      <Key char="enter-2" />
-      <Key char="enter-3" />
-    </div>
-  );
+  return <Fragment />;
 }
 
 type KeyProps = {
@@ -103,6 +113,8 @@ function Key(props: KeyProps) {
   const hideCompletedBoards = useSelector(
     (s) => s.settings.hideCompletedBoards
   );
+  const highlightedBoard = useSelector((s) => s.ui.highlightedBoard);
+  const completedBoards = useSelector(selectCompletedBoards);
 
   const styles = useMemo(
     () =>
@@ -111,10 +123,21 @@ function Key(props: KeyProps) {
         targets,
         guesses,
         guessColors,
+        completedBoards,
         wideMode,
-        hideCompletedBoards
+        hideCompletedBoards,
+        highlightedBoard
       ),
-    [char, targets, guesses, guessColors, wideMode, hideCompletedBoards]
+    [
+      char,
+      targets,
+      guesses,
+      guessColors,
+      completedBoards,
+      wideMode,
+      hideCompletedBoards,
+      highlightedBoard,
+    ]
   );
 
   return (
@@ -133,8 +156,10 @@ function generateStyles(
   targets: string[],
   guesses: string[],
   guessColors: string[][],
+  completedBoards: boolean[],
   wideMode: boolean,
-  hideCompletedBoards: boolean
+  hideCompletedBoards: boolean,
+  highlightedBoard: number | null
 ): CSSProperties {
   // Don't generate style for backspace & enter keys
   if (!ALPHABET.has(char)) {
@@ -150,15 +175,13 @@ function generateStyles(
   // is B if the letter is wrong, or the board is completed
   // is Y if any guess has Y (but no G)
   // is G if any guess has G
-  const colors = [];
+  let colors = [];
   // Pad count if hideCompletedBoards is on
   let pad = 0;
   for (let i = 0; i < targets.length; i++) {
-    const target = targets[i];
-    const complete = guesses.includes(target);
     // Check if board is complete
-    if (complete) {
-      if (hideCompletedBoards) {
+    if (completedBoards[i]) {
+      if (hideCompletedBoards && highlightedBoard === null) {
         pad++;
       } else {
         colors.push("B");
@@ -182,6 +205,25 @@ function generateStyles(
   }
   for (let i = 0; i < pad; i++) {
     colors.push("B");
+  }
+
+  // Special case: if highlighted board, then the array contains just one element
+  if (highlightedBoard !== null) {
+    if (colors[highlightedBoard] === "B") {
+      return {
+        filter: "contrast(0.5) brightness(0.5)",
+      };
+    } else if (colors[highlightedBoard] === "Y") {
+      return {
+        backgroundColor: "var(--keyboard-yellow)",
+        color: "var(--black)",
+      };
+    } else if (colors[highlightedBoard] === "G") {
+      return {
+        backgroundColor: "var(--keyboard-green)",
+        color: "var(--black)",
+      };
+    }
   }
 
   // If all B, then fade style

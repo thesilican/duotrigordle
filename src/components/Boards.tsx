@@ -1,70 +1,148 @@
+import { ActionCreator, AnyAction } from "@reduxjs/toolkit";
 import cn from "classnames";
-import React from "react";
+import React, { Fragment, useEffect, useRef } from "react";
+import { useDispatch } from "react-redux";
 import { NUM_BOARDS, WORDS_VALID } from "../consts";
 import { range } from "../funcs";
-import { selectGuessColors, useSelector } from "../store";
+import {
+  highlightArrowDown,
+  highlightArrowLeft,
+  highlightArrowRight,
+  highlightArrowUp,
+  highlightClick,
+  highlightEsc,
+  resolveSideEffect,
+  selectGuessColors,
+  useSelector,
+} from "../store";
 
 export default function Boards() {
-  const input = useSelector((s) => s.game.input);
   const gameOver = useSelector((s) => s.game.gameOver);
+  const showFloatingInput = useSelector((s) => s.settings.showFloatingInput);
 
   return (
-    <div className={cn("boards", "show-input-hint")}>
-      {range(NUM_BOARDS).map((i) => (
-        <Board key={i} idx={i} />
-      ))}
-      <div className={cn("input-wrapper", gameOver && "hidden")}>
-        <div className="input">
-          <div className="word">
-            <Word
-              letters={input}
-              textRed={input.length === 5 && !WORDS_VALID.has(input)}
-            />
+    <>
+      <KeyboardListener />
+      <div className={cn("boards", "show-input-hint")}>
+        {range(NUM_BOARDS).map((i) => (
+          <Board key={i} idx={i} />
+        ))}
+        <div
+          className={cn(
+            "input-wrapper",
+            (gameOver || !showFloatingInput) && "hidden"
+          )}
+        >
+          <div className="input">
+            <div className="word">
+              <InputWord />
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
+}
+
+const keyMap = new Map<string, ActionCreator<AnyAction>>([
+  ["ArrowRight", highlightArrowRight],
+  ["ArrowLeft", highlightArrowLeft],
+  ["ArrowDown", highlightArrowDown],
+  ["ArrowUp", highlightArrowUp],
+  ["Escape", highlightEsc],
+]);
+function KeyboardListener() {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.ctrlKey || e.metaKey || e.altKey) {
+        return;
+      }
+      let actionCreator;
+      if ((actionCreator = keyMap.get(e.key))) {
+        e.preventDefault();
+        dispatch(actionCreator());
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [dispatch]);
+
+  return <Fragment />;
 }
 
 type BoardProps = {
   idx: number;
 };
 function Board(props: BoardProps) {
+  const dispatch = useDispatch();
   const guesses = useSelector((s) => s.game.guesses);
   const target = useSelector((s) => s.game.targets[props.idx]);
   const gameOver = useSelector((s) => s.game.gameOver);
   const colors = useSelector(selectGuessColors)[props.idx];
+  const highlight = useSelector((s) => s.ui.highlightedBoard === props.idx);
+  const guessedAt = guesses.indexOf(target);
+  const complete = guessedAt !== -1;
+  const guessCount = complete ? guessedAt + 1 : guesses.length;
 
-  const complete =
-    guesses.indexOf(target) !== -1 && !gameOver ? "complete" : null;
+  const ref = useRef<HTMLDivElement>(null);
+  const sideEffect = useSelector((s) => s.ui.sideEffects[0] ?? null);
+  useEffect(() => {
+    if (
+      sideEffect &&
+      sideEffect.type === "scroll-board-into-view" &&
+      sideEffect.board === props.idx
+    ) {
+      ref.current?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+      dispatch(resolveSideEffect(sideEffect.id));
+    }
+  }, [props.idx, sideEffect, dispatch]);
 
   return (
-    <div className={cn("board", complete)}>
-      <Words guesses={guesses} target={target} colors={colors} />
+    <div
+      className={cn(
+        "board",
+        complete && !gameOver && "complete",
+        highlight && "highlight"
+      )}
+      onClick={() => dispatch(highlightClick(props.idx))}
+    >
+      <div ref={ref} className="scroll-into-view" />
+      <ColoredWords words={guesses} colors={colors} count={guessCount} />
+      {!complete && !gameOver && <InputWord />}
     </div>
   );
 }
 
-type WordsProps = {
-  guesses: string[];
-  target: string;
+type ColoredWordsProps = {
+  words: string[];
   colors: string[];
+  count: number;
 };
-const Words = React.memo(function (props: WordsProps) {
-  const { guesses, target, colors } = props;
-  const guessedAt = guesses.indexOf(target);
-  const complete = guessedAt !== -1;
-  const guessCount = complete ? guessedAt + 1 : guesses.length;
+const ColoredWords = React.memo(function (props: ColoredWordsProps) {
+  const { words, colors, count } = props;
   return (
     <>
-      {range(guessCount).map((i) => (
-        <Word key={i} letters={guesses[i]} colors={colors[i]} />
+      {range(count).map((i) => (
+        <Word key={i} letters={words[i]} colors={colors[i]} />
       ))}
-      {guessCount === 0 && <Word letters="" />}
     </>
   );
 });
+
+function InputWord() {
+  const input = useSelector((s) => s.game.input);
+  return (
+    <Word
+      letters={input}
+      textRed={input.length === 5 && !WORDS_VALID.has(input)}
+    />
+  );
+}
 
 type WordProps = {
   letters: string;

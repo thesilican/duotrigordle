@@ -13,6 +13,7 @@ import {
   formatTimeElapsed,
   isFullscreen,
   MersenneTwister,
+  randU32,
 } from "../funcs";
 import { showPopup, startGame, useSelector } from "../store";
 import { loadGameFromLocalStorage } from "./LocalStorage";
@@ -42,8 +43,7 @@ function Row1() {
   const backRef = useRef<HTMLButtonElement>(null);
   const handlePracticeClick = () => {
     practiceRef.current?.blur();
-    const id = MersenneTwister().u32();
-    dispatch(startGame({ id, practice: true }));
+    dispatch(startGame({ id: randU32(), practice: true }));
   };
 
   const handleNewClick = () => {
@@ -53,8 +53,7 @@ function Row1() {
         "(Your current progress will be lost)"
     );
     if (!res) return;
-    const id = MersenneTwister().u32();
-    dispatch(startGame({ id, practice: true }));
+    dispatch(startGame({ id: randU32(), practice: true }));
   };
 
   const handleBackClick = () => {
@@ -207,8 +206,7 @@ function Timer() {
           (!useCmdKey && k.ctrlKey && !k.metaKey))
       ) {
         k.preventDefault();
-        const id = MersenneTwister().u32();
-        dispatch(startGame({ id, practice: true }));
+        dispatch(startGame({ id: randU32(), practice: true }));
         setReset(true);
         setTimeout(() => setReset(false), 500);
       }

@@ -1,7 +1,7 @@
 import cn from "classnames";
 import { useEffect, useMemo } from "react";
 import { NUM_GUESSES } from "../consts";
-import { allWordsGuessed } from "../funcs";
+import { getAllWordsGuessed } from "../funcs";
 import { addDebugHooks, useSelector } from "../store";
 import About from "./About";
 import Boards from "./Boards";
@@ -17,8 +17,8 @@ export default function App() {
   const guesses = useSelector((s) => s.game.guesses);
   const guessesUsedUp = guesses.length === NUM_GUESSES;
   const gameWin = useMemo(
-    () => allWordsGuessed(guesses, targets),
-    [guesses, targets]
+    () => getAllWordsGuessed(targets, guesses),
+    [targets, guesses]
   );
   const gameOver = guessesUsedUp || gameWin;
   const gameLose = guessesUsedUp && !gameWin;

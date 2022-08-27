@@ -7,6 +7,8 @@
   --guess-gray: #495057;
   --guess-yellow: #ffcd39;
   --guess-green: #4dd4ac;
+  --guess-text-white: #dee2e6;
+  --guess-text-highlight: #f8f9fa;
   --guess-text-red: #dc3545;
   --keyboard-gray: #6c757d;
   --keyboard-yellow: #ffcd39;
@@ -140,6 +142,8 @@ button {
   gap: 1px;
   padding: 1px;
   transition: box-shadow 0.1s ease, background-color 0.1s ease;
+
+  position: relative;
 }
 
 .game:not(.game.hide-completed-boards) .board {
@@ -189,8 +193,20 @@ button {
 }
 
 .board.highlight {
-  background-color: var(--white);
-  box-shadow: 0px 0px 10px var(--white);
+  background-color: var(--guess-text-highlight);
+  box-shadow: 0px 0px 0px 2px var(--guess-text-highlight);
+}
+.board.highlight .cell:not(.yellow):not(.green):not(.text-red) {
+  color: var(--white);
+}
+
+.board .scroll-into-view {
+  position: absolute;
+  visibility: none;
+  top: -4px;
+  bottom: -4px;
+  left: 0;
+  right: 0;
 }
 
 .cell {
@@ -199,11 +215,9 @@ button {
   align-items: center;
   justify-content: center;
   background: var(--guess-black);
-  font-size: calc(var(--app-width) / 25);
-  line-height: 0.75;
   user-select: none;
-  background: var(--guess-black);
   position: relative;
+  color: var(--guess-text-white);
 }
 .cell.gray {
   background: var(--guess-gray);
@@ -222,6 +236,8 @@ button {
 
 .letter {
   position: absolute;
+  font-size: calc(var(--app-width) / 25);
+  line-height: 0.75;
 }
 
 .input-wrapper {
@@ -231,9 +247,13 @@ button {
 
   display: flex;
   justify-content: center;
+  align-self: flex-end;
 }
 .input-wrapper.hidden {
   display: none;
+}
+.input-wrapper .cell {
+  background: var(--black);
 }
 .game.wide .input-wrapper {
   grid-column: 1/9;
@@ -241,7 +261,6 @@ button {
 
 .input {
   background-color: var(--white);
-  box-shadow: 0px 0px 4px var(--white);
   padding: 1px;
 }
 

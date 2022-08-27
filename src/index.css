@@ -164,7 +164,7 @@ button {
   grid-template-columns: repeat(5, 1fr);
   gap: 1px;
   padding: 1px;
-  transition: box-shadow 0.1s ease, background-color 0.1s ease;
+  transition: background-color 0.1s ease;
 
   position: relative;
 }

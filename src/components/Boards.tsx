@@ -18,7 +18,7 @@ import {
 
 export default function Boards() {
   const gameOver = useSelector((s) => s.game.gameOver);
-  const showFloatingInput = useSelector((s) => s.settings.showFloatingInput);
+  const showFloatingInput = useSelector((s) => s.settings.useFloatingInput);
 
   return (
     <>
@@ -82,9 +82,11 @@ function Board(props: BoardProps) {
   const gameOver = useSelector((s) => s.game.gameOver);
   const colors = useSelector(selectGuessColors)[props.idx];
   const highlight = useSelector((s) => s.ui.highlightedBoard === props.idx);
+  const useFloatingInput = useSelector((s) => s.settings.useFloatingInput);
   const guessedAt = guesses.indexOf(target);
   const complete = guessedAt !== -1;
   const guessCount = complete ? guessedAt + 1 : guesses.length;
+  const showInput = !complete && !gameOver && !useFloatingInput;
 
   const ref = useRef<HTMLDivElement>(null);
   const sideEffect = useSelector((s) => s.ui.sideEffects[0] ?? null);
@@ -113,7 +115,8 @@ function Board(props: BoardProps) {
     >
       <div ref={ref} className="scroll-into-view" />
       <ColoredWords words={guesses} colors={colors} count={guessCount} />
-      {!complete && !gameOver && <InputWord />}
+      {showInput && <InputWord />}
+      {guessCount === 0 && !showInput && <Word letters="" />}
     </div>
   );
 }

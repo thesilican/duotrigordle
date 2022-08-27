@@ -12,7 +12,7 @@ export function Settings() {
     hideCompletedBoards,
     animateHiding,
     hideKeyboard,
-    showFloatingInput,
+    useFloatingInput,
   } = useSelector((s) => s.settings);
 
   return (
@@ -44,12 +44,12 @@ export function Settings() {
           <input
             type="checkbox"
             id="show-floating-input"
-            checked={showFloatingInput}
+            checked={useFloatingInput}
             onChange={(e) =>
-              dispatch(updateSettings({ showFloatingInput: e.target.checked }))
+              dispatch(updateSettings({ useFloatingInput: e.target.checked }))
             }
           />
-          <label htmlFor="show-floating-input">Show floating input</label>
+          <label htmlFor="show-floating-input">Use floating input</label>
         </div>
         <div className="group">
           <input

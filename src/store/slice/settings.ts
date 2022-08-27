@@ -4,7 +4,7 @@ import { initialState } from "..";
 export type SettingsState = {
   colorBlindMode: boolean;
   showTimer: boolean;
-  showFloatingInput: boolean;
+  useFloatingInput: boolean;
   wideMode: boolean;
   hideCompletedBoards: boolean;
   animateHiding: boolean;
@@ -13,7 +13,7 @@ export type SettingsState = {
 export const settingsInitialState: SettingsState = {
   colorBlindMode: false,
   showTimer: false,
-  showFloatingInput: false,
+  useFloatingInput: false,
   wideMode: false,
   hideCompletedBoards: false,
   animateHiding: true,

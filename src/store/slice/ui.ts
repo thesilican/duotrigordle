@@ -32,6 +32,9 @@ export const highlightArrowLeft = createAction("ui/highlightArrowLeft");
 export const highlightArrowDown = createAction("ui/highlightArrowDown");
 export const highlightArrowUp = createAction("ui/highlightArrowUp");
 export const highlightEsc = createAction("ui/highlightEsc");
+export const createSideEffect = createAction<SideEffectAction>(
+  "ui/createSideEffect"
+);
 export const resolveSideEffect = createAction<number>("ui/resolveSideEffect");
 
 export const uiReducer = createReducer(
@@ -69,6 +72,9 @@ export const uiReducer = createReducer(
       })
       .addCase(highlightEsc, (state, _) => {
         state.ui.highlightedBoard = null;
+      })
+      .addCase(createSideEffect, (state, action) => {
+        addSideEffect(state, action.payload);
       })
       .addCase(resolveSideEffect, (state, action) => {
         state.ui.sideEffects = state.ui.sideEffects.filter(

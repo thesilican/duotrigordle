@@ -12,10 +12,15 @@ import {
   exitFullscreen,
   formatTimeElapsed,
   isFullscreen,
-  MersenneTwister,
   randU32,
 } from "../funcs";
-import { showPopup, startGame, useSelector } from "../store";
+import {
+  createSideEffect,
+  selectCompletedBoards,
+  showPopup,
+  startGame,
+  useSelector,
+} from "../store";
 import { loadGameFromLocalStorage } from "./LocalStorage";
 
 export default function Header() {
@@ -23,6 +28,7 @@ export default function Header() {
     <div className="header">
       <Row1 />
       <Row2 />
+      <Row3 />
     </div>
   );
 }
@@ -218,4 +224,29 @@ function Timer() {
   }, [dispatch, practice]);
 
   return <p className="timer">{reset ? "New Game" : timerText}</p>;
+}
+
+function Row3() {
+  const dispatch = useDispatch();
+  const boardsCompleted = useSelector(selectCompletedBoards);
+  return (
+    <div className="row-3">
+      {boardsCompleted.map((complete, i) => (
+        <button
+          key={i}
+          className={cn("chip", complete && "complete")}
+          onClick={() =>
+            dispatch(
+              createSideEffect({
+                type: "scroll-board-into-view",
+                board: i,
+              })
+            )
+          }
+        >
+          {i + 1}
+        </button>
+      ))}
+    </div>
+  );
 }

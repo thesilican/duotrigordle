@@ -23,8 +23,6 @@ body {
   height: 100%;
   background: var(--black);
   color: var(--white);
-  font-family: "Outfit", sans-serif;
-  font-size: calc(var(--app-width) / 30);
 }
 #root {
   height: 100%;
@@ -52,14 +50,11 @@ button {
 .game {
   height: 100%;
   transition: background-color 0.1s ease;
+  font-family: "Outfit", sans-serif;
+  font-size: calc(var(--app-width) / 30);
 }
-.main {
-  max-width: var(--app-max-width);
-  height: 100%;
-  margin: auto;
-
-  display: grid;
-  grid-template-rows: auto 1fr auto;
+.game.wide {
+  --app-width: var(--app-max-width);
 }
 .game.win {
   background: var(--app-green);
@@ -73,8 +68,15 @@ button {
   --keyboard-yellow: rgb(96, 165, 250);
   --keyboard-green: rgb(251, 146, 60);
 }
+.main {
+  max-width: var(--app-max-width);
+  height: 100%;
+  margin: auto;
+
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+}
 .game.wide .main {
-  --app-width: var(--app-max-width);
   width: calc(var(--app-max-width) * 2);
   max-width: calc(var(--app-max-width) * 2);
 }
@@ -83,7 +85,7 @@ button {
 .header {
   padding: 4px 4px 0px 4px;
   display: grid;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto auto auto;
 }
 .row-1 {
   display: grid;
@@ -120,6 +122,27 @@ button {
 }
 .timer {
   font-family: monospace;
+}
+.row-3 {
+  display: grid;
+  grid-template-columns: repeat(32, 1fr);
+  gap: 1px;
+  padding: 1px 0px;
+}
+.chip {
+  background: var(--guess-black);
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(var(--app-width) / 60);
+  height: calc(var(--app-width) / 32);
+}
+.chip.complete {
+  color: var(--black);
+  background: var(--guess-green);
 }
 
 /* Boards */

@@ -169,13 +169,13 @@ export default function Stats() {
           <p>{avgTimeAll}</p>
         </div>
         <div className="stats-import">
-          <button className="link" onClick={handleAddClick}>
+          <button className="button-link" onClick={handleAddClick}>
             Add
           </button>
-          <button className="link" onClick={handleRemoveClick}>
+          <button className="button-link" onClick={handleRemoveClick}>
             Remove
           </button>
-          <button className="link" onClick={handleListClick}>
+          <button className="button-link" onClick={handleListClick}>
             List
           </button>
           <a

@@ -375,9 +375,20 @@ button {
 }
 .words {
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
+  align-items: center;
+  grid-template-columns: repeat(4, 1fr);
   column-gap: calc(var(--app-width) / 75);
   text-align: center;
+}
+.game.wide .words {
+  grid-template-columns: repeat(8, 1fr);
+}
+.words .word {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--white);
+  cursor: pointer;
 }
 .kofi {
   grid-column: 1/3;

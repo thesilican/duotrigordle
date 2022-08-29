@@ -101,10 +101,10 @@ button {
   text-align: center;
   font-size: calc(var(--app-width) / 22);
 }
-.title.practice {
+.game:not(.wide) .title.practice {
   font-size: calc(var(--app-width) / 24);
 }
-.title.historical {
+.game:not(.wide) .title.historical {
   font-size: calc(var(--app-width) / 30);
 }
 .icon {

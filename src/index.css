@@ -89,8 +89,9 @@ button {
 }
 .row-1 {
   display: grid;
-  grid-template-columns: auto auto 1fr auto auto auto auto;
+  grid-template-columns: auto auto auto 1fr auto auto auto auto;
   column-gap: 8px;
+  align-items: center;
 }
 .mode-switch {
   font-size: calc(var(--app-width) / 40);
@@ -99,6 +100,12 @@ button {
   margin: 0;
   text-align: center;
   font-size: calc(var(--app-width) / 22);
+}
+.title.practice {
+  font-size: calc(var(--app-width) / 24);
+}
+.title.historical {
+  font-size: calc(var(--app-width) / 30);
 }
 .icon {
   margin: 0;

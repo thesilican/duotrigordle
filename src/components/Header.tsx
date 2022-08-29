@@ -11,6 +11,7 @@ import {
   enterFullscreen,
   exitFullscreen,
   formatTimeElapsed,
+  getTodaysId,
   isFullscreen,
   randU32,
 } from "../funcs";
@@ -37,9 +38,11 @@ function Row1() {
   const dispatch = useDispatch();
   const id = useSelector((s) => s.game.id);
   const practice = useSelector((s) => s.game.practice);
-  const title = practice
-    ? `Practice Duotrigordle`
-    : `Daily Duotrigordle #${id}`;
+  const [title, titleClass] = practice
+    ? id < 99999
+      ? [`Historical Duotrigordle #${id}`, "historical"]
+      : [`Practice Duotrigordle`, "practice"]
+    : [`Daily Duotrigordle #${id}`, null];
 
   // Refs so that the buttons are blurred on press
   // so that pressing enter again does not cause the
@@ -47,6 +50,7 @@ function Row1() {
   const practiceRef = useRef<HTMLButtonElement>(null);
   const newRef = useRef<HTMLButtonElement>(null);
   const backRef = useRef<HTMLButtonElement>(null);
+  const histRef = useRef<HTMLButtonElement>(null);
   const handlePracticeClick = () => {
     practiceRef.current?.blur();
     dispatch(startGame({ id: randU32(), practice: true }));
@@ -55,19 +59,40 @@ function Row1() {
   const handleNewClick = () => {
     newRef.current?.blur();
     const res = window.confirm(
-      "Are you sure you want to start a new practice duotrigordle?\n" +
-        "(Your current progress will be lost)"
+      "Are you sure you want to start a new Practice Duotrigordle?\n" +
+        "(Pro-tip: You can also press Ctrl+R)"
     );
     if (!res) return;
     dispatch(startGame({ id: randU32(), practice: true }));
   };
 
+  const handleHistClick = () => {
+    histRef.current?.blur();
+    const res = window.prompt(
+      "Play a Historical Duotrigordle!\n" +
+        "Enter a past Daily Duotrigordle # to play:"
+    );
+    if (res === null) return;
+    const num = parseInt(res ?? "", 10);
+    if (isNaN(num)) {
+      alert("Please enter a number");
+    } else if (num < getTodaysId()) {
+      dispatch(startGame({ id: num, practice: true }));
+    } else if (num >= 99999) {
+      // Allow numbers greater than 99999 for people that want to play with duotrigordle practice seed
+      alert(
+        `Starting Practice Duotrigordle with seed ${num}\n` +
+          `(Note: you can set a Practice Duotrigordle seed ≥100000)`
+      );
+      dispatch(startGame({ id: num, practice: true }));
+    } else {
+      alert("Please enter a past Daily Duotrigordle #");
+    }
+  };
+
   const handleBackClick = () => {
     backRef.current?.blur();
-    const res = window.confirm(
-      "Are you sure you want to exit practice mode?\n" +
-        "(Your current progress will be lost)"
-    );
+    const res = window.confirm("Are you sure you want to exit practice mode?");
     if (!res) return;
     loadGameFromLocalStorage(dispatch);
   };
@@ -101,6 +126,13 @@ function Row1() {
           >
             Back
           </button>
+          <button
+            className="mode-switch"
+            ref={histRef}
+            onClick={handleHistClick}
+          >
+            Hist
+          </button>
           <button className="mode-switch" ref={newRef} onClick={handleNewClick}>
             New
           </button>
@@ -114,10 +146,11 @@ function Row1() {
           >
             Practice
           </button>
-          <div></div>
+          <div />
+          <div />
         </>
       )}
-      <p className="title">{title}</p>
+      <p className={cn("title", titleClass)}>{title}</p>
       <button className="icon" onClick={() => dispatch(showPopup("stats"))}>
         <img src={statsSvg} alt="Stats" />
       </button>

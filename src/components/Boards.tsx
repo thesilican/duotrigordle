@@ -83,10 +83,19 @@ function Board(props: BoardProps) {
   const colors = useSelector(selectGuessColors)[props.idx];
   const highlight = useSelector((s) => s.ui.highlightedBoard === props.idx);
   const useFloatingInput = useSelector((s) => s.settings.useFloatingInput);
+  const hideEmptyRows = useSelector((s) => s.settings.hideEmptyRows);
   const guessedAt = guesses.indexOf(target);
   const complete = guessedAt !== -1;
   const guessCount = complete ? guessedAt + 1 : guesses.length;
-  const showInput = !complete && !gameOver && !useFloatingInput;
+  const showInput =
+    !complete && !gameOver && (!useFloatingInput || !hideEmptyRows);
+  const emptyWordsCount = hideEmptyRows
+    ? // If hide empty rows, then show one empty row if input isn't shown and there are no guesses
+      !showInput && guessCount === 0
+      ? 1
+      : 0
+    : // Otherwise, pad empty rows
+      NUM_BOARDS - guessCount - (showInput ? 1 : 0);
 
   const ref = useRef<HTMLDivElement>(null);
   const sideEffect = useSelector((s) => s.ui.sideEffects[0] ?? null);
@@ -116,7 +125,7 @@ function Board(props: BoardProps) {
       <div ref={ref} className="scroll-into-view" />
       <ColoredWords words={guesses} colors={colors} count={guessCount} />
       {showInput && <InputWord />}
-      {guessCount === 0 && !showInput && <Word letters="" />}
+      <EmptyWords count={emptyWordsCount} />
     </div>
   );
 }
@@ -132,6 +141,19 @@ const ColoredWords = React.memo(function (props: ColoredWordsProps) {
     <>
       {range(count).map((i) => (
         <Word key={i} letters={words[i]} colors={colors[i]} />
+      ))}
+    </>
+  );
+});
+
+type EmptyWordsProps = {
+  count: number;
+};
+const EmptyWords = React.memo(function (props: EmptyWordsProps) {
+  return (
+    <>
+      {range(props.count).map((i) => (
+        <Word key={i} letters="" />
       ))}
     </>
   );

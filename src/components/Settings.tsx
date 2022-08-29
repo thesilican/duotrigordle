@@ -13,6 +13,7 @@ export function Settings() {
     animateHiding,
     hideKeyboard,
     useFloatingInput,
+    hideEmptyRows,
   } = useSelector((s) => s.settings);
 
   return (
@@ -39,17 +40,6 @@ export function Settings() {
             }
           />
           <label htmlFor="show-timer">Show speedrun timer</label>
-        </div>
-        <div className="group">
-          <input
-            type="checkbox"
-            id="show-floating-input"
-            checked={useFloatingInput}
-            onChange={(e) =>
-              dispatch(updateSettings({ useFloatingInput: e.target.checked }))
-            }
-          />
-          <label htmlFor="show-floating-input">Use floating input</label>
         </div>
         <div className="group">
           <input
@@ -103,6 +93,28 @@ export function Settings() {
             }
           />
           <label htmlFor="hide-keyboard">Hide keyboard</label>
+        </div>
+        <div className="group">
+          <input
+            type="checkbox"
+            id="show-floating-input"
+            checked={useFloatingInput}
+            onChange={(e) =>
+              dispatch(updateSettings({ useFloatingInput: e.target.checked }))
+            }
+          />
+          <label htmlFor="show-floating-input">Use floating input</label>
+        </div>
+        <div className="group">
+          <input
+            type="checkbox"
+            id="hide-empty-rows"
+            checked={hideEmptyRows}
+            onChange={(e) =>
+              dispatch(updateSettings({ hideEmptyRows: e.target.checked }))
+            }
+          />
+          <label htmlFor="hide-empty-rows">Hide empty rows</label>
         </div>
         <button className="close" onClick={() => dispatch(showPopup(null))}>
           close

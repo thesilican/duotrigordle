@@ -9,6 +9,7 @@ export type SettingsState = {
   hideCompletedBoards: boolean;
   animateHiding: boolean;
   hideKeyboard: boolean;
+  hideEmptyRows: boolean;
 };
 export const settingsInitialState: SettingsState = {
   colorBlindMode: false,
@@ -18,6 +19,7 @@ export const settingsInitialState: SettingsState = {
   hideCompletedBoards: false,
   animateHiding: true,
   hideKeyboard: false,
+  hideEmptyRows: false,
 };
 
 export const updateSettings = createAction<Partial<SettingsState>>(

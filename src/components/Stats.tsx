@@ -8,7 +8,7 @@ import {
   removeHistory,
   showPopup,
   StatsState,
-  useSelector,
+  useSelector
 } from "../store";
 
 export default function Stats() {

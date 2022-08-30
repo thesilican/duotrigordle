@@ -4,14 +4,14 @@ import { useDispatch } from "react-redux";
 import { NUM_GUESSES } from "../consts";
 import { getAllWordsGuessed, getTargetWords, getTodaysId } from "../funcs";
 import {
-  GameState,
-  loadGame,
-  loadStats,
-  SettingsState,
-  startGame,
-  StatsState,
-  updateSettings,
-  useSelector,
+    GameState,
+    loadGame,
+    loadStats,
+    SettingsState,
+    startGame,
+    StatsState,
+    updateSettings,
+    useSelector
 } from "../store";
 
 // This component doesn't actually render anything, but it manages

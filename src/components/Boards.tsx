@@ -2,7 +2,7 @@ import { ActionCreator, AnyAction } from "@reduxjs/toolkit";
 import cn from "classnames";
 import React, { Fragment, useEffect, useRef } from "react";
 import { useDispatch } from "react-redux";
-import { NUM_BOARDS, WORDS_VALID } from "../consts";
+import { NUM_BOARDS, NUM_GUESSES, WORDS_VALID } from "../consts";
 import { range } from "../funcs";
 import {
   highlightArrowDown,
@@ -95,7 +95,7 @@ function Board(props: BoardProps) {
       ? 1
       : 0
     : // Otherwise, pad empty rows
-      NUM_BOARDS - guessCount - (showInput ? 1 : 0);
+      NUM_GUESSES - guessCount - (showInput ? 1 : 0);
 
   const ref = useRef<HTMLDivElement>(null);
   const sideEffect = useSelector((s) => s.ui.sideEffects[0] ?? null);

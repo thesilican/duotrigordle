@@ -8,19 +8,19 @@ import settingsSvg from "../assets/settings.svg";
 import statsSvg from "../assets/stats.svg";
 import { NUM_BOARDS, NUM_GUESSES } from "../consts";
 import {
-  enterFullscreen,
-  exitFullscreen,
-  formatTimeElapsed,
-  getTodaysId,
-  isFullscreen,
-  randU32,
+    enterFullscreen,
+    exitFullscreen,
+    formatTimeElapsed,
+    getTodaysId,
+    isFullscreen,
+    randU32
 } from "../funcs";
 import {
-  createSideEffect,
-  selectCompletedBoards,
-  showPopup,
-  startGame,
-  useSelector,
+    createSideEffect,
+    selectCompletedBoards,
+    showPopup,
+    startGame,
+    useSelector
 } from "../store";
 import { loadGameFromLocalStorage } from "./LocalStorage";
 

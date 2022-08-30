@@ -4,12 +4,12 @@ import { useDispatch } from "react-redux";
 import { ALPHABET } from "../consts";
 import { range } from "../funcs";
 import {
-  inputBackspace,
-  inputEnter,
-  inputLetter,
-  selectCompletedBoards,
-  selectGuessColors,
-  useSelector,
+    inputBackspace,
+    inputEnter,
+    inputLetter,
+    selectCompletedBoards,
+    selectGuessColors,
+    useSelector
 } from "../store";
 
 type KeyboardProps = {

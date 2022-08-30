@@ -2,10 +2,10 @@ import { createAction, createReducer } from "@reduxjs/toolkit";
 import { initialState } from "..";
 import { NUM_BOARDS, NUM_GUESSES, WORDS_VALID } from "../../consts";
 import {
-  getAllWordsGuessed,
-  getCompletedBoards,
-  getTargetWords,
-  range,
+    getAllWordsGuessed,
+    getCompletedBoards,
+    getTargetWords,
+    range
 } from "../../funcs";
 
 export type GameState = {

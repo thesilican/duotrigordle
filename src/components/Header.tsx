@@ -8,19 +8,19 @@ import settingsSvg from "../assets/settings.svg";
 import statsSvg from "../assets/stats.svg";
 import { NUM_BOARDS, NUM_GUESSES } from "../consts";
 import {
-    enterFullscreen,
-    exitFullscreen,
-    formatTimeElapsed,
-    getTodaysId,
-    isFullscreen,
-    randU32
+  enterFullscreen,
+  exitFullscreen,
+  formatTimeElapsed,
+  getTodaysId,
+  isFullscreen,
+  randU32,
 } from "../funcs";
 import {
-    createSideEffect,
-    selectCompletedBoards,
-    showPopup,
-    startGame,
-    useSelector
+  createSideEffect,
+  selectCompletedBoards,
+  showPopup,
+  startGame,
+  useSelector,
 } from "../store";
 import { loadGameFromLocalStorage } from "./LocalStorage";
 
@@ -262,12 +262,17 @@ function Timer() {
 function Row3() {
   const dispatch = useDispatch();
   const boardsCompleted = useSelector(selectCompletedBoards);
+  const highlightedBoard = useSelector((s) => s.ui.highlightedBoard);
   return (
     <div className="row-3">
       {boardsCompleted.map((complete, i) => (
         <button
           key={i}
-          className={cn("chip", complete && "complete")}
+          className={cn(
+            "chip",
+            complete && "complete",
+            !complete && highlightedBoard === i && "highlight"
+          )}
           onClick={() =>
             dispatch(
               createSideEffect({

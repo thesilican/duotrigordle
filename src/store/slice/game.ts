@@ -2,10 +2,10 @@ import { createAction, createReducer } from "@reduxjs/toolkit";
 import { initialState } from "..";
 import { NUM_BOARDS, NUM_GUESSES, WORDS_VALID } from "../../consts";
 import {
-    getAllWordsGuessed,
-    getCompletedBoards,
-    getTargetWords,
-    range
+  getAllWordsGuessed,
+  getCompletedBoards,
+  getTargetWords,
+  range,
 } from "../../funcs";
 
 export type GameState = {
@@ -104,16 +104,18 @@ export const gameReducer = createReducer(
           game.endTime = action.payload.timestamp;
 
           // Add stat to game history
-          const idx = state.stats.history.findIndex((v) => v.id === game.id);
-          if (idx !== -1) {
-            state.stats.history.splice(idx, 1);
+          if (!game.practice) {
+            const idx = state.stats.history.findIndex((v) => v.id === game.id);
+            if (idx !== -1) {
+              state.stats.history.splice(idx, 1);
+            }
+            state.stats.history.push({
+              id: game.id,
+              guesses: game.guesses.length,
+              time: game.endTime - game.startTime,
+            });
+            state.stats.history.sort((a, b) => a.id - b.id);
           }
-          state.stats.history.push({
-            id: game.id,
-            guesses: game.guesses.length,
-            time: game.endTime - game.startTime,
-          });
-          state.stats.history.sort((a, b) => a.id - b.id);
 
           // Clear board highlights
           state.ui.highlightedBoard = null;

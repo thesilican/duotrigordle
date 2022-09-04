@@ -4,12 +4,12 @@ import { useDispatch } from "react-redux";
 import { ALPHABET } from "../consts";
 import { range } from "../funcs";
 import {
-    inputBackspace,
-    inputEnter,
-    inputLetter,
-    selectCompletedBoards,
-    selectGuessColors,
-    useSelector
+  inputBackspace,
+  inputEnter,
+  inputLetter,
+  selectCompletedBoards,
+  selectGuessColors,
+  useSelector,
 } from "../store";
 
 type KeyboardProps = {
@@ -71,7 +71,7 @@ function KeydownListener() {
       if (key === "BACKSPACE") {
         dispatch(inputBackspace());
       } else if (key === "ENTER") {
-        dispatch(inputEnter({ timestamp: new Date().getTime() }));
+        dispatch(inputEnter({ timestamp: Date.now() }));
       } else if (ALPHABET.has(key)) {
         dispatch(inputLetter({ letter: key }));
       }
@@ -103,7 +103,7 @@ function Key(props: KeyProps) {
     props.char === "backspace"
       ? () => dispatch(inputBackspace())
       : props.char.startsWith("enter-")
-      ? () => dispatch(inputEnter({ timestamp: new Date().getTime() }))
+      ? () => dispatch(inputEnter({ timestamp: Date.now() }))
       : () => dispatch(inputLetter({ letter: props.char }));
 
   const targets = useSelector((s) => s.game.targets);

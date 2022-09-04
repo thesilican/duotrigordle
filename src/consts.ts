@@ -9,7 +9,7 @@ export const START_DATE = (() => {
   // Old method had problems with the start date being before DST
   const utcDate = new Date("2022-03-03T00:00:00Z").getTime();
   const offset = new Date().getTimezoneOffset();
-  return new Date(utcDate + offset * 60 * 1000);
+  return utcDate + offset * 60 * 1000;
 })();
 
 export const ALPHABET = new Set([

@@ -209,7 +209,7 @@ function Timer() {
   const gameStarted = useSelector((s) => s.game.guesses.length > 0);
   const gameOver = useSelector((s) => s.game.gameOver);
   const practice = useSelector((s) => s.game.practice);
-  const [now, setNow] = useState(() => new Date().getTime());
+  const [now, setNow] = useState(() => Date.now());
 
   const timerText = useMemo(() => {
     if (!showTimer) {
@@ -226,7 +226,7 @@ function Timer() {
   useEffect(() => {
     if (!showTimer) return;
     const interval = setInterval(() => {
-      setNow(() => new Date().getTime());
+      setNow(() => Date.now());
     }, 25);
     return () => clearInterval(interval);
   }, [showTimer]);

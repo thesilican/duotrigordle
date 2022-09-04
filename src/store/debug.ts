@@ -24,7 +24,7 @@ export function addDebugHooks() {
           console.warn("You must have an empty game board to solve the game");
           return;
         }
-        const timestamp = new Date().getTime();
+        const timestamp = Date.now();
         store.dispatch(inputEnter({ timestamp }));
         for (let i = 0; i < state.game.targets.length; i++) {
           const target = state.game.targets[i];

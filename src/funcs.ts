@@ -85,8 +85,7 @@ export function formatTimeElapsed(miliseconds: number) {
 
 // Returns the id for today's duotrigordle
 export function getTodaysId(): number {
-  const today = new Date();
-  const diff = today.getTime() - START_DATE.getTime();
+  const diff = Date.now() - START_DATE;
   return Math.ceil(diff / 1000 / 60 / 60 / 24);
 }
 

@@ -5,8 +5,7 @@ import { START_DATE } from "../consts";
 import { showPopup, useSelector } from "../store";
 
 function getHoursRemaining() {
-  const now = new Date();
-  const diff = now.getTime() - START_DATE.getTime();
+  const diff = Date.now() - START_DATE;
   const hoursRemaining = 24 - ((diff / 1000 / 60 / 60) % 24);
   if (hoursRemaining > 0.95) {
     return hoursRemaining.toFixed(0);

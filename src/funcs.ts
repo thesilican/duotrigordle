@@ -11,8 +11,7 @@ export function range(max: number): number[] {
 
 // Simple seeded RNG
 // https://gist.github.com/miyaokamarina/0a8660363095bb5b5d5d7677ed5be9b0
-export function MersenneTwister(seed?: number | Uint32Array) {
-  if (!seed) seed = Date.now();
+function MersenneTwister(seed: number | Uint32Array) {
   const next = (mt: Uint32Array, i: number, j: number, k: number) => {
     j = (mt[i]! & 0x80000000) | (mt[j]! & 0x7fffffff);
     mt[i] = mt[k]! ^ (j >>> 1) ^ (-(j & 0x1) & 0x9908b0df);
@@ -64,8 +63,9 @@ export function MersenneTwister(seed?: number | Uint32Array) {
   return { u32, f32_ii, f32_ix, f32_xx, u53, f64_ix, save };
 }
 
+const rng = MersenneTwister(Date.now());
 export function randU32() {
-  return MersenneTwister().u32();
+  return rng.u32();
 }
 
 // Format time elapsed in 00:00.00 format

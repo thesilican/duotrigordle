@@ -91,11 +91,19 @@ export function getTodaysId(): number {
 
 // Given a duotrigordle id, return the corresponding 32 target wordles
 export function getTargetWords(id: number): string[] {
+  // Temporary, for migration of GIPSY/GYPSY
+  // WORDS_TARGET will be updated after daily duotrigordle 188
+  const targetPool = WORDS_TARGET;
+  if (id > 187) {
+    for (const word of ["GIPSY", "GYPSY"]) {
+      targetPool.splice(targetPool.indexOf(word), 1);
+    }
+  }
   const targetWords: string[] = [];
   const rng = MersenneTwister(id);
   while (targetWords.length < NUM_BOARDS) {
-    const idx = rng.u32() % WORDS_TARGET.length;
-    const word = WORDS_TARGET[idx];
+    const idx = rng.u32() % targetPool.length;
+    const word = targetPool[idx];
     if (!targetWords.includes(word)) {
       targetWords.push(word);
     }

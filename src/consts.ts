@@ -2,6 +2,8 @@ export const NUM_BOARDS = 32;
 
 export const NUM_GUESSES = 37;
 
+export const PRACTICE_MODE_MIN_ID = 100000;
+
 export const START_DATE = (() => {
   // Use this method so that the start date is offset by current timezone offset
   // Old method had problems with the start date being before DST

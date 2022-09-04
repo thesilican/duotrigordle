@@ -6,7 +6,7 @@ import fullscreenSvg from "../assets/fullscreen.svg";
 import helpSvg from "../assets/help.svg";
 import settingsSvg from "../assets/settings.svg";
 import statsSvg from "../assets/stats.svg";
-import { NUM_BOARDS, NUM_GUESSES } from "../consts";
+import { NUM_BOARDS, NUM_GUESSES, PRACTICE_MODE_MIN_ID } from "../consts";
 import {
   enterFullscreen,
   exitFullscreen,
@@ -39,7 +39,7 @@ function Row1() {
   const id = useSelector((s) => s.game.id);
   const practice = useSelector((s) => s.game.practice);
   const [title, titleClass] = practice
-    ? id < 99999
+    ? id < PRACTICE_MODE_MIN_ID
       ? [`Historical Duotrigordle #${id}`, "historical"]
       : [`Practice Duotrigordle`, "practice"]
     : [`Daily Duotrigordle #${id}`, null];
@@ -78,8 +78,8 @@ function Row1() {
       alert("Please enter a number");
     } else if (num < getTodaysId()) {
       dispatch(startGame({ id: num, practice: true }));
-    } else if (num >= 99999) {
-      // Allow numbers greater than 99999 for people that want to play with duotrigordle practice seed
+    } else if (num >= PRACTICE_MODE_MIN_ID) {
+      // Allow numbers greater than PRACTICE_MODE_MIN_ID for people that want to play with duotrigordle practice seed
       alert(
         `Starting Practice Duotrigordle with seed ${num}\n` +
           `(Note: you can set a Practice Duotrigordle seed ≥100000)`

@@ -93,10 +93,11 @@ export function getTodaysId(): number {
 export function getTargetWords(id: number): string[] {
   // Temporary, for migration of GIPSY/GYPSY
   // WORDS_TARGET will be updated after daily duotrigordle 188
-  const targetPool = WORDS_TARGET;
+  const targetPool = [...WORDS_TARGET];
   if (id > 187) {
     for (const word of ["GIPSY", "GYPSY"]) {
-      targetPool.splice(targetPool.indexOf(word), 1);
+      const idx = targetPool.indexOf(word);
+      if (idx !== -1) targetPool.splice(idx, 1);
     }
   }
   const targetWords: string[] = [];

@@ -35,6 +35,7 @@ export default function About() {
         </p>
         <hr className="separator" />
         <p>Duotrigordle by Bryan Chen</p>
+        <p>Board highlight idea by Dr. Om Patel</p>
         <p>
           Source code on{" "}
           <a

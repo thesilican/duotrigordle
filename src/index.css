@@ -395,12 +395,10 @@ button {
   cursor: pointer;
 }
 .kofi {
-  grid-column: 1/3;
   text-align: center;
-  font-size: calc(var(--app-width) / 50);
 }
 .kofi .emoji {
-  width: calc(var(--app-width) / 50);
+  width: calc(var(--app-width) / 30);
 }
 
 .popup-wrapper {

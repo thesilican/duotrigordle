@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { START_DATE } from "../consts";
 import { showPopup, useSelector } from "../store";
+import twemoji from "twemoji";
 
 function getHoursRemaining() {
   const diff = Date.now() - START_DATE;
@@ -92,6 +93,20 @@ export default function About() {
             by Josh Wardle
           </li>
         </ul>
+        <hr className="separator" />
+        <div className="kofi">
+          <span dangerouslySetInnerHTML={{ __html: twemoji.parse("💛") }} />{" "}
+          Duotrigordle?{" "}
+          <a
+            target="_blank"
+            href="https://ko-fi.com/thesilican"
+            rel="noreferrer"
+          >
+            Buy me a{" "}
+            <span dangerouslySetInnerHTML={{ __html: twemoji.parse("☕️") }} />{" "}
+            !
+          </a>
+        </div>
         <button className="close" onClick={() => dispatch(showPopup(null))}>
           close
         </button>

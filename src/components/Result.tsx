@@ -60,14 +60,6 @@ export default function Result(props: ResultProps) {
           </button>
         ))}
       </div>
-      <div className="kofi">
-        <span dangerouslySetInnerHTML={{ __html: twemoji.parse("💛") }} />{" "}
-        Duotrigordle?{" "}
-        <a target="_blank" href="https://ko-fi.com/H2H0BTKB3" rel="noreferrer">
-          Buy me a{" "}
-          <span dangerouslySetInnerHTML={{ __html: twemoji.parse("☕️") }} /> !
-        </a>
-      </div>
     </div>
   );
 }

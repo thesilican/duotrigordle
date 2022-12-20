@@ -1,9 +1,9 @@
 import cn from "classnames";
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
+import twemoji from "twemoji";
 import { START_DATE } from "../consts";
 import { showPopup, useSelector } from "../store";
-import twemoji from "twemoji";
 
 function getHoursRemaining() {
   const diff = Date.now() - START_DATE;

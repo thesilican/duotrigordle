@@ -4,6 +4,7 @@ import { NUM_GUESSES } from "../consts";
 import { getAllWordsGuessed } from "../funcs";
 import { addDebugHooks, useSelector } from "../store";
 import About from "./About";
+import { AdBox } from "./AdBox";
 import Boards from "./Boards";
 import Header from "./Header";
 import Keyboard from "./Keyboard";
@@ -63,6 +64,7 @@ export default function App() {
       )}
     >
       <div className="main">
+        <AdBox />
         <Header />
         <Boards />
         <Keyboard hidden={gameOver} />

@@ -10,6 +10,7 @@ export function AdBox() {
     if (!adsLoaded) {
       dispatch(setAdsLoadState(true));
       try {
+        console.log("Loading ad");
         // @ts-ignore
         (adsbygoogle = window.adsbygoogle || []).push({});
       } catch {}
@@ -21,11 +22,9 @@ export function AdBox() {
       <div className="ad-box">
         <ins
           className="adsbygoogle"
-          style={{ display: "block" }}
+          style={{ display: "inline-block", width: "600px", height: "60px" }}
           data-ad-client="ca-pub-4459769759726497"
           data-ad-slot="5019524864"
-          data-ad-format="auto"
-          data-full-width-responsive="true"
         />
       </div>
     </div>

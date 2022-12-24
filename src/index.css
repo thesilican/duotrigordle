@@ -91,7 +91,7 @@ button {
   display: none;
 }
 .ad-box {
-  width: 600px;
+  width: min(100vw, 600px);
   height: 60px;
 }
 

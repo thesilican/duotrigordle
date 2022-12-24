@@ -93,6 +93,8 @@ button {
 .ad-box {
   width: min(100vw, 600px);
   height: 60px;
+  display: flex;
+  justify-content: center;
 }
 
 /* Header */

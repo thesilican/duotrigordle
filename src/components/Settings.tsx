@@ -145,10 +145,11 @@ function KofiEmailInput() {
   const dispatch = useDispatch();
   const kofiEmail = useSelector((s) => s.settings.kofiEmail);
   const [email, setEmail] = useState("");
-  // 0 - no error
+  // 0 - no error message
   // 1 - not a valid kofi email
   // 2 - error communicating with server
-  // 3 - empty input
+  // 3 - empty input field
+  // 4 - success
   const [errorCode, setErrorCode] = useState(0);
 
   useEffect(() => {
@@ -164,7 +165,7 @@ function KofiEmailInput() {
       setErrorCode(0);
     } else {
       if (!email) {
-        setErrorCode(0);
+        setErrorCode(3);
         return;
       }
       const url = new URL("/api/emails/validate", window.location.href);
@@ -174,7 +175,7 @@ function KofiEmailInput() {
         .then((valid) => {
           if (valid) {
             dispatch(updateSettings({ kofiEmail: email }));
-            setErrorCode(0);
+            setErrorCode(4);
           } else {
             setErrorCode(1);
           }
@@ -220,6 +221,8 @@ function KofiEmailInput() {
           <>There was a problem communicating with the server</>
         ) : errorCode === 3 ? (
           <>Please enter an email</>
+        ) : errorCode === 4 ? (
+          <>Success!</>
         ) : null}
       </p>
     </>

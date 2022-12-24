@@ -1,24 +1,25 @@
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { setAdsLoadState, useSelector } from "../store";
+import { resolveSideEffect, useSelector } from "../store";
+import cn from "classnames";
 
 export function AdBox() {
   const dispatch = useDispatch();
-  const adsLoaded = useSelector((s) => s.ui.adsLoaded);
+  const hideAds = useSelector((s) => s.settings.hideAds);
+  const sideEffect = useSelector((s) => s.ui.sideEffects[0] ?? null);
 
   useEffect(() => {
-    if (!adsLoaded) {
-      dispatch(setAdsLoadState(true));
+    if (!hideAds && sideEffect && sideEffect.type === "load-ads") {
       try {
-        console.log("Loading ad");
         // @ts-ignore
         (adsbygoogle = window.adsbygoogle || []).push({});
       } catch {}
+      dispatch(resolveSideEffect(sideEffect.id));
     }
-  }, [dispatch, adsLoaded]);
+  }, [dispatch, hideAds, sideEffect]);
 
   return (
-    <div className="ad-box-wrapper">
+    <div className={cn("ad-box-wrapper", hideAds && "hidden")}>
       <div className="ad-box">
         <ins
           className="adsbygoogle"

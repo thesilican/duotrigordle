@@ -14,6 +14,7 @@ export function Settings() {
     hideKeyboard,
     useFloatingInput,
     hideEmptyRows,
+    hideAds,
   } = useSelector((s) => s.settings);
 
   return (
@@ -115,6 +116,18 @@ export function Settings() {
             }
           />
           <label htmlFor="hide-empty-rows">Hide empty rows</label>
+        </div>
+        <hr className="separator" />
+        <div className="group">
+          <input
+            type="checkbox"
+            id="hide-ads"
+            checked={hideAds}
+            onChange={(e) =>
+              dispatch(updateSettings({ hideAds: e.target.checked }))
+            }
+          />
+          <label htmlFor="hide-ads">Hide ads</label>
         </div>
         <button className="close" onClick={() => dispatch(showPopup(null))}>
           close

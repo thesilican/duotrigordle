@@ -87,7 +87,9 @@ button {
   display: flex;
   justify-content: center;
 }
-
+.ad-box-wrapper.hidden {
+  display: none;
+}
 .ad-box {
   width: 600px;
   height: 60px;

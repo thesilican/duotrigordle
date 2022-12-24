@@ -189,7 +189,7 @@ function KofiEmailInput() {
         The following options are for{" "}
         <a target="_blank" href="https://ko-fi.com/thesilican" rel="noreferrer">
           ko-fi supporters
-        </a>
+        </a>{" "}
         only, enter the email you used to donate:
       </p>
       <div className="kofi-email-input">

@@ -464,6 +464,21 @@ button {
   opacity: 0.5;
 }
 
+.group.hide-ads.disabled {
+  opacity: 0.5;
+}
+
+.popup .hint {
+  font-size: calc(var(--app-width) / 40);
+}
+
+.kofi-email-input {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  margin: 4px;
+}
+
 /* Stats */
 .stats-title {
   text-align: center;

@@ -1,4 +1,5 @@
 import cn from "classnames";
+import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { showPopup, updateSettings, useSelector } from "../store";
 
@@ -15,6 +16,7 @@ export function Settings() {
     useFloatingInput,
     hideEmptyRows,
     hideAds,
+    kofiEmail,
   } = useSelector((s) => s.settings);
 
   return (
@@ -118,10 +120,12 @@ export function Settings() {
           <label htmlFor="hide-empty-rows">Hide empty rows</label>
         </div>
         <hr className="separator" />
-        <div className="group">
+        <KofiEmailInput />
+        <div className={cn("group", "hide-ads", !kofiEmail && "disabled")}>
           <input
             type="checkbox"
             id="hide-ads"
+            disabled={!kofiEmail}
             checked={hideAds}
             onChange={(e) =>
               dispatch(updateSettings({ hideAds: e.target.checked }))
@@ -134,5 +138,88 @@ export function Settings() {
         </button>
       </div>
     </div>
+  );
+}
+
+function KofiEmailInput() {
+  const dispatch = useDispatch();
+  const kofiEmail = useSelector((s) => s.settings.kofiEmail);
+  const [email, setEmail] = useState("");
+  // 0 - no error
+  // 1 - not a valid kofi email
+  // 2 - error communicating with server
+  const [errorCode, setErrorCode] = useState(0);
+
+  useEffect(() => {
+    if (kofiEmail) {
+      setEmail(kofiEmail);
+    }
+  }, [kofiEmail]);
+
+  function handleClick() {
+    if (kofiEmail) {
+      setEmail("");
+      dispatch(updateSettings({ hideAds: false, kofiEmail: null }));
+      setErrorCode(0);
+    } else {
+      if (!email) {
+        setErrorCode(0);
+        return;
+      }
+      const url =
+        process.env.NODE_ENV === "development"
+          ? new URL("/emails/validate", window.location.href)
+          : new URL("https://api.duotrigordle.com/emails/validate");
+      url.searchParams.append("email", email);
+      fetch(url)
+        .then((x) => x.json())
+        .then((valid) => {
+          if (valid) {
+            dispatch(updateSettings({ kofiEmail: email }));
+            setErrorCode(0);
+          } else {
+            setErrorCode(1);
+          }
+        })
+        .catch(() => {
+          setErrorCode(2);
+        });
+    }
+  }
+  return (
+    <>
+      <p className="hint">
+        If you are a{" "}
+        <a target="_blank" href="https://ko-fi.com/thesilican" rel="noreferrer">
+          ko-fi supporter
+        </a>
+        , enter the email you used to donate to enable the below options
+      </p>
+      <div className="kofi-email-input">
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <input
+          type="button"
+          onClick={handleClick}
+          value={kofiEmail ? "Reset" : "Submit"}
+        />
+      </div>
+      <p className="hint">
+        {errorCode === 1 ? (
+          <>
+            Not a valid supporter email
+            <br />
+            (Contact{" "}
+            <a href="mailto:bryanchen74@gmail.com">bryanchen74@gmail.com</a> for
+            any issues)
+          </>
+        ) : errorCode === 2 ? (
+          <></>
+        ) : null}
+      </p>
+    </>
   );
 }

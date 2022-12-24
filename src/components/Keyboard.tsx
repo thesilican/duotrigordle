@@ -60,10 +60,14 @@ export default function Keyboard(props: KeyboardProps) {
 
 function KeydownListener() {
   const dispatch = useDispatch();
+  const popup = useSelector((s) => s.ui.popup);
 
   // Listen to keyboard events
   useEffect(() => {
     const handler = (k: KeyboardEvent) => {
+      if (popup) {
+        return;
+      }
       if (k.ctrlKey || k.metaKey || k.altKey) {
         return;
       }
@@ -80,7 +84,7 @@ function KeydownListener() {
     return () => {
       window.removeEventListener("keydown", handler);
     };
-  }, [dispatch]);
+  }, [dispatch, popup]);
 
   return <Fragment />;
 }

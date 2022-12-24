@@ -53,9 +53,13 @@ const keyMap = new Map<string, ActionCreator<AnyAction>>([
 ]);
 function KeyboardListener() {
   const dispatch = useDispatch();
+  const popup = useSelector((s) => s.ui.popup);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
+      if (popup) {
+        return;
+      }
       if (e.ctrlKey || e.metaKey || e.altKey) {
         return;
       }
@@ -67,7 +71,7 @@ function KeyboardListener() {
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [dispatch]);
+  }, [dispatch, popup]);
 
   return <Fragment />;
 }

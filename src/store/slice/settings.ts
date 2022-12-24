@@ -11,6 +11,7 @@ export type SettingsState = {
   hideKeyboard: boolean;
   hideEmptyRows: boolean;
   hideAds: boolean;
+  kofiEmail: string | null;
 };
 export const settingsInitialState: SettingsState = {
   colorBlindMode: false,
@@ -22,6 +23,7 @@ export const settingsInitialState: SettingsState = {
   hideKeyboard: false,
   hideEmptyRows: false,
   hideAds: false,
+  kofiEmail: null,
 };
 
 export const updateSettings = createAction<Partial<SettingsState>>(

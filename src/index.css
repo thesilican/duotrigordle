@@ -74,11 +74,23 @@ button {
   margin: auto;
 
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto auto 1fr auto;
 }
 .game.wide .main {
   width: calc(var(--app-max-width) * 2);
   max-width: calc(var(--app-max-width) * 2);
+}
+
+.ad-box-wrapper {
+  overflow: hidden;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+}
+
+.ad-box {
+  width: 600px;
+  height: 60px;
 }
 
 /* Header */

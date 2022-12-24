@@ -4,6 +4,7 @@ import { NUM_BOARDS } from "../../consts";
 import { getCompletedBoards, range } from "../../funcs";
 
 export type UiState = {
+  adsLoaded: boolean;
   popup: PopupState;
   highlightedBoard: number | null;
   sideEffects: SideEffect[];
@@ -19,6 +20,7 @@ type SideEffectAction = {
 };
 
 export const uiInitialState: UiState = {
+  adsLoaded: false,
   popup: null,
   highlightedBoard: null,
   sideEffects: [],
@@ -32,6 +34,7 @@ export const highlightArrowLeft = createAction("ui/highlightArrowLeft");
 export const highlightArrowDown = createAction("ui/highlightArrowDown");
 export const highlightArrowUp = createAction("ui/highlightArrowUp");
 export const highlightEsc = createAction("ui/highlightEsc");
+export const setAdsLoadState = createAction<boolean>("ui/set-ads-load-state");
 export const createSideEffect = createAction<SideEffectAction>(
   "ui/createSideEffect"
 );
@@ -72,6 +75,9 @@ export const uiReducer = createReducer(
       })
       .addCase(highlightEsc, (state, _) => {
         state.ui.highlightedBoard = null;
+      })
+      .addCase(setAdsLoadState, (state, action) => {
+        state.ui.adsLoaded = action.payload;
       })
       .addCase(createSideEffect, (state, action) => {
         addSideEffect(state, action.payload);

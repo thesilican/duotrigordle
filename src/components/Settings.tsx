@@ -186,11 +186,11 @@ function KofiEmailInput() {
   return (
     <>
       <p className="hint">
-        If you are a{" "}
+        The following options are for{" "}
         <a target="_blank" href="https://ko-fi.com/thesilican" rel="noreferrer">
-          ko-fi supporter
+          ko-fi supporters
         </a>
-        , enter the email you used to donate to enable the below options
+        only, enter the email you used to donate:
       </p>
       <div className="kofi-email-input">
         <input

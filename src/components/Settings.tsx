@@ -148,6 +148,7 @@ function KofiEmailInput() {
   // 0 - no error
   // 1 - not a valid kofi email
   // 2 - error communicating with server
+  // 3 - empty input
   const [errorCode, setErrorCode] = useState(0);
 
   useEffect(() => {
@@ -216,7 +217,9 @@ function KofiEmailInput() {
             any issues)
           </>
         ) : errorCode === 2 ? (
-          <></>
+          <>There was a problem communicating with the server</>
+        ) : errorCode === 3 ? (
+          <>Please enter an email</>
         ) : null}
       </p>
     </>

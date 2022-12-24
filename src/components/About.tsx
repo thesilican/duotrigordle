@@ -107,6 +107,14 @@ export default function About() {
             !
           </a>
         </div>
+        <hr className="separator" />
+        <a
+          target="_blank"
+          href="https://duotrigordle.com/privacy.html"
+          rel="noreferrer"
+        >
+          Privacy Policy
+        </a>
         <button className="close" onClick={() => dispatch(showPopup(null))}>
           close
         </button>

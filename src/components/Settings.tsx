@@ -166,10 +166,7 @@ function KofiEmailInput() {
         setErrorCode(0);
         return;
       }
-      const url =
-        process.env.NODE_ENV === "development"
-          ? new URL("/emails/validate", window.location.href)
-          : new URL("https://api.duotrigordle.com/emails/validate");
+      const url = new URL("/api/emails/validate", window.location.href);
       url.searchParams.append("email", email);
       fetch(url)
         .then((x) => x.json())

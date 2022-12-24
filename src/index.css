@@ -400,6 +400,9 @@ button {
 .kofi .emoji {
   width: calc(var(--app-width) / 30);
 }
+.legal {
+  text-align: center;
+}
 
 .popup-wrapper {
   position: fixed;

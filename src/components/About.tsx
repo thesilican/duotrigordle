@@ -46,6 +46,21 @@ export default function About() {
           >
             GitHub
           </a>
+          <div className="kofi">
+            <span dangerouslySetInnerHTML={{ __html: twemoji.parse("💛") }} />{" "}
+            Duotrigordle?{" "}
+            <a
+              target="_blank"
+              href="https://ko-fi.com/thesilican"
+              rel="noreferrer"
+            >
+              Buy me a{" "}
+              <span
+                dangerouslySetInnerHTML={{ __html: twemoji.parse("☕️") }}
+              />{" "}
+              !
+            </a>
+          </div>
         </p>
         <hr className="separator" />
         <p>Based on</p>
@@ -94,27 +109,15 @@ export default function About() {
           </li>
         </ul>
         <hr className="separator" />
-        <div className="kofi">
-          <span dangerouslySetInnerHTML={{ __html: twemoji.parse("💛") }} />{" "}
-          Duotrigordle?{" "}
+        <div className="legal">
           <a
             target="_blank"
-            href="https://ko-fi.com/thesilican"
+            href="https://duotrigordle.com/privacy.html"
             rel="noreferrer"
           >
-            Buy me a{" "}
-            <span dangerouslySetInnerHTML={{ __html: twemoji.parse("☕️") }} />{" "}
-            !
+            Privacy Policy
           </a>
         </div>
-        <hr className="separator" />
-        <a
-          target="_blank"
-          href="https://duotrigordle.com/privacy.html"
-          rel="noreferrer"
-        >
-          Privacy Policy
-        </a>
         <button className="close" onClick={() => dispatch(showPopup(null))}>
           close
         </button>

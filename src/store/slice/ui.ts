@@ -13,10 +13,14 @@ type PopupState = "about" | "settings" | "stats" | null;
 type SideEffect = {
   id: number;
 } & SideEffectAction;
-type SideEffectAction = {
-  type: "scroll-board-into-view";
-  board: number;
-};
+type SideEffectAction =
+  | {
+      type: "scroll-board-into-view";
+      board: number;
+    }
+  | {
+      type: "load-ads";
+    };
 
 export const uiInitialState: UiState = {
   popup: null,

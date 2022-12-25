@@ -74,11 +74,27 @@ button {
   margin: auto;
 
   display: grid;
-  grid-template-rows: auto 1fr auto;
+  grid-template-rows: auto auto 1fr auto;
 }
 .game.wide .main {
   width: calc(var(--app-max-width) * 2);
   max-width: calc(var(--app-max-width) * 2);
+}
+
+.ad-box-wrapper {
+  overflow: hidden;
+  height: 60px;
+  display: flex;
+  justify-content: center;
+}
+.ad-box-wrapper.hidden {
+  display: none;
+}
+.ad-box {
+  width: min(100vw, 600px);
+  height: 60px;
+  display: flex;
+  justify-content: center;
 }
 
 /* Header */
@@ -451,6 +467,21 @@ button {
 
 .group.animate-hiding.active {
   opacity: 0.5;
+}
+
+.group.hide-ads.disabled {
+  opacity: 0.5;
+}
+
+.popup .hint {
+  font-size: calc(var(--app-width) / 40);
+}
+
+.kofi-email-input {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  margin: 4px;
 }
 
 /* Stats */

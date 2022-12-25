@@ -2,6 +2,7 @@
   "name": "duotrigordle",
   "version": "1.0.0",
   "private": true,
+  "proxy": "https://api.duotrigordle.com/",
   "license": "MIT",
   "dependencies": {
     "@reduxjs/toolkit": "^1.8.5",

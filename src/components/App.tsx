@@ -1,9 +1,11 @@
 import cn from "classnames";
 import { useEffect, useMemo } from "react";
+import { useDispatch } from "react-redux";
 import { NUM_GUESSES } from "../consts";
 import { getAllWordsGuessed } from "../funcs";
-import { addDebugHooks, useSelector } from "../store";
+import { addDebugHooks, createSideEffect, useSelector } from "../store";
 import About from "./About";
+import { AdBox } from "./AdBox";
 import Boards from "./Boards";
 import Header from "./Header";
 import Keyboard from "./Keyboard";
@@ -13,6 +15,7 @@ import { Settings } from "./Settings";
 import Stats from "./Stats";
 
 export default function App() {
+  const dispatch = useDispatch();
   const targets = useSelector((s) => s.game.targets);
   const guesses = useSelector((s) => s.game.guesses);
   const guessesUsedUp = guesses.length === NUM_GUESSES;
@@ -31,7 +34,10 @@ export default function App() {
 
   useEffect(() => {
     addDebugHooks();
-  }, []);
+    setTimeout(() => {
+      dispatch(createSideEffect({ type: "load-ads" }));
+    }, 1000);
+  }, [dispatch]);
 
   // Prevent duotrigordle form working in iframes
   // (looking at you https://dordle.io/duotrigordle)
@@ -63,6 +69,7 @@ export default function App() {
       )}
     >
       <div className="main">
+        <AdBox />
         <Header />
         <Boards />
         <Keyboard hidden={gameOver} />

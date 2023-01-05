@@ -530,13 +530,18 @@ button {
   column-gap: calc(var(--app-width) / 40);
   margin-bottom: calc(var(--app-width) / 120);
 }
-.stats-import {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
+.stats-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   font-size: calc(var(--app-width) / 40);
-  text-align: center;
 }
-.stats-import .link {
+.stats-editor .buttons {
+  display: grid;
+  grid-template-columns: auto auto auto 1fr auto;
+  gap: calc(var(--app-width) / 40);
+}
+.stats-editor .link {
   background: none;
   font-size: calc(var(--app-width) / 40);
   border: none;
@@ -544,4 +549,10 @@ button {
   color: var(--white);
   text-decoration: underline;
   cursor: pointer;
+}
+.stats-editor:not(.expanded) .editor {
+  display: none;
+}
+.stats-editor:not(.expanded) .hint {
+  display: none;
 }

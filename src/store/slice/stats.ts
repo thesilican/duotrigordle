@@ -2,23 +2,24 @@ import { createAction, createReducer } from "@reduxjs/toolkit";
 import { initialState } from "..";
 import { PRACTICE_MODE_MIN_ID } from "../../consts";
 
-export type GameHistory = {
+export type GameEntry = {
   id: number;
   guesses: number | null;
-  time: number;
+  time: number | null;
 };
 export type StatsState = {
-  history: GameHistory[];
+  history: GameEntry[];
 };
 export const statsInitialState: StatsState = {
   history: [],
 };
 
 export const loadStats = createAction<StatsState>("stats/loadStats");
-export const addHistory = createAction<GameHistory>("stats/addHistory");
+export const addHistory = createAction<GameEntry>("stats/addHistory");
 export const removeHistory = createAction<{ id: number }>(
   "stats/removeHistory"
 );
+export const setHistory = createAction<GameEntry[]>("stats/setHistory");
 
 export const statsReducer = createReducer(
   () => initialState,
@@ -29,46 +30,48 @@ export const statsReducer = createReducer(
         normalizeHistory(state.stats.history);
       })
       .addCase(addHistory, (state, action) => {
-        insertHistory(state.stats.history, action.payload);
+        const entry = action.payload;
+        const newHistory = state.stats.history.filter((x) => x.id !== entry.id);
+        newHistory.push(entry);
+        state.stats.history = normalizeHistory(newHistory);
       })
       .addCase(removeHistory, (state, action) => {
-        const history = state.stats.history;
-        for (let i = 0; i < history.length; i++) {
-          if (history[i].id === action.payload.id) {
-            history.splice(i, 1);
-          }
-        }
-        normalizeHistory(state.stats.history);
+        const newHistory = state.stats.history.filter(
+          (x) => x.id !== action.payload.id
+        );
+        state.stats.history = normalizeHistory(newHistory);
+      })
+      .addCase(setHistory, (state, action) => {
+        state.stats.history = normalizeHistory(action.payload);
       })
 );
 
-export function insertHistory(history: GameHistory[], game: GameHistory) {
-  const idx = history.findIndex((v) => v.id === game.id);
-  if (idx !== -1) {
-    history.splice(idx, 1);
-  }
-  history.push(game);
-  normalizeHistory(history);
-}
-
-export function normalizeHistory(history: GameHistory[]) {
-  // Remove practice mode games (in case they were added by accident)
-  for (let i = 0; i < history.length; i++) {
-    if (history[i].id >= PRACTICE_MODE_MIN_ID) {
-      history.splice(i, 1);
-      i--;
-    }
-  }
-  // Remove duplicate ids
+export function normalizeHistory(history: GameEntry[]): GameEntry[] {
+  const newHistory: GameEntry[] = [];
+  // Remove invalid ids
   const visited = new Set();
-  for (let i = 0; i < history.length; i++) {
-    if (visited.has(history[i])) {
-      history.splice(i, 1);
-      i--;
-    } else {
-      visited.add(history[i]);
+  for (const entry of history) {
+    if (
+      entry.id > 0 &&
+      entry.id < PRACTICE_MODE_MIN_ID &&
+      !visited.has(entry.id)
+    ) {
+      newHistory.push({
+        id: entry.id,
+        guesses: entry.guesses,
+        time: entry.time,
+      });
     }
   }
   // Sort ids
-  history.sort((a, b) => a.id - b.id);
+  newHistory.sort((a, b) => a.id - b.id);
+  // Round times to nearest 0.01
+  for (let i = 0; i < newHistory.length; i++) {
+    const time = newHistory[i].time;
+    if (time !== null) {
+      const rounded = Math.round(time * 100) / 100;
+      newHistory[i].time = rounded;
+    }
+  }
+  return newHistory;
 }

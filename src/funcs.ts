@@ -83,6 +83,21 @@ export function formatTimeElapsed(miliseconds: number) {
   );
 }
 
+// Parse time elapsed in 00:00.00 format
+export function parseTimeElapsed(text: string): number | null {
+  const match = text.match(/(?:(\d+):)?(\d+(?:\.\d+)?)/);
+  if (!match) {
+    return null;
+  }
+  const min = parseFloat(match[1] ?? 0);
+  const sec = parseFloat(match[2]);
+  const time = (min * 60 + sec) * 1000;
+  if (isNaN(time)) {
+    return null;
+  }
+  return time;
+}
+
 // Returns the id for today's duotrigordle
 export function getTodaysId(): number {
   const diff = Date.now() - START_DATE;

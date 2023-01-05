@@ -1,5 +1,5 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
-import { initialState, insertHistory } from "..";
+import { initialState, normalizeHistory } from "..";
 import { NUM_BOARDS, NUM_GUESSES, WORDS_VALID } from "../../consts";
 import {
   getAllWordsGuessed,
@@ -105,12 +105,16 @@ export const gameReducer = createReducer(
 
           // Add stat to game history
           if (!game.practice) {
-            const gameHistory = {
+            const entry = {
               id: game.id,
               guesses: game.guesses.length,
               time: game.endTime - game.startTime,
             };
-            insertHistory(state.stats.history, gameHistory);
+            const newHistory = state.stats.history.filter(
+              (x) => x.id !== entry.id
+            );
+            newHistory.push(entry);
+            state.stats.history = normalizeHistory(newHistory);
           }
 
           // Clear board highlights

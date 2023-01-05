@@ -3,27 +3,28 @@
 Since Duotrigordle added statistics quite late, I've included the ability for you to manually input past games
 in case you've been tracking them on your own.
 
-![Stats](https://i.imgur.com/0cXaEjH.png)
+![Stats](https://i.imgur.com/jgFVAVy.png)
 
-## Adding games
+## Editing Stats
 
-To add past games to be recorded in the statistics:
+To edit your duotrigordle statistics, click "Edit" at the bottom of the statistics popup.
 
-1. Press "Add"
-1. Enter the Daily Duotrigordle # for the game you'd like to record
-1. Enter the number of guesses it took you to complete the game, or enter "X" if you failed to complete it in under 37 guesses
-1. Enter the number of seconds it took you to complete the game (e.g. if you completed a game in 1:23.45, you should enter 83.45 into the box)
-1. Repeat steps 2-4 until you've entered all your games
+Each line of text represents one game of duotrigordle, and contains the following three pieces of data seperated by spaces:
 
-## Removing games
+1. Daily Duotrigordle Number
+2. Guess Count, this should be a number from 32-37 representing the number of guesses it took, or "X" if you failed to guess every word
+3. Time Elapsed, this is how long it took you to complete the game, or you can enter "-" if you do not want to track the time for that game (it will not be counted towards your time averages). Some examples of valid time formats are: `1:23.45`, `83.45`, `01:00`, `123:00`
 
-You may remove games if you entered something by mistake:
+Below is an example of valid entries:
 
-1. Press "Remove"
-1. Enter the Daily Duotrigordle # for the game you wish to remove
-1. Repeat step 2 until you've removed all the games you'd like to remove
+```
+102 36 -
+105 37 -
+300 35 12:34.23
+302 37 01:32.23
+303 36 01:32.12
+304 X 06:03.00
+310 36 12:03.00
+```
 
-## Listing games
-
-Pressing "List" will list all the games recorded for statistics. Press "Ok" if you'd like to copy the
-games to your clipboard (useful if the alert popup text is cut off), otherwise press "Cancel".
+Click "Submit" once you've finished making any changes to your stats, or "Reset" to undo any changes you've made.

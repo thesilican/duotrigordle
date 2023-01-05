@@ -46,22 +46,20 @@ export default function About() {
           >
             GitHub
           </a>
-          <div className="kofi">
-            <span dangerouslySetInnerHTML={{ __html: twemoji.parse("💛") }} />{" "}
-            Duotrigordle?{" "}
-            <a
-              target="_blank"
-              href="https://ko-fi.com/thesilican"
-              rel="noreferrer"
-            >
-              Buy me a{" "}
-              <span
-                dangerouslySetInnerHTML={{ __html: twemoji.parse("☕️") }}
-              />{" "}
-              !
-            </a>
-          </div>
         </p>
+        <div className="kofi">
+          <span dangerouslySetInnerHTML={{ __html: twemoji.parse("💛") }} />{" "}
+          Duotrigordle?{" "}
+          <a
+            target="_blank"
+            href="https://ko-fi.com/thesilican"
+            rel="noreferrer"
+          >
+            Buy me a{" "}
+            <span dangerouslySetInnerHTML={{ __html: twemoji.parse("☕️") }} />{" "}
+            !
+          </a>
+        </div>
         <hr className="separator" />
         <p>Based on</p>
         <ul>

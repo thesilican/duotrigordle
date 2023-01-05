@@ -107,7 +107,9 @@ export const gameReducer = createReducer(
           if (!game.practice) {
             const entry = {
               id: game.id,
-              guesses: game.guesses.length,
+              guesses: getAllWordsGuessed(game.targets, game.guesses)
+                ? game.guesses.length
+                : null,
               time: game.endTime - game.startTime,
             };
             const newHistory = state.stats.history.filter(

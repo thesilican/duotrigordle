@@ -1,44 +1,27 @@
 {
   "name": "duotrigordle",
-  "version": "1.0.0",
   "private": true,
-  "proxy": "https://api.duotrigordle.com/",
-  "license": "MIT",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview"
+  },
   "dependencies": {
-    "@reduxjs/toolkit": "^1.8.5",
-    "@types/node": "^18.7.13",
-    "@types/react": "^18.0.17",
-    "@types/react-dom": "^18.0.6",
-    "classnames": "^2.3.1",
+    "@reduxjs/toolkit": "^1.9.2",
+    "classnames": "^2.3.2",
+    "normalize.css": "^8.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-redux": "^7.2.6",
-    "react-scripts": "^5.0.1",
-    "twemoji": "^14.0.2",
-    "typescript": "^4.8.2"
+    "react-redux": "^8.0.5",
+    "twemoji": "^14.0.2"
   },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "devDependencies": {
+    "@types/react": "^18.0.27",
+    "@types/react-dom": "^18.0.6",
+    "@vitejs/plugin-react": "^2.0.0",
+    "typescript": "^4.6.4",
+    "vite": "^3.0.0"
   }
 }

@@ -1,13 +1,13 @@
 import { configureStore } from "@reduxjs/toolkit";
 import {
-    TypedUseSelectorHook,
-    useSelector as useSelectorOriginal
+  TypedUseSelectorHook,
+  useSelector as useSelectorOriginal,
 } from "react-redux";
 import { gameInitialState, gameReducer, GameState } from "./slice/game";
 import {
-    settingsInitialState,
-    settingsReducer,
-    SettingsState
+  settingsInitialState,
+  settingsReducer,
+  SettingsState,
 } from "./slice/settings";
 import { statsInitialState, statsReducer, StatsState } from "./slice/stats";
 import { uiInitialState, uiReducer, UiState } from "./slice/ui";
@@ -37,10 +37,8 @@ export const store = configureStore<RootState>({
 export const useSelector: TypedUseSelectorHook<RootState> = useSelectorOriginal;
 
 // Reexports
-export * from "./debug";
 export * from "./selector";
 export * from "./slice/game";
 export * from "./slice/settings";
 export * from "./slice/stats";
 export * from "./slice/ui";
-

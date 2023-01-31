@@ -54,7 +54,6 @@
   align-items: center;
   justify-content: center;
   background: var(--gray-2);
-  user-select: none;
   position: relative;
   color: var(--white);
 }
@@ -71,6 +70,7 @@
 }
 
 .letter {
+  user-select: none;
   position: absolute;
   font-size: calc(min(100vw, var(--width)) * 0.035);
   line-height: 0.75;

@@ -26,6 +26,10 @@ Or using docker-compose
 $ docker-compose up --build
 ```
 
+## Typescript Errors
+
+If you're using VS Code, you may run into errors with CSS module types. To fix this, open a typescript file > open the command palette (cmd + shift + p) > Typescript: Select Typescript Version... > Use Workspace Version.
+
 ## Contributions
 
 If you have any features that you would like to see implemented, feel free to post an issue requesting it. However, I am currently quite busy and might not be able to implement right away if at all. You are also free to submit pull requests for new features.

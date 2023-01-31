@@ -1,0 +1,80 @@
+.header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--gray-1);
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.row1 {
+  width: 100%;
+  max-width: var(--width);
+  display: flex;
+  align-items: center;
+}
+@media screen and (min-width: 600px) {
+  .row1 {
+    gap: 4px;
+  }
+}
+
+.titleWrapper {
+  flex-grow: 1;
+}
+.title {
+  transition: transform 0.25s ease;
+  text-align: center;
+}
+@media screen and (min-width: 600px) {
+  .title {
+    font-size: 20px;
+  }
+}
+.welcome .title {
+  transform: translateX(-20px);
+  font-size: 20px;
+  text-align: left;
+}
+
+.icon {
+  background-color: transparent;
+  border: none;
+  padding: 0px;
+}
+.img {
+  width: 30px;
+  height: 30px;
+}
+
+.icon.back {
+  transition: opacity 0.25s ease;
+}
+.welcome .icon.back {
+  visibility: hidden;
+  opacity: 0;
+}
+
+.row2 {
+  width: 100%;
+  padding-left: 4px;
+  padding-right: 4px;
+  max-width: var(--width);
+  display: flex;
+  justify-content: stretch;
+  transition: opacity 0.25s ease;
+}
+.welcome .row2 {
+  visibility: hidden;
+  height: 0;
+  opacity: 0;
+}
+
+.timer {
+  flex-grow: 1;
+  font-family: "Roboto Mono", monospace;
+  text-align: center;
+}
+
+.row3 {
+}

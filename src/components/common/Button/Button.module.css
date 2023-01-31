@@ -1,0 +1,14 @@
+.button {
+  color: var(--white);
+  background-color: var(--gray-4);
+  font-size: 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  height: 40px;
+  padding: 4px 16px;
+}
+
+.button:active {
+  transform: translateY(1px);
+}

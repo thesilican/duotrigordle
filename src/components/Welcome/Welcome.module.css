@@ -1,0 +1,90 @@
+.welcomeWrapper {
+  display: flex;
+  justify-content: center;
+}
+
+.welcome {
+  width: 100%;
+  max-width: 400px;
+  display: flex;
+  flex-direction: column;
+  padding: 30px 8px 4px 8px;
+  gap: 30px;
+}
+
+.tabs {
+  display: grid;
+  position: relative;
+  grid-template-columns: 1fr 1fr;
+  height: 40px;
+  animation: fadeIn 0.5s ease;
+}
+.tabWrapper {
+  position: relative;
+}
+.tab {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  background-color: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+.highlight {
+  position: absolute;
+  z-index: 1;
+  user-select: none;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 50%;
+  background-color: var(--gray-4);
+  transition: transform 0.25s ease;
+  border-radius: 8px;
+}
+.practice .highlight {
+  transform: translateX(100%);
+}
+
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.gmDaily,
+.gmPractice {
+  flex-direction: column;
+  gap: 30px;
+}
+.gmDaily {
+  display: flex;
+  animation: fadeIn 0.5s ease;
+}
+.gmPractice {
+  display: none;
+}
+.practice .gmDaily {
+  display: none;
+}
+.practice .gmPractice {
+  display: flex;
+  animation: fadeIn 0.5s ease;
+}
+
+.gamemode {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.link {
+  font-size: 20px;
+}

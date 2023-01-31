@@ -1,14 +1,16 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
-import { initialState, RootState } from "..";
-import { NUM_BOARDS } from "../../consts";
-import { getCompletedBoards, range } from "../../funcs";
+import { initialState, AppState, getCompletedBoards } from "..";
+import { NUM_BOARDS } from "../consts";
+import { range } from "../../util";
 
 export type UiState = {
+  view: UiView;
   popup: PopupState;
   highlightedBoard: number | null;
   sideEffects: SideEffect[];
   sideEffectCount: number;
 };
+type UiView = "welcome" | "game";
 type PopupState = "about" | "settings" | "stats" | null;
 type SideEffect = {
   id: number;
@@ -23,32 +25,37 @@ type SideEffectAction =
     };
 
 export const uiInitialState: UiState = {
+  view: "welcome",
   popup: null,
   highlightedBoard: null,
   sideEffects: [],
   sideEffectCount: 0,
 };
 
-export const showPopup = createAction<PopupState>("ui/showPopup");
-export const highlightClick = createAction<number>("ui/clickBoard");
-export const highlightArrowRight = createAction("ui/highlightArrowRight");
-export const highlightArrowLeft = createAction("ui/highlightArrowLeft");
-export const highlightArrowDown = createAction("ui/highlightArrowDown");
-export const highlightArrowUp = createAction("ui/highlightArrowUp");
-export const highlightEsc = createAction("ui/highlightEsc");
-export const createSideEffect = createAction<SideEffectAction>(
-  "ui/createSideEffect"
-);
-export const resolveSideEffect = createAction<number>("ui/resolveSideEffect");
+export const uiAction = {
+  setView: createAction<UiView>("ui/setView"),
+  showPopup: createAction<PopupState>("ui/showPopup"),
+  highlightClick: createAction<number>("ui/clickBoard"),
+  highlightArrowRight: createAction("ui/highlightArrowRight"),
+  highlightArrowLeft: createAction("ui/highlightArrowLeft"),
+  highlightArrowDown: createAction("ui/highlightArrowDown"),
+  highlightArrowUp: createAction("ui/highlightArrowUp"),
+  highlightEsc: createAction("ui/highlightEsc"),
+  createSideEffect: createAction<SideEffectAction>("ui/createSideEffect"),
+  resolveSideEffect: createAction<number>("ui/resolveSideEffect"),
+};
 
 export const uiReducer = createReducer(
   () => initialState,
   (builder) =>
     builder
-      .addCase(showPopup, (state, action) => {
+      .addCase(uiAction.setView, (state, action) => {
+        state.ui.view = action.payload;
+      })
+      .addCase(uiAction.showPopup, (state, action) => {
         state.ui.popup = action.payload;
       })
-      .addCase(highlightClick, (state, action) => {
+      .addCase(uiAction.highlightClick, (state, action) => {
         if (
           state.game.gameOver ||
           state.ui.highlightedBoard === action.payload
@@ -58,40 +65,36 @@ export const uiReducer = createReducer(
           state.ui.highlightedBoard = action.payload;
         }
       })
-      .addCase(highlightArrowRight, (state, _) => {
+      .addCase(uiAction.highlightArrowRight, (state, _) => {
         performHighlightArrow(state, 1, 1);
       })
-      .addCase(highlightArrowLeft, (state, _) => {
+      .addCase(uiAction.highlightArrowLeft, (state, _) => {
         performHighlightArrow(state, -1, 1);
       })
-      .addCase(highlightArrowDown, (state, _) => {
+      .addCase(uiAction.highlightArrowDown, (state, _) => {
         state.settings.wideMode
           ? performHighlightArrow(state, 8, 8)
           : performHighlightArrow(state, 4, 4);
       })
-      .addCase(highlightArrowUp, (state, _) => {
+      .addCase(uiAction.highlightArrowUp, (state, _) => {
         state.settings.wideMode
           ? performHighlightArrow(state, -8, 8)
           : performHighlightArrow(state, -4, 4);
       })
-      .addCase(highlightEsc, (state, _) => {
+      .addCase(uiAction.highlightEsc, (state, _) => {
         state.ui.highlightedBoard = null;
       })
-      .addCase(createSideEffect, (state, action) => {
+      .addCase(uiAction.createSideEffect, (state, action) => {
         addSideEffect(state, action.payload);
       })
-      .addCase(resolveSideEffect, (state, action) => {
+      .addCase(uiAction.resolveSideEffect, (state, action) => {
         state.ui.sideEffects = state.ui.sideEffects.filter(
           (x) => x.id !== action.payload
         );
       })
 );
 
-function performHighlightArrow(
-  state: RootState,
-  amount: number,
-  group: number
-) {
+function performHighlightArrow(state: AppState, amount: number, group: number) {
   if (state.game.gameOver) {
     state.ui.highlightedBoard = null;
     return;
@@ -154,7 +157,7 @@ function performHighlightArrow(
   }
 }
 
-function addSideEffect(state: RootState, effect: SideEffectAction) {
+function addSideEffect(state: AppState, effect: SideEffectAction) {
   state.ui.sideEffects.push({
     id: state.ui.sideEffectCount,
     ...effect,

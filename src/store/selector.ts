@@ -1,13 +1,13 @@
 import { createSelector } from "@reduxjs/toolkit";
-import { RootState } from ".";
 import {
+  AppState,
   getAllWordsGuessed,
   getCompletedBoards,
   getGuessColors,
-} from "../funcs";
+} from ".";
 
-export const selectTargets = (state: RootState) => state.game.targets;
-export const selectGuesses = (state: RootState) => state.game.guesses;
+export const selectTargets = (state: AppState) => state.game.targets;
+export const selectGuesses = (state: AppState) => state.game.guesses;
 
 export const selectGuessColors = createSelector(
   selectTargets,
@@ -25,7 +25,7 @@ export const selectCompletedBoards = createSelector(
 );
 
 export const selectAllWordsGuessed = createSelector(
-  (state: RootState) => state.game.targets,
-  (state: RootState) => state.game.guesses,
+  (state: AppState) => state.game.targets,
+  (state: AppState) => state.game.guesses,
   (targets, guesses) => getAllWordsGuessed(targets, guesses)
 );

@@ -1,6 +1,6 @@
 import cn from "classnames";
 import React from "react";
-import { range } from "../../funcs";
+import { range } from "../../util";
 import {
   black,
   board,

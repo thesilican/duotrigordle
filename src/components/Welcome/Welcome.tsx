@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react";
+import cn from "classnames";
+import { useState } from "react";
+import { uiAction, useAppDispatch } from "../../store";
 import { LinkButton } from "../common/LinkButton/LinkButton";
 import {
   gamemode,
@@ -7,15 +9,16 @@ import {
   highlight,
   link,
   practice,
-  tabWrapper,
   tab,
   tabs,
+  tabWrapper,
   welcome,
 } from "./Welcome.module.css";
-import cn from "classnames";
 
 export function Welcome() {
+  const dispatch = useAppDispatch();
   const [isPractice, setIsPractice] = useState(false);
+
   return (
     <div className={cn(welcome, isPractice && practice)}>
       <div className={tabs} role="tablist">
@@ -41,7 +44,12 @@ export function Welcome() {
       </div>
       <div className={gmDaily}>
         <div className={gamemode}>
-          <LinkButton className={link}>Continue</LinkButton>
+          <LinkButton
+            className={link}
+            onClick={() => dispatch(uiAction.setView("game"))}
+          >
+            Continue
+          </LinkButton>
           <p>Continue your current game.</p>
         </div>
         <div className={gamemode}>

@@ -20,29 +20,35 @@ import {
   titleWrapper,
   welcome,
 } from "./Header.module.css";
+import { uiAction, useAppDispatch, useAppSelector } from "../../store";
 
 export function Header() {
-  const [isWelcome, setIsWelcome] = useState(false);
+  const isWelcomeView = useAppSelector((s) => s.ui.view === "welcome");
+
   return (
-    <div className={cn(isWelcome && welcome, header)}>
+    <div className={cn(isWelcomeView && welcome, header)}>
       <AdBox />
-      <Row1 onClick={() => setIsWelcome((x) => !x)} />
+      <Row1 />
       <Row2 />
     </div>
   );
 }
 
-function Row1({ onClick }: { onClick: () => void }) {
+function Row1() {
+  const dispatch = useAppDispatch();
   const { fullscreen, toggleFullscreen } = useFullscreen();
   return (
     <div className={row1}>
-      <Button className={cn(icon, back)}>
+      <Button
+        className={cn(icon, back)}
+        onClick={() => dispatch(uiAction.setView("welcome"))}
+      >
         <img className={img} src={backIcon} alt="back" />
       </Button>
       <div className={titleWrapper}>
         <p className={title}>Practice Duotrigordle</p>
       </div>
-      <Button className={icon} onClick={onClick}>
+      <Button className={icon}>
         <img className={img} src={statsIcon} alt="stats" />
       </Button>
       <Button className={icon}>

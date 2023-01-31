@@ -1,8 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import {
-  TypedUseSelectorHook,
-  useSelector as useSelectorOriginal,
-} from "react-redux";
+import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { gameInitialState, gameReducer, GameState } from "./slice/game";
 import {
   settingsInitialState,
@@ -12,13 +9,13 @@ import {
 import { statsInitialState, statsReducer, StatsState } from "./slice/stats";
 import { uiInitialState, uiReducer, UiState } from "./slice/ui";
 
-export type RootState = {
+export type AppState = {
   game: GameState;
   settings: SettingsState;
   stats: StatsState;
   ui: UiState;
 };
-export const initialState: RootState = {
+export const initialState: AppState = {
   game: gameInitialState,
   settings: settingsInitialState,
   stats: statsInitialState,
@@ -29,12 +26,12 @@ export const initialState: RootState = {
 // (I don't really want to use https://github.com/redux-utilities/reduce-reducers)
 const reducers = [gameReducer, settingsReducer, statsReducer, uiReducer];
 
-export const store = configureStore<RootState>({
+export const store = configureStore<AppState>({
   reducer: (state, action) => reducers.reduce((s, r) => r(s, action), state)!,
 });
 
-// Partially monomorphise useSelector with State
-export const useSelector: TypedUseSelectorHook<RootState> = useSelectorOriginal;
+export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector;
+export const useAppDispatch: () => typeof store.dispatch = useDispatch;
 
 // Reexports
 export * from "./selector";
@@ -42,3 +39,5 @@ export * from "./slice/game";
 export * from "./slice/settings";
 export * from "./slice/stats";
 export * from "./slice/ui";
+export * from "./consts";
+export * from "./funcs";

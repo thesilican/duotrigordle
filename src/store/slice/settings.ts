@@ -26,14 +26,14 @@ export const settingsInitialState: SettingsState = {
   kofiEmail: null,
 };
 
-export const updateSettings = createAction<Partial<SettingsState>>(
-  "settings/updateSettings"
-);
+export const settingsAction = {
+  update: createAction<Partial<SettingsState>>("settings/updateSettings"),
+};
 
 export const settingsReducer = createReducer(
   () => initialState,
   (builder) => {
-    builder.addCase(updateSettings, (state, action) => {
+    builder.addCase(settingsAction.update, (state, action) => {
       state.settings = {
         ...state.settings,
         ...action.payload,

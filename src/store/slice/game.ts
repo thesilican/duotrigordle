@@ -1,12 +1,13 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
-import { initialState, normalizeHistory } from "..";
-import { NUM_BOARDS, NUM_GUESSES, WORDS_VALID } from "../../consts";
 import {
   getAllWordsGuessed,
   getCompletedBoards,
   getTargetWords,
-  range,
-} from "../../funcs";
+  initialState,
+  normalizeHistory,
+} from "..";
+import { NUM_BOARDS, NUM_GUESSES, WORDS_VALID } from "../consts";
+import { range } from "../../util";
 
 export type GameState = {
   // Daily Duotrigordle number (seed for target words)
@@ -37,25 +38,23 @@ export const gameInitialState: GameState = {
   endTime: 0,
 };
 
-export const loadGame = createAction<{ game: GameState }>("game/loadGame");
-export const startGame = createAction<{ id: number; practice: boolean }>(
-  "game/startGame"
-);
-export const inputLetter = createAction<{ letter: string }>("game/inputLetter");
-export const inputBackspace = createAction("game/inputBackspace");
-export const inputEnter = createAction<{ timestamp: number }>(
-  "game/inputEnter"
-);
+export const gameAction = {
+  load: createAction<{ game: GameState }>("game/loadGame"),
+  start: createAction<{ id: number; practice: boolean }>("game/startGame"),
+  inputLetter: createAction<{ letter: string }>("game/inputLetter"),
+  inputBackspace: createAction("game/inputBackspace"),
+  inputEnter: createAction<{ timestamp: number }>("game/inputEnter"),
+};
 
 export const gameReducer = createReducer(
   () => initialState,
   (builder) =>
     builder
-      .addCase(loadGame, (state, action) => {
+      .addCase(gameAction.load, (state, action) => {
         state.game = action.payload.game;
         state.ui.highlightedBoard = null;
       })
-      .addCase(startGame, (state, action) => {
+      .addCase(gameAction.start, (state, action) => {
         state.game = {
           id: action.payload.id,
           targets: getTargetWords(action.payload.id),
@@ -68,19 +67,19 @@ export const gameReducer = createReducer(
         };
         state.ui.highlightedBoard = null;
       })
-      .addCase(inputLetter, (state, action) => {
+      .addCase(gameAction.inputLetter, (state, action) => {
         const game = state.game;
         if (game.gameOver) return;
         if (game.input.length < 5) {
           game.input += action.payload.letter;
         }
       })
-      .addCase(inputBackspace, (state, _) => {
+      .addCase(gameAction.inputBackspace, (state, _) => {
         const game = state.game;
         if (game.gameOver) return;
         game.input = game.input.substring(0, game.input.length - 1);
       })
-      .addCase(inputEnter, (state, action) => {
+      .addCase(gameAction.inputEnter, (state, action) => {
         const game = state.game;
         if (game.gameOver) return;
 

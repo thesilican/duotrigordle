@@ -1,4 +1,7 @@
 .git
 node_modules
-build
+dist
 docs
+LICENSE
+README.md
+.gitignore

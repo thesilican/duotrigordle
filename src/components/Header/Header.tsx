@@ -22,7 +22,7 @@ import {
 } from "./Header.module.css";
 
 export function Header() {
-  const [isWelcome, setIsWelcome] = useState(true);
+  const [isWelcome, setIsWelcome] = useState(false);
   return (
     <div className={cn(isWelcome && welcome, header)}>
       <AdBox />
@@ -40,7 +40,7 @@ function Row1({ onClick }: { onClick: () => void }) {
         <img className={img} src={backIcon} alt="back" />
       </Button>
       <div className={titleWrapper}>
-        <p className={title}>Duotrigordle</p>
+        <p className={title}>Practice Duotrigordle</p>
       </div>
       <Button className={icon} onClick={onClick}>
         <img className={img} src={statsIcon} alt="stats" />

@@ -5,6 +5,7 @@
   background-color: var(--gray-1);
   padding-top: 4px;
   padding-bottom: 4px;
+  border-bottom: 1px solid var(--gray-3);
 }
 
 .row1 {
@@ -26,15 +27,18 @@
   transition: transform 0.25s ease;
   text-align: center;
 }
-@media screen and (min-width: 600px) {
-  .title {
-    font-size: 20px;
-  }
-}
 .welcome .title {
   transform: translateX(-20px);
-  font-size: 20px;
+  font-size: 24px;
   text-align: left;
+}
+@media screen and (min-width: 600px) {
+  .title {
+    font-size: 24px;
+  }
+  .welcome .title {
+    font-size: 30px;
+  }
 }
 
 .icon {
@@ -63,6 +67,12 @@
   display: flex;
   justify-content: stretch;
   transition: opacity 0.25s ease;
+  font-size: 12px;
+}
+@media screen and (min-width: 600px) {
+  .row2 {
+    font-size: 16px;
+  }
 }
 .welcome .row2 {
   visibility: hidden;
@@ -74,7 +84,4 @@
   flex-grow: 1;
   font-family: "Roboto Mono", monospace;
   text-align: center;
-}
-
-.row3 {
 }

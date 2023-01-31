@@ -1,0 +1,8 @@
+.keyboard {
+  width: 100%;
+  max-width: var(--width);
+  margin: auto;
+  background-color: var(--black);
+  border: 1px solid var(--white);
+  height: 100px;
+}

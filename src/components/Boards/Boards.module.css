@@ -1,0 +1,77 @@
+.boards {
+  flex: 1;
+  width: 100%;
+  max-width: var(--width);
+  margin: auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  row-gap: 24px;
+  column-gap: 4px;
+  overflow-y: scroll;
+  padding: 4px 4px 4px 4px;
+}
+@media screen and (min-width: 600px) {
+  .boards {
+    column-gap: 8px;
+    row-gap: 36px;
+    padding: 8px 8px 8px 8px;
+  }
+}
+
+.board {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.board.highlighted {
+  background-color: var(--white);
+  border: 2px solid var(--white);
+}
+@media screen and (min-width: 600px) {
+  .board.highlighted {
+    border: 4px solid var(--white);
+  }
+}
+
+.row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1px;
+}
+.row.sticky {
+  position: sticky;
+  bottom: -4px;
+}
+@media screen and (min-width: 600px) {
+  .row.sticky {
+    bottom: -8px;
+  }
+}
+
+.cell {
+  height: calc(min(100vw, var(--width)) * 0.045);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--gray-2);
+  user-select: none;
+  position: relative;
+  color: var(--white);
+}
+.cell.black {
+  background: var(--gray-4);
+}
+.cell.yellow {
+  background: var(--yellow);
+  color: var(--black);
+}
+.cell.green {
+  background: var(--green);
+  color: var(--black);
+}
+
+.letter {
+  position: absolute;
+  font-size: calc(min(100vw, var(--width)) * 0.035);
+  line-height: 0.75;
+}

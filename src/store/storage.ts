@@ -1,16 +1,9 @@
 import { Dispatch } from "@reduxjs/toolkit";
-import { NUM_GUESSES } from "../../store/consts";
-import {
-  gameAction,
-  GameState,
-  getAllWordsGuessed,
-  getTargetWords,
-  getTodaysId,
-  settingsAction,
-  SettingsState,
-  statsAction,
-  StatsState,
-} from "../../store";
+import { NUM_GUESSES } from "./consts";
+import { getTargetWords, getAllWordsGuessed, getTodaysId } from "./funcs";
+import { GameState, gameAction } from "./slice/game";
+import { settingsAction, SettingsState } from "./slice/settings";
+import { statsAction, StatsState } from "./slice/stats";
 
 // Serialization for game
 type GameSerialized = {

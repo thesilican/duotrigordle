@@ -1,4 +1,6 @@
 .header {
+  width: 100%;
+
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -28,7 +30,9 @@
   text-align: center;
 }
 .welcome .title {
-  transform: translateX(-20px);
+  margin-left: 40px;
+  margin-right: -40px;
+  transform: translateX(-36px);
   font-size: 24px;
   text-align: left;
 }
@@ -45,17 +49,16 @@
   background-color: transparent;
   border: none;
   padding: 0px;
+  transition: opacity 0.25s ease;
 }
 .img {
   width: 30px;
   height: 30px;
 }
 
-.icon.back {
-  transition: opacity 0.25s ease;
-}
-.welcome .icon.back {
+.icon.hidden {
   visibility: hidden;
+  position: fixed;
   opacity: 0;
 }
 

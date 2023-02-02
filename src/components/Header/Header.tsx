@@ -4,23 +4,24 @@ import aboutIcon from "../../assets/about.svg";
 import backIcon from "../../assets/back.svg";
 import fullscreenExitIcon from "../../assets/fullscreen-exit.svg";
 import fullscreenIcon from "../../assets/fullscreen.svg";
-import statsIcon from "../../assets/stats.svg";
+import restartIcon from "../../assets/restart.svg";
 import settingsIcon from "../../assets/settings.svg";
+import statsIcon from "../../assets/stats.svg";
+import { uiAction, useAppDispatch, useAppSelector } from "../../store";
 import { AdBox } from "../AdBox/AdBox";
 import { Button } from "../common/Button/Button";
 import {
-  back,
-  timer,
   header,
+  hidden,
   icon,
   img,
   row1,
   row2,
+  timer,
   title,
   titleWrapper,
   welcome,
 } from "./Header.module.css";
-import { uiAction, useAppDispatch, useAppSelector } from "../../store";
 
 export function Header() {
   const isWelcomeView = useAppSelector((s) => s.ui.view === "welcome");
@@ -37,24 +38,40 @@ export function Header() {
 function Row1() {
   const dispatch = useAppDispatch();
   const { fullscreen, toggleFullscreen } = useFullscreen();
+  const isWelcomeView = useAppSelector((s) => s.ui.view === "welcome");
+
+  const titleText = isWelcomeView ? "Duotrigordle" : "Practice Duotrigordle";
+
   return (
     <div className={row1}>
       <Button
-        className={cn(icon, back)}
+        className={cn(icon, isWelcomeView && hidden)}
         onClick={() => dispatch(uiAction.setView("welcome"))}
       >
         <img className={img} src={backIcon} alt="back" />
       </Button>
+      <Button className={cn(icon, hidden)}>
+        <img className={img} src={restartIcon} alt="restart" />
+      </Button>
       <div className={titleWrapper}>
-        <p className={title}>Practice Duotrigordle</p>
+        <p className={title}>{titleText}</p>
       </div>
-      <Button className={icon}>
+      <Button
+        className={icon}
+        onClick={() => dispatch(uiAction.showModal("stats"))}
+      >
         <img className={img} src={statsIcon} alt="stats" />
       </Button>
-      <Button className={icon}>
+      <Button
+        className={icon}
+        onClick={() => dispatch(uiAction.showModal("about"))}
+      >
         <img className={img} src={aboutIcon} alt="about" />
       </Button>
-      <Button className={icon}>
+      <Button
+        className={icon}
+        onClick={() => dispatch(uiAction.showModal("settings"))}
+      >
         <img className={img} src={settingsIcon} alt="settings" />
       </Button>
       <Button className={icon} onClick={toggleFullscreen}>
@@ -131,5 +148,5 @@ function useFullscreen() {
     };
   }, []);
 
-  return { fullscreen, toggleFullscreen };
+  return { fullscreen, enterFullscreen, exitFullscreen, toggleFullscreen };
 }

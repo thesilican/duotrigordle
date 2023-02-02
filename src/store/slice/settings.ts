@@ -4,24 +4,20 @@ import { initialState } from "..";
 export type SettingsState = {
   colorBlindMode: boolean;
   showTimer: boolean;
-  useFloatingInput: boolean;
   wideMode: boolean;
   hideCompletedBoards: boolean;
   animateHiding: boolean;
-  hideKeyboard: boolean;
-  hideEmptyRows: boolean;
+  stickyInput: boolean;
   hideAds: boolean;
   kofiEmail: string | null;
 };
 export const settingsInitialState: SettingsState = {
   colorBlindMode: false,
   showTimer: false,
-  useFloatingInput: false,
   wideMode: false,
   hideCompletedBoards: false,
   animateHiding: true,
-  hideKeyboard: false,
-  hideEmptyRows: false,
+  stickyInput: true,
   hideAds: false,
   kofiEmail: null,
 };

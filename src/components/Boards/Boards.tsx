@@ -1,16 +1,20 @@
 import cn from "classnames";
-import React from "react";
+import React, { useState } from "react";
 import { range } from "../../util";
 import {
+  animate,
   black,
   board,
   boards,
   cell,
   green,
+  hidden,
   highlighted,
   letter,
-  row,
   sticky,
+  textGhost,
+  textRed,
+  textYellow,
   yellow,
 } from "./Boards.module.css";
 
@@ -28,8 +32,18 @@ type BoardProps = {
   idx: number;
 };
 function Board({ idx }: BoardProps) {
+  const [isHidden, setIsHidden] = useState(false);
+  const [isHighlighted, setIsHighlighted] = useState(false);
   return (
-    <div className={cn(board, idx === 0 && highlighted)}>
+    <div
+      className={cn(
+        board,
+        isHighlighted && highlighted,
+        isHidden && hidden,
+        animate
+      )}
+      onClick={() => setIsHighlighted(!isHighlighted)}
+    >
       {range(37).map((i) => (
         <Row key={i} idx={i} />
       ))}
@@ -41,9 +55,9 @@ type RowProps = {
   idx: number;
 };
 function Row({ idx }: RowProps) {
-  const threshold = 20;
+  const threshold = 30;
   return (
-    <div className={cn(row, idx === threshold && sticky)}>
+    <>
       {range(5).map((i) => {
         const color =
           idx < threshold
@@ -54,28 +68,41 @@ function Row({ idx }: RowProps) {
               : "G"
             : undefined;
         const char = idx < threshold ? "P" : idx === threshold ? "F" : "";
-        return <Cell key={i} char={char} color={color} />;
+        return (
+          <Cell
+            key={i}
+            char={char}
+            color={color}
+            textColor={idx === threshold ? "ghost" : undefined}
+            sticky={idx === threshold}
+          />
+        );
       })}
-    </div>
+    </>
   );
 }
 
 type CellProps = {
   char?: string;
   color?: "B" | "Y" | "G";
-  textRed?: boolean;
+  textColor?: "red" | "yellow" | "ghost";
+  sticky?: boolean;
 };
-const Cell = React.memo(({ char, color, textRed }: CellProps) => {
+const Cell = React.memo((props: CellProps) => {
   return (
     <div
       className={cn(
         cell,
-        color === "B" && black,
-        color === "Y" && yellow,
-        color === "G" && green
+        props.color === "B" && black,
+        props.color === "Y" && yellow,
+        props.color === "G" && green,
+        props.textColor === "red" && textRed,
+        props.textColor === "yellow" && textYellow,
+        props.textColor === "ghost" && textGhost,
+        props.sticky && sticky
       )}
     >
-      <span className={letter}>{char}</span>
+      <span className={letter}>{props.char}</span>
     </div>
   );
 });

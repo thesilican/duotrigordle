@@ -50,7 +50,7 @@ export function Welcome() {
           >
             Continue
           </LinkButton>
-          <p>Continue your current game.</p>
+          <p>Daily Duotrigordle #123 (30/32)</p>
         </div>
         <div className={gamemode}>
           <LinkButton className={link}>Daily Duotrigordle</LinkButton>

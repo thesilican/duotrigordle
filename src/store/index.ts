@@ -24,7 +24,12 @@ export const initialState: AppState = {
 
 // Create root reducer by reducing reducers
 // (I don't really want to use https://github.com/redux-utilities/reduce-reducers)
-const reducers = [gameReducer, settingsReducer, statsReducer, uiReducer];
+const reducers = [
+  gameReducer,
+  settingsReducer,
+  statsReducer,
+  uiReducer,
+] as const;
 
 export const store = configureStore<AppState>({
   reducer: (state, action) => reducers.reduce((s, r) => r(s, action), state)!,
@@ -41,3 +46,4 @@ export * from "./slice/stats";
 export * from "./slice/ui";
 export * from "./consts";
 export * from "./funcs";
+export * from "./storage";

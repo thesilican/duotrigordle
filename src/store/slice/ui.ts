@@ -5,13 +5,13 @@ import { range } from "../../util";
 
 export type UiState = {
   view: UiView;
-  popup: PopupState;
+  modal: ModalState;
   highlightedBoard: number | null;
   sideEffects: SideEffect[];
   sideEffectCount: number;
 };
 type UiView = "welcome" | "game";
-type PopupState = "about" | "settings" | "stats" | null;
+type ModalState = "about" | "settings" | "stats" | null;
 type SideEffect = {
   id: number;
 } & SideEffectAction;
@@ -26,7 +26,7 @@ type SideEffectAction =
 
 export const uiInitialState: UiState = {
   view: "welcome",
-  popup: null,
+  modal: null,
   highlightedBoard: null,
   sideEffects: [],
   sideEffectCount: 0,
@@ -34,7 +34,7 @@ export const uiInitialState: UiState = {
 
 export const uiAction = {
   setView: createAction<UiView>("ui/setView"),
-  showPopup: createAction<PopupState>("ui/showPopup"),
+  showModal: createAction<ModalState>("ui/showModal"),
   highlightClick: createAction<number>("ui/clickBoard"),
   highlightArrowRight: createAction("ui/highlightArrowRight"),
   highlightArrowLeft: createAction("ui/highlightArrowLeft"),
@@ -52,8 +52,8 @@ export const uiReducer = createReducer(
       .addCase(uiAction.setView, (state, action) => {
         state.ui.view = action.payload;
       })
-      .addCase(uiAction.showPopup, (state, action) => {
-        state.ui.popup = action.payload;
+      .addCase(uiAction.showModal, (state, action) => {
+        state.ui.modal = action.payload;
       })
       .addCase(uiAction.highlightClick, (state, action) => {
         if (

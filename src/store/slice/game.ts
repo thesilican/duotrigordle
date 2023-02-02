@@ -2,6 +2,7 @@ import { createAction, createReducer } from "@reduxjs/toolkit";
 import {
   getAllWordsGuessed,
   getCompletedBoards,
+  getJumbleWords,
   getTargetWords,
   initialState,
   normalizeHistory,
@@ -12,6 +13,10 @@ import { range } from "../../util";
 export type GameState = {
   // Daily Duotrigordle number (seed for target words)
   id: number;
+  // Whether or not the game is in practice mode
+  practice: boolean;
+  // Current gamemode
+  gamemode: GameMode;
   // Current word input
   input: string;
   // List of guesses
@@ -20,16 +25,17 @@ export type GameState = {
   targets: string[];
   // Whether or not the game is finished
   gameOver: boolean;
-  // Whether or not the game is in practice mode
-  practice: boolean;
   // Start timestamp (milliseconds from unix epoch)
   startTime: number;
   // End timestamp (milliseconds from unix epoch)
   endTime: number;
 };
+export type GameMode = "normal" | "sequence" | "jumble";
+
 export const gameInitialState: GameState = {
   id: 0,
   input: "",
+  gamemode: "normal",
   guesses: [],
   targets: range(NUM_BOARDS).map((_) => "AAAAA"),
   gameOver: false,
@@ -40,7 +46,12 @@ export const gameInitialState: GameState = {
 
 export const gameAction = {
   load: createAction<{ game: GameState }>("game/loadGame"),
-  start: createAction<{ id: number; practice: boolean }>("game/startGame"),
+  start: createAction<{
+    id: number;
+    practice: boolean;
+    gamemode: GameMode;
+    timestamp: number;
+  }>("game/startGame"),
   inputLetter: createAction<{ letter: string }>("game/inputLetter"),
   inputBackspace: createAction("game/inputBackspace"),
   inputEnter: createAction<{ timestamp: number }>("game/inputEnter"),
@@ -55,10 +66,17 @@ export const gameReducer = createReducer(
         state.ui.highlightedBoard = null;
       })
       .addCase(gameAction.start, (state, action) => {
+        const targets = getTargetWords(action.payload.id);
+        const guesses =
+          action.payload.gamemode === "jumble"
+            ? getJumbleWords(targets, action.payload.timestamp)
+            : [];
+
         state.game = {
           id: action.payload.id,
-          targets: getTargetWords(action.payload.id),
-          guesses: [],
+          gamemode: action.payload.gamemode,
+          targets,
+          guesses,
           input: "",
           gameOver: false,
           practice: action.payload.practice,
@@ -94,11 +112,11 @@ export const gameReducer = createReducer(
           game.startTime = action.payload.timestamp;
         }
 
+        // Check if game over
         if (
           game.guesses.length === NUM_GUESSES ||
           getAllWordsGuessed(game.targets, game.guesses)
         ) {
-          // Game over
           game.gameOver = true;
           game.endTime = action.payload.timestamp;
 

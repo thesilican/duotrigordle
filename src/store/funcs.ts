@@ -26,7 +26,7 @@ export function getTargetWords(id: number): string[] {
 // black, yellow, or green letter guess
 // e.g. getGuessResult("XYCEZ", "ABCDE") returns "BBGYB"
 export function getGuessColors(target: string, guess: string): string {
-  let guessResult: string[] = ["B", "B", "B", "B", "B"];
+  const guessResult: string[] = ["B", "B", "B", "B", "B"];
 
   // Find green letters
   const unmatched = new Map<string, number>();
@@ -64,4 +64,29 @@ export function getCompletedBoards(
 // Check if every target word has been guessed
 export function getAllWordsGuessed(targets: string[], guesses: string[]) {
   return getCompletedBoards(targets, guesses).indexOf(false) === -1;
+}
+
+// Generate 3 random words
+export function getJumbleWords(targets: string[], seed: number): string[] {
+  const rng = MersenneTwister(seed);
+  const words: string[] = [];
+  for (let i = 0; i < 100; i++) {
+    words.splice(0, words.length);
+    const letterPool = new Set<string>();
+    for (let i = 0; i < 3; i++) {
+      let word;
+      do {
+        const idx = rng.u32() % WORDS_TARGET.length;
+        word = WORDS_TARGET[idx];
+      } while (targets.includes(word));
+      words.push(word);
+      for (const letter of word) {
+        letterPool.add(letter);
+      }
+    }
+    if (letterPool.size >= 10) {
+      break;
+    }
+  }
+  return words;
 }

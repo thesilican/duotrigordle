@@ -82,6 +82,9 @@
   height: 0;
   opacity: 0;
 }
+.red {
+  color: var(--red);
+}
 
 .timer {
   flex-grow: 1;

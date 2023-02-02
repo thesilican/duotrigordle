@@ -1,5 +1,5 @@
 import cn from "classnames";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import aboutIcon from "../../assets/about.svg";
 import backIcon from "../../assets/back.svg";
 import fullscreenExitIcon from "../../assets/fullscreen-exit.svg";
@@ -7,7 +7,17 @@ import fullscreenIcon from "../../assets/fullscreen.svg";
 import restartIcon from "../../assets/restart.svg";
 import settingsIcon from "../../assets/settings.svg";
 import statsIcon from "../../assets/stats.svg";
-import { uiAction, useAppDispatch, useAppSelector } from "../../store";
+import {
+  getCompletedBoards,
+  loadGameFromLocalStorage,
+  NUM_BOARDS,
+  NUM_GUESSES,
+  PRACTICE_MODE_MIN_ID,
+  uiAction,
+  useAppDispatch,
+  useAppSelector,
+} from "../../store";
+import { formatTimeElapsed } from "../../util";
 import { AdBox } from "../AdBox/AdBox";
 import { Button } from "../common/Button/Button";
 import {
@@ -15,6 +25,7 @@ import {
   hidden,
   icon,
   img,
+  red,
   row1,
   row2,
   timer,
@@ -24,10 +35,10 @@ import {
 } from "./Header.module.css";
 
 export function Header() {
-  const isWelcomeView = useAppSelector((s) => s.ui.view === "welcome");
+  const isWelcome = useAppSelector((s) => s.ui.view === "welcome");
 
   return (
-    <div className={cn(isWelcomeView && welcome, header)}>
+    <div className={cn(isWelcome && welcome, header)}>
       <AdBox />
       <Row1 />
       <Row2 />
@@ -38,23 +49,63 @@ export function Header() {
 function Row1() {
   const dispatch = useAppDispatch();
   const { fullscreen, toggleFullscreen } = useFullscreen();
-  const isWelcomeView = useAppSelector((s) => s.ui.view === "welcome");
+  const isGameView = useAppSelector((s) => s.ui.view === "game");
+  const isPractice = useAppSelector((s) => s.game.practice);
+  const gameId = useAppSelector((s) => s.game.id);
+  const gameMode = useAppSelector((s) => s.game.gameMode);
+  const showRestart = isGameView && isPractice;
 
-  const titleText = isWelcomeView ? "Duotrigordle" : "Practice Duotrigordle";
+  const handleBackClick = () => {
+    if (isPractice) {
+      loadGameFromLocalStorage(dispatch);
+    }
+    dispatch(uiAction.setView("welcome"));
+  };
+
+  const handleRestartClick = () => {
+    //
+  };
+
+  const renderTitle = () => {
+    if (!isGameView) {
+      return "Duotrigordle";
+    } else {
+      const gameModeText =
+        gameMode === "normal"
+          ? "Duotrigordle"
+          : gameMode === "jumble"
+          ? "Jumble"
+          : gameMode === "sequence"
+          ? "Sequence"
+          : "??????";
+      if (isPractice) {
+        if (gameId < PRACTICE_MODE_MIN_ID) {
+          return `Historic Duotrigordle #${gameId}`;
+        } else {
+          return `Practice ${gameModeText}`;
+        }
+      } else {
+        return `Daily ${gameModeText} #${gameId}`;
+      }
+    }
+  };
 
   return (
     <div className={row1}>
       <Button
-        className={cn(icon, isWelcomeView && hidden)}
-        onClick={() => dispatch(uiAction.setView("welcome"))}
+        className={cn(icon, !isGameView && hidden)}
+        onClick={handleBackClick}
       >
         <img className={img} src={backIcon} alt="back" />
       </Button>
-      <Button className={cn(icon, hidden)}>
+      <Button
+        className={cn(icon, !showRestart && hidden)}
+        onClick={handleRestartClick}
+      >
         <img className={img} src={restartIcon} alt="restart" />
       </Button>
       <div className={titleWrapper}>
-        <p className={title}>{titleText}</p>
+        <p className={title}>{renderTitle()}</p>
       </div>
       <Button
         className={icon}
@@ -86,17 +137,63 @@ function Row1() {
 }
 
 function Row2() {
+  const targets = useAppSelector((s) => s.game.targets);
+  const guesses = useAppSelector((s) => s.game.guesses);
+  const gameOver = useAppSelector((s) => s.game.gameOver);
+  const boardsCompleted = useMemo(
+    () =>
+      getCompletedBoards(targets, guesses).reduce((a, v) => a + (v ? 1 : 0), 0),
+    [targets, guesses]
+  );
+  const numGuesses = guesses.length;
+  const extraGuessesNum =
+    NUM_GUESSES - NUM_BOARDS - (numGuesses - boardsCompleted);
+  const cannotWin = extraGuessesNum < 0;
+  const extraGuesses =
+    extraGuessesNum > 0 ? "+" + extraGuessesNum : extraGuessesNum;
+
   return (
     <div className={row2}>
-      <span>Boards: 32/32</span>
+      <span>
+        Boards: {boardsCompleted}/{NUM_BOARDS}
+      </span>
       <Timer />
-      <span>Guesses: 37/37 (+5)</span>
+      <span className={cn(cannotWin && !gameOver && red)}>
+        Guesses: {numGuesses}/{NUM_GUESSES} ({extraGuesses})
+      </span>
     </div>
   );
 }
 
 function Timer() {
-  return <span className={cn(timer)}>{false ? "00:00.00" : ""}</span>;
+  const showTimer = useAppSelector((s) => s.settings.showTimer);
+  const startTime = useAppSelector((s) => s.game.startTime);
+  const endTime = useAppSelector((s) => s.game.endTime);
+  const gameStarted = useAppSelector((s) => s.game.guesses.length > 0);
+  const gameOver = useAppSelector((s) => s.game.gameOver);
+  const [now, setNow] = useState(() => Date.now());
+
+  const timerText = useMemo(() => {
+    if (!showTimer) {
+      return "";
+    } else if (!gameStarted) {
+      return formatTimeElapsed(0);
+    } else if (gameOver) {
+      return formatTimeElapsed(endTime - startTime);
+    } else {
+      return formatTimeElapsed(now - startTime);
+    }
+  }, [now, showTimer, startTime, endTime, gameStarted, gameOver]);
+
+  useEffect(() => {
+    if (!showTimer) return;
+    const interval = setInterval(() => {
+      setNow(() => Date.now());
+    }, 25);
+    return () => clearInterval(interval);
+  }, [showTimer]);
+
+  return <span className={timer}>{timerText}</span>;
 }
 
 // Type declarations for fullscreen stuff

@@ -24,7 +24,8 @@
   gap: 1px;
   /* Safari force gpu render */
   transform: translateZ(0);
-  transition: background-color 0.1s ease, box-shadow 0.1s ease;
+  transition: filter 0.25s ease, background-color 0.1s ease,
+    box-shadow 0.1s ease;
 }
 .board.highlighted {
   background-color: var(--white);

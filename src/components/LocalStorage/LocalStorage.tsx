@@ -8,7 +8,7 @@ import {
   saveGameToLocalStorage,
   saveSettingsToLocalStorage,
   saveStatsToLocalStorage,
-} from "./storage";
+} from "../../store/storage";
 
 export function LocalStorage() {
   const dispatch = useDispatch();
@@ -16,10 +16,10 @@ export function LocalStorage() {
 
   useLayoutEffect(() => {
     if (!loaded) {
-      setLoaded(true);
       loadGameFromLocalStorage(dispatch);
       loadSettingsFromLocalStorage(dispatch);
       loadStatsFromLocalStorage(dispatch);
+      setLoaded(true);
     }
   }, [dispatch, loaded]);
 

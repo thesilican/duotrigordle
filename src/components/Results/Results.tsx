@@ -70,12 +70,7 @@ export function Results() {
     );
   };
 
-  const isShown = true;
-  const win = true;
-
-  if (!isShown) {
-    return null;
-  }
+  const win = getAllWordsGuessed(targets, guesses);
 
   return (
     <div className={cn(results, win ? green : red)}>
@@ -94,7 +89,7 @@ export function Results() {
               className={cn(word, i === 0 && red)}
               onClick={() => handleWordClick(i)}
             >
-              HELLO
+              {targets[i]}
             </button>
           ))}
         </div>

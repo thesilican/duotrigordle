@@ -13,13 +13,17 @@ import { main } from "./App.module.css";
 
 export function App() {
   const view = useAppSelector((s) => s.ui.view);
+  const gameOver = useAppSelector((s) => s.game.gameOver);
+  const showKeyboard = view === "game" && !gameOver;
+  const showResults = view === "game" && gameOver;
+
   return (
     <>
       <div className={main}>
         <Header />
         {view === "welcome" ? <Welcome /> : <Boards />}
-        <Keyboard />
-        <Results />
+        {showKeyboard ? <Keyboard /> : null}
+        {showResults ? <Results /> : null}
       </div>
       <About />
       <Stats />

@@ -15,8 +15,8 @@ export type GameState = {
   id: number;
   // Whether or not the game is in practice mode
   practice: boolean;
-  // Current gamemode
-  gamemode: GameMode;
+  // Current game mode
+  gameMode: GameMode;
   // Current word input
   input: string;
   // List of guesses
@@ -35,7 +35,7 @@ export type GameMode = "normal" | "sequence" | "jumble";
 export const gameInitialState: GameState = {
   id: 0,
   input: "",
-  gamemode: "normal",
+  gameMode: "normal",
   guesses: [],
   targets: range(NUM_BOARDS).map((_) => "AAAAA"),
   gameOver: false,
@@ -49,7 +49,7 @@ export const gameAction = {
   start: createAction<{
     id: number;
     practice: boolean;
-    gamemode: GameMode;
+    gameMode: GameMode;
     timestamp: number;
   }>("game/startGame"),
   inputLetter: createAction<{ letter: string }>("game/inputLetter"),
@@ -68,13 +68,13 @@ export const gameReducer = createReducer(
       .addCase(gameAction.start, (state, action) => {
         const targets = getTargetWords(action.payload.id);
         const guesses =
-          action.payload.gamemode === "jumble"
+          action.payload.gameMode === "jumble"
             ? getJumbleWords(targets, action.payload.timestamp)
             : [];
 
         state.game = {
           id: action.payload.id,
-          gamemode: action.payload.gamemode,
+          gameMode: action.payload.gameMode,
           targets,
           guesses,
           input: "",

@@ -1,12 +1,7 @@
+import { gameAction, useAppDispatch } from "../../store";
 import { key, keyboard, row1, row2, row3, spacer } from "./Keyboard.module.css";
 
 export function Keyboard() {
-  const isShown = false;
-
-  if (!isShown) {
-    return null;
-  }
-
   return (
     <div className={keyboard}>
       <div className={row1}>
@@ -52,7 +47,25 @@ export function Keyboard() {
 type KeyProps = {
   char: string;
 };
-function Key({ char }: KeyProps) {
-  const display = char === "backspace" ? "⌫" : char === "enter" ? "⏎" : char;
-  return <button className={key}>{display}</button>;
+function Key(props: KeyProps) {
+  const dispatch = useAppDispatch();
+  const char =
+    props.char === "backspace"
+      ? "⌫"
+      : props.char === "enter"
+      ? "⏎"
+      : props.char;
+
+  const handleClick =
+    props.char === "backspace"
+      ? () => dispatch(gameAction.inputBackspace())
+      : props.char === "enter"
+      ? () => dispatch(gameAction.inputEnter({ timestamp: Date.now() }))
+      : () => dispatch(gameAction.inputLetter({ letter: props.char }));
+
+  return (
+    <button className={key} onClick={handleClick}>
+      {char}
+    </button>
+  );
 }

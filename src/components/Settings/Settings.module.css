@@ -13,6 +13,7 @@
 .setting {
   display: flex;
   gap: 16px;
+  align-items: center;
 }
 .setting.indented {
   margin-left: 24px;

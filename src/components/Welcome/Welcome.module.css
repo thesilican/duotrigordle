@@ -80,7 +80,7 @@
   animation: fadeIn 0.5s ease;
 }
 
-.gamemode {
+.gameMode {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -88,4 +88,10 @@
 
 .link {
   font-size: 24px;
+}
+
+.archiveDescription {
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }

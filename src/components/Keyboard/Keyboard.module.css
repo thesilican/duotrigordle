@@ -32,6 +32,7 @@
   border-radius: 4px;
   cursor: pointer;
   font-size: 30px;
+  user-select: none;
 }
 @media screen and (min-width: 600px) {
   .key {

@@ -1,13 +1,22 @@
 import { Dispatch } from "@reduxjs/toolkit";
 import { NUM_GUESSES } from "./consts";
-import { getTargetWords, getAllWordsGuessed, getTodaysId } from "./funcs";
-import { GameState, gameAction } from "./slice/game";
-import { settingsAction, SettingsState } from "./slice/settings";
-import { statsAction, StatsState } from "./slice/stats";
+import {
+  gameAction,
+  GameMode,
+  GameState,
+  getAllWordsGuessed,
+  getTargetWords,
+  getTodaysId,
+  settingsAction,
+  SettingsState,
+  statsAction,
+  StatsState,
+} from ".";
 
 // Serialization for game
 type GameSerialized = {
   id: number;
+  gameMode: GameMode;
   guesses: string[];
   startTime: number;
   endTime: number;
@@ -25,10 +34,15 @@ export function assertGameSerialized(obj: unknown): GameSerialized | null {
     "startTime" in obj &&
     typeof obj.startTime == "number" &&
     "endTime" in obj &&
-    typeof obj.endTime == "number"
+    typeof obj.endTime == "number" &&
+    "gameMode" in obj &&
+    (obj.gameMode === "normal" ||
+      obj.gameMode === "sequence" ||
+      obj.gameMode === "jumble")
   ) {
     return {
       id: obj.id,
+      gameMode: obj.gameMode,
       guesses: obj.guesses,
       startTime: obj.startTime,
       endTime: obj.endTime,
@@ -40,6 +54,7 @@ export function assertGameSerialized(obj: unknown): GameSerialized | null {
 export function serializeGame(state: GameState): GameSerialized {
   return {
     id: state.id,
+    gameMode: state.gameMode,
     guesses: state.guesses,
     startTime: state.startTime,
     endTime: state.endTime,
@@ -52,6 +67,7 @@ export function deserializeGame(serialized: GameSerialized): GameState {
     getAllWordsGuessed(targets, serialized.guesses);
   return {
     id: serialized.id,
+    gameMode: serialized.gameMode,
     input: "",
     targets,
     guesses: serialized.guesses,
@@ -67,8 +83,6 @@ export function loadGameFromLocalStorage(dispatch: Dispatch) {
   const serialized = assertGameSerialized(text && JSON.parse(text));
   if (serialized && serialized.id === todaysId) {
     dispatch(gameAction.load({ game: deserializeGame(serialized) }));
-  } else {
-    dispatch(gameAction.start({ id: todaysId, practice: false }));
   }
 }
 export function saveGameToLocalStorage(state: GameState) {

@@ -1,7 +1,11 @@
 // Generate integers 0 <= i < max
-export function range(max: number): number[] {
+export function range(min: number, max?: number): number[] {
+  if (max === undefined) {
+    max = min;
+    min = 0;
+  }
   const array = [];
-  for (let i = 0; i < max; i++) {
+  for (let i = min; i < max; i++) {
     array.push(i);
   }
   return array;

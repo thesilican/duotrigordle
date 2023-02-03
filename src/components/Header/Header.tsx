@@ -7,10 +7,10 @@ import fullscreenIcon from "../../assets/fullscreen.svg";
 import restartIcon from "../../assets/restart.svg";
 import settingsIcon from "../../assets/settings.svg";
 import statsIcon from "../../assets/stats.svg";
+import logoIcon from "../../assets/logo.svg";
 import {
   gameAction,
   getCompletedBoards,
-  getPracticeId,
   loadGameFromLocalStorage,
   NUM_BOARDS,
   NUM_GUESSES,
@@ -35,6 +35,7 @@ const {
   title,
   titleWrapper,
   welcome,
+  text,
 } = styles;
 
 export function Header() {
@@ -60,6 +61,10 @@ function Row1() {
 
   const handleBackClick = () => {
     if (isPractice) {
+      const res = window.confirm(
+        "Are you sure you want to quick your practice game?"
+      );
+      if (!res) return;
       loadGameFromLocalStorage(dispatch);
     }
     dispatch(uiAction.setView("welcome"));
@@ -107,40 +112,66 @@ function Row1() {
         className={cn(icon, !isGameView && hidden)}
         onClick={handleBackClick}
       >
-        <img className={img} src={backIcon} alt="back" />
+        <img
+          className={img}
+          src={backIcon}
+          alt="back"
+          title="Back to Homepage"
+        />
       </Button>
       <Button
         className={cn(icon, !showRestart && hidden)}
         onClick={handleRestartClick}
       >
-        <img className={img} src={restartIcon} alt="restart" />
+        <img
+          className={img}
+          src={restartIcon}
+          alt="restart"
+          title="Restart Game"
+        />
       </Button>
       <div className={titleWrapper}>
-        <p className={title}>{renderTitle()}</p>
+        <div className={title}>
+          {!isGameView ? (
+            <img src={logoIcon} width={30} height={30} alt="Logo" />
+          ) : null}
+          <span className={text}>{renderTitle()}</span>
+        </div>
       </div>
       <Button
         className={icon}
         onClick={() => dispatch(uiAction.showModal("stats"))}
       >
-        <img className={img} src={statsIcon} alt="stats" />
+        <img
+          className={img}
+          src={statsIcon}
+          alt="statistics"
+          title="Statistics"
+        />
       </Button>
       <Button
         className={icon}
         onClick={() => dispatch(uiAction.showModal("about"))}
       >
-        <img className={img} src={aboutIcon} alt="about" />
+        <img className={img} src={aboutIcon} alt="about" title="About" />
       </Button>
       <Button
         className={icon}
         onClick={() => dispatch(uiAction.showModal("settings"))}
       >
-        <img className={img} src={settingsIcon} alt="settings" />
+        <img
+          className={img}
+          src={settingsIcon}
+          alt="settings"
+          title="Settings"
+        />
       </Button>
       <Button className={icon} onClick={toggleFullscreen}>
         <img
           className={img}
           src={fullscreen ? fullscreenExitIcon : fullscreenIcon}
           alt="toggle fullscreen"
+          title="Toggle Fullscreen"
         />
       </Button>
     </div>

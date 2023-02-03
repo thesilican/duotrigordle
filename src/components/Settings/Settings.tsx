@@ -31,7 +31,7 @@ export function Settings() {
     hideCompletedBoards,
     kofiEmail,
     stickyInput,
-    disableHints,
+    showHints,
   } = useAppSelector((s) => s.settings);
 
   return (
@@ -46,6 +46,7 @@ export function Settings() {
           />
           <label className={label} htmlFor="show-timer">
             <p className={name}>Show Speedrun Timer</p>
+            <p className={description}>For pro gamers</p>
           </label>
         </div>
         <div className={setting}>
@@ -56,7 +57,7 @@ export function Settings() {
           />
           <label className={label} htmlFor="wide-mode">
             <p className={name}>Wide Mode</p>
-            <p className={description}>8 boards per columns</p>
+            <p className={description}>8 boards per column</p>
           </label>
         </div>
         <div className={setting}>
@@ -69,6 +70,7 @@ export function Settings() {
           />
           <label className={label} htmlFor="hide-completed-boards">
             <p className={name}>Hide Completed Boards</p>
+            <p className={description}>Boards are hidden when completed</p>
           </label>
         </div>
         <div
@@ -84,7 +86,7 @@ export function Settings() {
           />
           <label className={label} htmlFor="animate-hiding">
             <p className={name}>Fade Out</p>
-            <p className={description}>Disabling may improve performance</p>
+            <p className={description}>Hidden boards have fade out animation</p>
           </label>
         </div>
         <div className={setting}>
@@ -97,21 +99,21 @@ export function Settings() {
           />
           <label className={label} htmlFor="sticky-input">
             <p className={name}>Sticky Input Field</p>
-            <p className={description}>Disabling may improve performance</p>
+            <p className={description}>
+              Input fields stick to the bottom when scrolling
+            </p>
           </label>
         </div>
         <div className={setting}>
           <Checkbox
-            checked={disableHints}
-            onChange={(x) =>
-              dispatch(settingsAction.update({ disableHints: x }))
-            }
-            id="disable-hints"
+            checked={showHints}
+            onChange={(x) => dispatch(settingsAction.update({ showHints: x }))}
+            id="show-hints"
           />
-          <label className={label} htmlFor="disable-hints">
-            <p className={name}>Disable Hints</p>
+          <label className={label} htmlFor="show-hints">
+            <p className={name}>Show Hints</p>
             <p className={description}>
-              Hides input ghost letters and yellow warning
+              Show input ghost letters and inconsistency warnings
             </p>
           </label>
         </div>

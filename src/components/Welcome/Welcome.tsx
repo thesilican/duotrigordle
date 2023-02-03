@@ -3,15 +3,13 @@ import { useState } from "react";
 import {
   gameAction,
   GameMode,
-  getPracticeId,
   getTodaysId,
   NUM_GUESSES,
-  PRACTICE_MODE_MIN_ID,
   uiAction,
   useAppDispatch,
   useAppSelector,
 } from "../../store";
-import { MersenneTwister, range } from "../../util";
+import { range } from "../../util";
 import { LinkButton } from "../common/LinkButton/LinkButton";
 import styles from "./Welcome.module.css";
 const {

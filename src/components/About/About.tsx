@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-import twemoji from "twemoji";
 import { START_DATE, useAppSelector } from "../../store";
 import { Modal } from "../common/Modal/Modal";
 import styles from "./About.module.css";
-const { emoji, kofi, footer, seperator, title } = styles;
+const { kofi, footer, seperator, title } = styles;
 
 export function About() {
   const shown = useAppSelector((s) => s.ui.modal === "about");
@@ -27,18 +26,9 @@ export function About() {
         </a>
       </p>
       <div className={kofi}>
-        <span
-          className={emoji}
-          dangerouslySetInnerHTML={{ __html: twemoji.parse("💛") }}
-        />{" "}
-        Duotrigordle?{" "}
+        💛 Duotrigordle?{" "}
         <a target="_blank" href="https://ko-fi.com/thesilican" rel="noreferrer">
-          Buy me a{" "}
-          <span
-            className={emoji}
-            dangerouslySetInnerHTML={{ __html: twemoji.parse("☕️") }}
-          />{" "}
-          !
+          Buy me a ☕️!
         </a>
       </div>
       <hr className={seperator} />

@@ -1,7 +1,5 @@
 import { batch } from "react-redux";
 import { store } from ".";
-import { randU32 } from "../util";
-import { getTodaysId } from "./funcs";
 import { gameAction } from "./slice/game";
 
 // Debugging purposes

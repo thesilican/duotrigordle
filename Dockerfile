@@ -6,4 +6,4 @@ COPY . /app/
 RUN npm run build
 
 FROM thesilican/httpd
-COPY --from=builder /app/dist/ /public
+COPY --from=builder /app/build/ /public

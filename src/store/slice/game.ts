@@ -10,7 +10,7 @@ import {
   initialState,
   normalizeHistory,
 } from "..";
-import { MersenneTwister, range } from "../../util";
+import { range } from "../../util";
 import {
   NUM_BOARDS,
   NUM_GUESSES,

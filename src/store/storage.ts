@@ -5,7 +5,6 @@ import {
   GameState,
   getAllGuessColors,
   getAllWordsGuessed,
-  getGuessColors,
   getTargetWords,
   getTodaysId,
   settingsAction,

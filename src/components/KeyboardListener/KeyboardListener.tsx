@@ -12,7 +12,6 @@ export function KeyboardListener() {
   const view = useAppSelector((s) => s.ui.view);
   const modal = useAppSelector((s) => s.ui.modal);
   const practice = useAppSelector((s) => s.game.practice);
-  const gameOver = useAppSelector((s) => s.game.gameOver);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -20,7 +19,7 @@ export function KeyboardListener() {
         if (e.key === "Escape") {
           dispatch(uiAction.showModal(null));
         }
-      } else if (!modal && view === "game" && !gameOver) {
+      } else if (!modal && view === "game") {
         if (e.key === "r" && (e.ctrlKey || e.metaKey) && practice) {
           dispatch(gameAction.restart({ timestamp: Date.now() }));
           e.preventDefault();
@@ -49,6 +48,6 @@ export function KeyboardListener() {
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [dispatch, gameOver, modal, view, practice]);
+  }, [dispatch, modal, view, practice]);
   return <Fragment />;
 }

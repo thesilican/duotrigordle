@@ -73,7 +73,6 @@ function Board(props: BoardProps) {
         behavior: "smooth",
         block: "nearest",
       });
-      console.log("hi");
       dispatch(uiAction.resolveSideEffect(sideEffect.id));
     }
   }, [dispatch, props.idx, sideEffect]);
@@ -139,7 +138,7 @@ type InputRowProps = {
 };
 function InputRow(props: InputRowProps) {
   const { guesses, colors } = props;
-  const disableHints = useAppSelector((s) => s.settings.disableHints);
+  const showHints = useAppSelector((s) => s.settings.showHints);
   const input = useAppSelector((s) => s.game.input);
   const sticky = useAppSelector((s) => s.settings.stickyInput);
 
@@ -150,15 +149,15 @@ function InputRow(props: InputRowProps) {
 
   const isError = input.length === 5 && !WORDS_VALID.has(input);
   const isWarn = useMemo(
-    () => (disableHints ? false : getWarnHint(input, guesses, colors)),
-    [disableHints, colors, guesses, input]
+    () => (showHints ? getWarnHint(input, guesses, colors) : false),
+    [showHints, colors, guesses, input]
   );
 
   return (
     <>
       {range(5).map((i) => {
         let textColor: "red" | "yellow" | "ghost" | undefined;
-        if (disableHints) {
+        if (!showHints) {
           textColor = isError ? "red" : undefined;
         } else if (input[i]) {
           textColor = isError ? "red" : isWarn ? "yellow" : undefined;
@@ -166,7 +165,7 @@ function InputRow(props: InputRowProps) {
           textColor = ghostLetters[i] ? "ghost" : undefined;
         }
         let char: string;
-        if (disableHints) {
+        if (!showHints) {
           char = input[i];
         } else {
           char = input[i] ?? ghostLetters[i];
@@ -193,12 +192,39 @@ function getGhostLetters(guesses: string[], colors: string[]): string[] {
 }
 
 function getWarnHint(input: string, guesses: string[], colors: string[]) {
-  for (let i = 0; i < input.length; i++) {
+  const include = new Set<string>();
+  for (let col = 0; col < 5; col++) {
     for (let row = 0; row < guesses.length; row++) {
-      if (colors[row][i] === "G" && input[i] !== guesses[row][i]) {
+      if (colors[row][col] === "Y" || colors[row][col] === "G") {
+        include.add(guesses[row][col]);
+      }
+    }
+  }
+  const exclude = new Set<string>();
+  for (let col = 0; col < 5; col++) {
+    for (let row = 0; row < guesses.length; row++) {
+      if (colors[row][col] === "B" && !include.has(guesses[row][col])) {
+        exclude.add(guesses[row][col]);
+      }
+    }
+  }
+  for (const letter of exclude) {
+    if (input.includes(letter)) {
+      return true;
+    }
+  }
+  for (const letter of include) {
+    if (input.length === 5 && !input.includes(letter)) {
+      return true;
+    }
+  }
+
+  for (let col = 0; col < input.length; col++) {
+    for (let row = 0; row < guesses.length; row++) {
+      if (colors[row][col] === "G" && input[col] !== guesses[row][col]) {
         return true;
       }
-      if (colors[row][i] === "Y" && input[i] === guesses[row][i]) {
+      if (colors[row][col] === "Y" && input[col] === guesses[row][col]) {
         return true;
       }
     }

@@ -8,7 +8,7 @@ export type SettingsState = {
   hideCompletedBoards: boolean;
   animateHiding: boolean;
   stickyInput: boolean;
-  disableHints: boolean;
+  showHints: boolean;
   hideAds: boolean;
   kofiEmail: string | null;
 };
@@ -19,7 +19,7 @@ export const settingsInitialState: SettingsState = {
   hideCompletedBoards: false,
   animateHiding: true,
   stickyInput: true,
-  disableHints: false,
+  showHints: true,
   hideAds: false,
   kofiEmail: null,
 };

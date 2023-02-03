@@ -27,14 +27,15 @@
 }
 .title {
   transition: transform 0.25s ease;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 .welcome .title {
   margin-left: 40px;
   margin-right: -40px;
   transform: translateX(-36px);
   font-size: 24px;
-  text-align: left;
 }
 @media screen and (min-width: 600px) {
   .title {
@@ -43,6 +44,13 @@
   .welcome .title {
     font-size: 30px;
   }
+}
+.text {
+  text-align: center;
+  flex: 1;
+}
+.welcome .text {
+  text-align: left;
 }
 
 .icon {

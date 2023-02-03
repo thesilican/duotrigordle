@@ -9,7 +9,8 @@ import {
   WORDS_VALID,
 } from "../../store";
 import { range } from "../../util";
-import {
+import styles from "./Boards.module.css";
+const {
   animate,
   black,
   board,
@@ -25,7 +26,7 @@ import {
   textRed,
   textYellow,
   yellow,
-} from "./Boards.module.css";
+} = styles;
 
 export function Boards() {
   return (
@@ -92,9 +93,7 @@ function Board(props: BoardProps) {
       onClick={() => dispatch(uiAction.highlightClick(props.idx))}
     >
       <ColoredRows words={guesses} colors={colors} count={coloredCount} />
-      {showInput && (
-        <InputRow idx={props.idx} guesses={guesses} colors={colors} />
-      )}
+      {showInput && <InputRow guesses={guesses} colors={colors} />}
       <EmptyRows count={emptyCount} />
     </div>
   );

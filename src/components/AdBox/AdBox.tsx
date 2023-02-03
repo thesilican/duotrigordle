@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { adBox, hidden } from "./AdBox.module.css";
+import styles from "./AdBox.module.css";
+const { adBox, hidden } = styles;
 import cn from "classnames";
 
 export function AdBox() {

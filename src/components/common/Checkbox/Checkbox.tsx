@@ -1,4 +1,5 @@
-import { checkbox } from "./Checkbox.module.css";
+import styles from "./Checkbox.module.css";
+const { checkbox } = styles;
 import cn from "classnames";
 
 type CheckboxProps = {

@@ -1,5 +1,6 @@
 import { gameAction, useAppDispatch } from "../../store";
-import { key, keyboard, row1, row2, row3, spacer } from "./Keyboard.module.css";
+import styles from "./Keyboard.module.css";
+const { key, keyboard, row1, row2, row3, spacer } = styles;
 
 export function Keyboard() {
   return (

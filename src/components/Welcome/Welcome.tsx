@@ -12,7 +12,8 @@ import {
 } from "../../store";
 import { MersenneTwister, range } from "../../util";
 import { LinkButton } from "../common/LinkButton/LinkButton";
-import {
+import styles from "./Welcome.module.css";
+const {
   archiveDescription,
   gmDaily,
   gmPractice,
@@ -23,7 +24,7 @@ import {
   tabs,
   tabWrapper,
   welcome,
-} from "./Welcome.module.css";
+} = styles;
 
 export function Welcome() {
   const dispatch = useAppDispatch();

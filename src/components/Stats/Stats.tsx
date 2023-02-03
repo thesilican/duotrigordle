@@ -12,7 +12,8 @@ import {
 import { formatTimeElapsed, parseTimeElapsed, range } from "../../util";
 import { LinkButton } from "../common/LinkButton/LinkButton";
 import { Modal } from "../common/Modal/Modal";
-import {
+import styles from "./Stats.module.css";
+const {
   bar,
   barColor,
   barWrapper,
@@ -29,7 +30,7 @@ import {
   times,
   title,
   value,
-} from "./Stats.module.css";
+} = styles;
 
 export default function Stats() {
   const shown = useAppSelector((s) => s.ui.modal === "stats");

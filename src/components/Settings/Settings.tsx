@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import { settingsAction, useAppDispatch, useAppSelector } from "../../store";
 import { Checkbox } from "../common/Checkbox/Checkbox";
 import { Modal } from "../common/Modal/Modal";
-import {
+import styles from "./Settings.module.css";
+const {
   description,
   disabled,
   email,
@@ -17,7 +18,7 @@ import {
   setting,
   settingsList,
   title,
-} from "./Settings.module.css";
+} = styles;
 
 export function Settings() {
   const dispatch = useAppDispatch();

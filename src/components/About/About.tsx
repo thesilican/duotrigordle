@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import twemoji from "twemoji";
 import { START_DATE, useAppSelector } from "../../store";
 import { Modal } from "../common/Modal/Modal";
-import { emoji, kofi, footer, seperator, title } from "./About.module.css";
+import styles from "./About.module.css";
+const { emoji, kofi, footer, seperator, title } = styles;
 
 export function About() {
   const shown = useAppSelector((s) => s.ui.modal === "about");

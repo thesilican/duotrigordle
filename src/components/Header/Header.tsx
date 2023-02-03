@@ -20,7 +20,8 @@ import {
 import { formatTimeElapsed } from "../../util";
 import { AdBox } from "../AdBox/AdBox";
 import { Button } from "../common/Button/Button";
-import {
+import styles from "./Header.module.css";
+const {
   header,
   hidden,
   icon,
@@ -32,7 +33,7 @@ import {
   title,
   titleWrapper,
   welcome,
-} from "./Header.module.css";
+} = styles;
 
 export function Header() {
   const isWelcome = useAppSelector((s) => s.ui.view === "welcome");

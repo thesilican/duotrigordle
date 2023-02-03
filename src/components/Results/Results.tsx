@@ -9,17 +9,8 @@ import {
 } from "../../store";
 import { formatTimeElapsed, range } from "../../util";
 import { Button } from "../common/Button/Button";
-import {
-  green,
-  red,
-  results,
-  row,
-  share,
-  text,
-  title,
-  word,
-  words,
-} from "./Results.module.css";
+import styles from "./Results.module.css";
+const { green, red, results, row, share, text, title, word, words } = styles;
 import cn from "classnames";
 
 export function Results() {

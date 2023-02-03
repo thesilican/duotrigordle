@@ -9,7 +9,8 @@ import { Results } from "../Results/Results";
 import { Settings } from "../Settings/Settings";
 import Stats from "../Stats/Stats";
 import { Welcome } from "../Welcome/Welcome";
-import { main } from "./App.module.css";
+import styles from "./App.module.css";
+const { main } = styles;
 
 export function App() {
   const view = useAppSelector((s) => s.ui.view);

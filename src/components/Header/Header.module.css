@@ -21,6 +21,9 @@
     gap: 4px;
   }
 }
+.wide .row1 {
+  max-width: var(--width-wide);
+}
 
 .titleWrapper {
   flex-grow: 1;
@@ -89,6 +92,9 @@
   visibility: hidden;
   height: 0;
   opacity: 0;
+}
+.wide .row2 {
+  max-width: var(--width-wide);
 }
 .red {
   color: var(--red);

@@ -113,7 +113,7 @@ export function Settings() {
           <label className={label} htmlFor="show-hints">
             <p className={name}>Show Hints</p>
             <p className={description}>
-              Show input ghost letters and inconsistency warnings
+              Show ghost letters and inconsistency warnings
             </p>
           </label>
         </div>

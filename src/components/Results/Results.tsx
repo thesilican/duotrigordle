@@ -11,7 +11,8 @@ import {
 import { formatTimeElapsed, range } from "../../util";
 import { Button } from "../common/Button/Button";
 import styles from "./Results.module.css";
-const { green, red, results, row, share, text, title, word, words } = styles;
+const { green, red, results, row, share, text, title, word, words, wide } =
+  styles;
 
 export function Results() {
   const dispatch = useAppDispatch();
@@ -21,6 +22,7 @@ export function Results() {
   const guesses = useAppSelector((s) => s.game.guesses);
   const showTimer = useAppSelector((s) => s.settings.showTimer);
   const timeElapsed = useAppSelector((s) => s.game.endTime - s.game.startTime);
+  const wideMode = useAppSelector((s) => s.settings.wideMode);
 
   const shareableText = useMemo(() => {
     return getShareableText(
@@ -64,7 +66,7 @@ export function Results() {
   const win = getAllWordsGuessed(targets, guesses);
 
   return (
-    <div className={cn(results, win ? green : red)}>
+    <div className={cn(results, win ? green : red, wideMode && wide)}>
       <p className={title}>{win ? "You win!" : "Better luck next time"}</p>
       <div className={row}>
         <div className={share}>

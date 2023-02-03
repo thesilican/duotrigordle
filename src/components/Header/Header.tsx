@@ -36,13 +36,15 @@ const {
   titleWrapper,
   welcome,
   text,
+  wide,
 } = styles;
 
 export function Header() {
   const isWelcome = useAppSelector((s) => s.ui.view === "welcome");
+  const wideMode = useAppSelector((s) => s.settings.wideMode);
 
   return (
-    <div className={cn(isWelcome && welcome, header)}>
+    <div className={cn(isWelcome && welcome, header, wideMode && wide)}>
       <AdBox />
       <Row1 />
       <Row2 />

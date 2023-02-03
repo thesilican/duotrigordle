@@ -1,6 +1,7 @@
 import cn from "classnames";
 import React, { useEffect, useMemo, useRef } from "react";
 import {
+  getCompletedBoards,
   NUM_GUESSES,
   uiAction,
   useAppDispatch,
@@ -26,11 +27,14 @@ const {
   textYellow,
   yellow,
   scrollIntoView,
+  wide,
 } = styles;
 
 export function Boards() {
+  const wideMode = useAppSelector((s) => s.settings.wideMode);
+
   return (
-    <div className={boards}>
+    <div className={cn(boards, wideMode && wide)}>
       {range(32).map((i) => (
         <Board key={i} idx={i} />
       ))}
@@ -43,19 +47,34 @@ type BoardProps = {
 };
 function Board(props: BoardProps) {
   const dispatch = useAppDispatch();
-  const target = useAppSelector((s) => s.game.targets[props.idx]);
+  const targets = useAppSelector((s) => s.game.targets);
   const guesses = useAppSelector((s) => s.game.guesses);
   const gameOver = useAppSelector((s) => s.game.gameOver);
   const isHighlighted = useAppSelector(
     (s) => s.ui.highlightedBoard === props.idx
   );
-  const colors = useAppSelector((s) => s.game.colors[props.idx]);
+  const guessColors = useAppSelector((s) => s.game.colors[props.idx]);
   const hideBoard = useAppSelector((s) => s.settings.hideCompletedBoards);
   const animateHiding = useAppSelector((s) => s.settings.animateHiding);
+  const sequence = useAppSelector((s) => s.game.gameMode === "sequence");
+
+  const target = targets[props.idx];
+  const isConcealed = useMemo(() => {
+    if (sequence) {
+      const completedBoards = getCompletedBoards(targets, guesses).reduce(
+        (a, v) => a + (v ? 1 : 0),
+        0
+      );
+      return props.idx > completedBoards;
+    } else {
+      return false;
+    }
+  }, [sequence, targets, guesses, props.idx]);
+  console.log(isConcealed);
   const guessedAt = guesses.indexOf(target);
   const complete = guessedAt !== -1;
   const coloredCount = complete ? guessedAt + 1 : guesses.length;
-  const showInput = !complete && !gameOver;
+  const showInput = !complete && !gameOver && !isConcealed;
   const emptyCount = NUM_GUESSES - coloredCount - (showInput ? 1 : 0);
 
   const isDimmed = !gameOver && complete && !hideBoard;
@@ -89,8 +108,13 @@ function Board(props: BoardProps) {
       onClick={() => dispatch(uiAction.highlightClick(props.idx))}
     >
       <div ref={scrollRef} className={scrollIntoView} />
-      <ColoredRows words={guesses} colors={colors} count={coloredCount} />
-      {showInput ? <InputRow guesses={guesses} colors={colors} /> : null}
+      <ColoredRows
+        words={guesses}
+        colors={guessColors}
+        count={coloredCount}
+        concealed={isConcealed}
+      />
+      {showInput ? <InputRow guesses={guesses} colors={guessColors} /> : null}
       <EmptyRows count={emptyCount} />
     </div>
   );
@@ -100,8 +124,18 @@ type ColoredRowsProps = {
   words: string[];
   colors: string[];
   count: number;
+  concealed: boolean;
 };
 const ColoredRows = React.memo(function ColoredRows(props: ColoredRowsProps) {
+  if (props.concealed) {
+    return (
+      <>
+        {range(props.count * 5).map((i) => (
+          <Cell key={i} char="?" color={"B"} />
+        ))}
+      </>
+    );
+  }
   return (
     <>
       {range(props.count * 5).map((i) => {

@@ -1,4 +1,3 @@
-import { describe, expect, test } from "vitest";
 import { getJumbleWords, getTargetWords } from "../funcs";
 
 describe("funcs", () => {

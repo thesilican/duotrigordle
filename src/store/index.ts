@@ -39,10 +39,10 @@ export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector;
 export const useAppDispatch: () => typeof store.dispatch = useDispatch;
 
 // Reexports
+export * from "./consts";
+export * from "./funcs";
 export * from "./slice/game";
 export * from "./slice/settings";
 export * from "./slice/stats";
 export * from "./slice/ui";
-export * from "./consts";
-export * from "./funcs";
 export * from "./storage";

@@ -1,7 +1,6 @@
 import cn from "classnames";
 import React, { useEffect, useMemo, useRef } from "react";
 import {
-  getGuessColors,
   NUM_GUESSES,
   uiAction,
   useAppDispatch,
@@ -26,6 +25,7 @@ const {
   textRed,
   textYellow,
   yellow,
+  scrollIntoView,
 } = styles;
 
 export function Boards() {
@@ -49,22 +49,19 @@ function Board(props: BoardProps) {
   const isHighlighted = useAppSelector(
     (s) => s.ui.highlightedBoard === props.idx
   );
-  const colors = useMemo(
-    () => guesses.map((guess) => getGuessColors(target, guess)),
-    [target, guesses]
-  );
+  const colors = useAppSelector((s) => s.game.colors[props.idx]);
   const hideBoard = useAppSelector((s) => s.settings.hideCompletedBoards);
   const animateHiding = useAppSelector((s) => s.settings.animateHiding);
-  const boardRef = useRef<HTMLDivElement>(null);
   const guessedAt = guesses.indexOf(target);
   const complete = guessedAt !== -1;
   const coloredCount = complete ? guessedAt + 1 : guesses.length;
-  const showInput = !complete;
+  const showInput = !complete && !gameOver;
   const emptyCount = NUM_GUESSES - coloredCount - (showInput ? 1 : 0);
 
   const isDimmed = !gameOver && complete && !hideBoard;
   const isHidden = !gameOver && complete && hideBoard;
 
+  const scrollRef = useRef<HTMLDivElement>(null);
   const sideEffect = useAppSelector((s) => s.ui.sideEffects[0]);
   useEffect(() => {
     if (
@@ -72,10 +69,11 @@ function Board(props: BoardProps) {
       sideEffect.type === "scroll-board-into-view" &&
       sideEffect.board === props.idx
     ) {
-      boardRef.current?.scrollIntoView({
+      scrollRef.current?.scrollIntoView({
         behavior: "smooth",
-        block: "start",
+        block: "nearest",
       });
+      console.log("hi");
       dispatch(uiAction.resolveSideEffect(sideEffect.id));
     }
   }, [dispatch, props.idx, sideEffect]);
@@ -89,11 +87,11 @@ function Board(props: BoardProps) {
         isHidden && hidden,
         animateHiding && animate
       )}
-      ref={boardRef}
       onClick={() => dispatch(uiAction.highlightClick(props.idx))}
     >
+      <div ref={scrollRef} className={scrollIntoView} />
       <ColoredRows words={guesses} colors={colors} count={coloredCount} />
-      {showInput && <InputRow guesses={guesses} colors={colors} />}
+      {showInput ? <InputRow guesses={guesses} colors={colors} /> : null}
       <EmptyRows count={emptyCount} />
     </div>
   );
@@ -141,6 +139,7 @@ type InputRowProps = {
 };
 function InputRow(props: InputRowProps) {
   const { guesses, colors } = props;
+  const disableHints = useAppSelector((s) => s.settings.disableHints);
   const input = useAppSelector((s) => s.game.input);
   const sticky = useAppSelector((s) => s.settings.stickyInput);
 
@@ -151,37 +150,37 @@ function InputRow(props: InputRowProps) {
 
   const isError = input.length === 5 && !WORDS_VALID.has(input);
   const isWarn = useMemo(
-    () => getWarnHint(input, guesses, colors),
-    [colors, guesses, input]
+    () => (disableHints ? false : getWarnHint(input, guesses, colors)),
+    [disableHints, colors, guesses, input]
   );
 
   return (
     <>
       {range(5).map((i) => {
         let textColor: "red" | "yellow" | "ghost" | undefined;
-        if (input[i]) {
+        if (disableHints) {
+          textColor = isError ? "red" : undefined;
+        } else if (input[i]) {
           textColor = isError ? "red" : isWarn ? "yellow" : undefined;
         } else {
           textColor = ghostLetters[i] ? "ghost" : undefined;
         }
+        let char: string;
+        if (disableHints) {
+          char = input[i];
+        } else {
+          char = input[i] ?? ghostLetters[i];
+        }
         return (
-          <Cell
-            key={i}
-            char={input[i] ?? ghostLetters[i]}
-            textColor={textColor}
-            sticky={sticky}
-          />
+          <Cell key={i} char={char} textColor={textColor} sticky={sticky} />
         );
       })}
     </>
   );
 }
 
-function getGhostLetters(
-  guesses: string[],
-  colors: string[]
-): (string | undefined)[] {
-  const ghostLetters: (string | undefined)[] = range(5).map(() => undefined);
+function getGhostLetters(guesses: string[], colors: string[]): string[] {
+  const ghostLetters: string[] = range(5).map(() => "");
   for (let i = 0; i < 5; i++) {
     for (let row = 0; row < guesses.length; row++) {
       if (colors[row][i] === "G") {

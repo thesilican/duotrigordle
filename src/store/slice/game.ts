@@ -1,14 +1,22 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
 import {
+  getAllGuessColors,
   getAllWordsGuessed,
   getCompletedBoards,
+  getGuessColors,
   getJumbleWords,
+  getPracticeId,
   getTargetWords,
   initialState,
   normalizeHistory,
 } from "..";
-import { NUM_BOARDS, NUM_GUESSES, WORDS_VALID } from "../consts";
-import { range } from "../../util";
+import { MersenneTwister, range } from "../../util";
+import {
+  NUM_BOARDS,
+  NUM_GUESSES,
+  PRACTICE_MODE_MIN_ID,
+  WORDS_VALID,
+} from "../consts";
 
 export type GameState = {
   // Daily Duotrigordle number (seed for target words)
@@ -23,6 +31,8 @@ export type GameState = {
   guesses: string[];
   // 32 wordle targets
   targets: string[];
+  // Word colors e.g. "BBYGG" (indexed by board, row)
+  colors: string[][];
   // Whether or not the game is finished
   gameOver: boolean;
   // Start timestamp (milliseconds from unix epoch)
@@ -38,6 +48,7 @@ export const gameInitialState: GameState = {
   gameMode: "normal",
   guesses: [],
   targets: range(NUM_BOARDS).map((_) => "AAAAA"),
+  colors: range(NUM_BOARDS).map(() => []),
   gameOver: false,
   practice: true,
   startTime: 0,
@@ -46,12 +57,23 @@ export const gameInitialState: GameState = {
 
 export const gameAction = {
   load: createAction<{ game: GameState }>("game/loadGame"),
+  // Start a Daily game
   start: createAction<{
     id: number;
-    practice: boolean;
     gameMode: GameMode;
     timestamp: number;
   }>("game/startGame"),
+  // Start a practice game
+  startPractice: createAction<{
+    gameMode: GameMode;
+    timestamp: number;
+  }>("game/startPractice"),
+  // Start a historic game
+  startHistoric: createAction<{
+    id: number;
+  }>("game/startHistoric"),
+  // Restart the current game
+  restart: createAction<{ timestamp: number }>("game/restart"),
   inputLetter: createAction<{ letter: string }>("game/inputLetter"),
   inputBackspace: createAction("game/inputBackspace"),
   inputEnter: createAction<{ timestamp: number }>("game/inputEnter"),
@@ -71,15 +93,85 @@ export const gameReducer = createReducer(
           action.payload.gameMode === "jumble"
             ? getJumbleWords(targets, action.payload.timestamp)
             : [];
+        const colors = getAllGuessColors(targets, guesses);
 
         state.game = {
           id: action.payload.id,
           gameMode: action.payload.gameMode,
           targets,
           guesses,
+          colors,
           input: "",
           gameOver: false,
-          practice: action.payload.practice,
+          practice: false,
+          startTime: 0,
+          endTime: 0,
+        };
+        state.ui.highlightedBoard = null;
+      })
+      .addCase(gameAction.startPractice, (state, action) => {
+        const id = getPracticeId(action.payload.timestamp);
+        const targets = getTargetWords(id);
+        const guesses =
+          action.payload.gameMode === "jumble"
+            ? getJumbleWords(targets, action.payload.timestamp)
+            : [];
+        const colors = getAllGuessColors(targets, guesses);
+
+        state.game = {
+          id,
+          gameMode: action.payload.gameMode,
+          targets,
+          guesses,
+          colors,
+          input: "",
+          gameOver: false,
+          practice: true,
+          startTime: 0,
+          endTime: 0,
+        };
+        state.ui.highlightedBoard = null;
+      })
+      .addCase(gameAction.startHistoric, (state, action) => {
+        const targets = getTargetWords(action.payload.id);
+        const guesses: string[] = [];
+        const colors = getAllGuessColors(targets, guesses);
+
+        state.game = {
+          id: action.payload.id,
+          gameMode: "normal",
+          targets,
+          guesses,
+          colors,
+          input: "",
+          gameOver: false,
+          practice: true,
+          startTime: 0,
+          endTime: 0,
+        };
+        state.ui.highlightedBoard = null;
+      })
+      .addCase(gameAction.restart, (state, action) => {
+        const id =
+          state.game.practice && state.game.id >= PRACTICE_MODE_MIN_ID
+            ? getPracticeId(action.payload.timestamp)
+            : state.game.id;
+        const targets = getTargetWords(id);
+        const guesses =
+          state.game.gameMode === "jumble"
+            ? getJumbleWords(targets, action.payload.timestamp)
+            : [];
+        const colors = getAllGuessColors(targets, guesses);
+
+        state.game = {
+          id,
+          gameMode: state.game.gameMode,
+          targets,
+          guesses,
+          colors,
+          input: "",
+          gameOver: false,
+          practice: state.game.practice,
           startTime: 0,
           endTime: 0,
         };
@@ -107,6 +199,10 @@ export const gameReducer = createReducer(
           return;
         }
         game.guesses.push(guess);
+        for (let i = 0; i < game.targets.length; i++) {
+          const colors = getGuessColors(game.targets[i], guess);
+          game.colors[i].push(colors);
+        }
         // Start timer on first guess
         if (game.guesses.length === 1) {
           game.startTime = action.payload.timestamp;

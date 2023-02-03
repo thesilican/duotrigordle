@@ -26,6 +26,7 @@
   transform: translateZ(0);
   transition: filter 0.25s ease, background-color 0.1s ease,
     box-shadow 0.1s ease;
+  position: relative;
 }
 .board.highlighted {
   background-color: var(--white);
@@ -64,6 +65,13 @@
     visibility: hidden;
     position: fixed;
   }
+}
+.scrollIntoView {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  left: 0;
+  visibility: none;
 }
 
 .cell {

@@ -1,6 +1,6 @@
+import cn from "classnames";
 import styles from "./Checkbox.module.css";
 const { checkbox } = styles;
-import cn from "classnames";
 
 type CheckboxProps = {
   id?: string;

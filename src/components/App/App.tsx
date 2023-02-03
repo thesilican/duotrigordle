@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { useAppSelector } from "../../store";
+import { addDebugHooks } from "../../store/debug";
 import { About } from "../About/About";
 import { Boards } from "../Boards/Boards";
 import { Header } from "../Header/Header";
@@ -17,6 +19,10 @@ export function App() {
   const gameOver = useAppSelector((s) => s.game.gameOver);
   const showKeyboard = view === "game" && !gameOver;
   const showResults = view === "game" && gameOver;
+
+  useEffect(() => {
+    addDebugHooks();
+  }, []);
 
   return (
     <>

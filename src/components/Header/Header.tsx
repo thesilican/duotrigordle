@@ -8,7 +8,9 @@ import restartIcon from "../../assets/restart.svg";
 import settingsIcon from "../../assets/settings.svg";
 import statsIcon from "../../assets/stats.svg";
 import {
+  gameAction,
   getCompletedBoards,
+  getPracticeId,
   loadGameFromLocalStorage,
   NUM_BOARDS,
   NUM_GUESSES,
@@ -64,7 +66,15 @@ function Row1() {
   };
 
   const handleRestartClick = () => {
-    //
+    const res = window.confirm(
+      "Are you sure you want to restart your practice game? (You can also use ctrl+r)"
+    );
+    if (res) {
+      dispatch(gameAction.restart({ timestamp: Date.now() }));
+      if (document.activeElement instanceof HTMLElement) {
+        document.activeElement?.blur();
+      }
+    }
   };
 
   const renderTitle = () => {

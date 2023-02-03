@@ -31,6 +31,7 @@ export function Settings() {
     hideCompletedBoards,
     kofiEmail,
     stickyInput,
+    disableHints,
   } = useAppSelector((s) => s.settings);
 
   return (
@@ -97,6 +98,21 @@ export function Settings() {
           <label className={label} htmlFor="sticky-input">
             <p className={name}>Sticky Input Field</p>
             <p className={description}>Disabling may improve performance</p>
+          </label>
+        </div>
+        <div className={setting}>
+          <Checkbox
+            checked={disableHints}
+            onChange={(x) =>
+              dispatch(settingsAction.update({ disableHints: x }))
+            }
+            id="disable-hints"
+          />
+          <label className={label} htmlFor="disable-hints">
+            <p className={name}>Disable Hints</p>
+            <p className={description}>
+              Hides input ghost letters and yellow warning
+            </p>
           </label>
         </div>
         <hr className={seperator} />

@@ -1,7 +1,7 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
-import { initialState, AppState, getCompletedBoards } from "..";
-import { NUM_BOARDS } from "../consts";
+import { AppState, getCompletedBoards, initialState } from "..";
 import { range } from "../../util";
+import { NUM_BOARDS } from "../consts";
 
 export type UiState = {
   view: UiView;

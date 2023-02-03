@@ -3,6 +3,7 @@ import { useState } from "react";
 import {
   gameAction,
   GameMode,
+  getPracticeId,
   getTodaysId,
   NUM_GUESSES,
   PRACTICE_MODE_MIN_ID,
@@ -54,35 +55,18 @@ export function Welcome() {
   };
 
   const handleNewGameClick = (practice: boolean, gameMode: GameMode) => {
-    let id;
     if (practice) {
-      const rng = MersenneTwister(Date.now());
-      do {
-        id = rng.u32();
-      } while (id < PRACTICE_MODE_MIN_ID);
+      dispatch(gameAction.startPractice({ gameMode, timestamp: Date.now() }));
     } else {
-      id = getTodaysId();
+      dispatch(
+        gameAction.start({ id: getTodaysId(), gameMode, timestamp: Date.now() })
+      );
     }
-    dispatch(
-      gameAction.start({
-        id,
-        practice,
-        gameMode,
-        timestamp: Date.now(),
-      })
-    );
     dispatch(uiAction.setView("game"));
   };
 
   const handleArchiveClick = () => {
-    dispatch(
-      gameAction.start({
-        id: archiveId,
-        practice: true,
-        gameMode: "normal",
-        timestamp: Date.now(),
-      })
-    );
+    dispatch(gameAction.startHistoric({ id: archiveId }));
     dispatch(uiAction.setView("game"));
   };
 

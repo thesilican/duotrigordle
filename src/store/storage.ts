@@ -1,10 +1,11 @@
 import { Dispatch } from "@reduxjs/toolkit";
-import { NUM_GUESSES } from "./consts";
 import {
   gameAction,
   GameMode,
   GameState,
+  getAllGuessColors,
   getAllWordsGuessed,
+  getGuessColors,
   getTargetWords,
   getTodaysId,
   settingsAction,
@@ -12,6 +13,7 @@ import {
   statsAction,
   StatsState,
 } from ".";
+import { NUM_GUESSES } from "./consts";
 
 // Serialization for game
 type GameSerialized = {
@@ -62,15 +64,17 @@ export function serializeGame(state: GameState): GameSerialized {
 }
 export function deserializeGame(serialized: GameSerialized): GameState {
   const targets = getTargetWords(serialized.id);
+  const guesses = serialized.guesses;
   const gameOver =
-    serialized.guesses.length === NUM_GUESSES ||
-    getAllWordsGuessed(targets, serialized.guesses);
+    guesses.length === NUM_GUESSES || getAllWordsGuessed(targets, guesses);
+  const colors = getAllGuessColors(targets, guesses);
   return {
     id: serialized.id,
     gameMode: serialized.gameMode,
     input: "",
     targets,
-    guesses: serialized.guesses,
+    guesses,
+    colors,
     gameOver,
     practice: false,
     startTime: serialized.startTime,

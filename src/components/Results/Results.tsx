@@ -1,3 +1,4 @@
+import cn from "classnames";
 import { useMemo, useState } from "react";
 import {
   getAllWordsGuessed,
@@ -11,7 +12,6 @@ import { formatTimeElapsed, range } from "../../util";
 import { Button } from "../common/Button/Button";
 import styles from "./Results.module.css";
 const { green, red, results, row, share, text, title, word, words } = styles;
-import cn from "classnames";
 
 export function Results() {
   const dispatch = useAppDispatch();

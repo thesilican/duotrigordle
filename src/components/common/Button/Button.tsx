@@ -1,7 +1,7 @@
+import cn from "classnames";
 import { ReactNode } from "react";
 import styles from "./Button.module.css";
 const { button } = styles;
-import cn from "classnames";
 
 type ButtonProps = {
   className?: string;

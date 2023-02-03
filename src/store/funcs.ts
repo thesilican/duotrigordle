@@ -1,5 +1,10 @@
 import { MersenneTwister } from "../util";
-import { NUM_BOARDS, START_DATE, WORDS_TARGET } from "./consts";
+import {
+  NUM_BOARDS,
+  PRACTICE_MODE_MIN_ID,
+  START_DATE,
+  WORDS_TARGET,
+} from "./consts";
 
 // Returns the id for today's duotrigordle
 export function getTodaysId(): number {
@@ -53,6 +58,15 @@ export function getGuessColors(target: string, guess: string): string {
   return guessResult.join("");
 }
 
+export function getAllGuessColors(
+  targets: string[],
+  guesses: string[]
+): string[][] {
+  return targets.map((target) =>
+    guesses.map((guess) => getGuessColors(target, guess))
+  );
+}
+
 // Return all boards that are completed
 export function getCompletedBoards(
   targets: string[],
@@ -89,4 +103,15 @@ export function getJumbleWords(targets: string[], seed: number): string[] {
     }
   }
   return words;
+}
+
+// Retuns a random practice mode id
+export function getPracticeId(seed: number) {
+  const rng = MersenneTwister(seed);
+  while (true) {
+    const num = rng.u32();
+    if (num >= PRACTICE_MODE_MIN_ID) {
+      return num;
+    }
+  }
 }

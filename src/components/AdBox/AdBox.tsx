@@ -7,26 +7,26 @@ import styles from "./AdBox.module.css";
 const overrideHideAds = false;
 
 export function AdBox() {
-  const view = useAppSelector((s) => s.ui.view);
   const hideAds = useAppSelector((s) => s.settings.hideAds);
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    if (!loaded && !hideAds && !overrideHideAds && view === "game") {
+    if (!loaded && !hideAds && !overrideHideAds) {
+      // Load Google Adsense
       try {
         // @ts-ignore
         (adsbygoogle = window.adsbygoogle || []).push({});
       } catch {}
       setLoaded(true);
     }
-  }, [loaded, view, hideAds]);
+  }, [loaded, hideAds]);
 
-  if (hideAds || overrideHideAds || !loaded) {
+  if (hideAds || overrideHideAds) {
     return null;
   }
 
   return (
-    <div className={cn(styles.adBox)}>
+    <div className={cn("ads-box", styles.adBox)}>
       <ins
         className="adsbygoogle"
         style={{

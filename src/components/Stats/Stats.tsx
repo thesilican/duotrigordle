@@ -13,24 +13,6 @@ import { formatTimeElapsed, parseTimeElapsed, range } from "../../util";
 import { LinkButton } from "../common/LinkButton/LinkButton";
 import { Modal } from "../common/Modal/Modal";
 import styles from "./Stats.module.css";
-const {
-  bar,
-  barColor,
-  barWrapper,
-  buttons,
-  chart,
-  editor,
-  editorContainer,
-  expanded,
-  grid,
-  hint,
-  label,
-  spacer,
-  statsContainer,
-  times,
-  title,
-  value,
-} = styles;
 
 export default function Stats() {
   const shown = useAppSelector((s) => s.ui.modal === "stats");
@@ -49,42 +31,42 @@ export default function Stats() {
 
   return (
     <Modal shown={shown}>
-      <div className={statsContainer}>
-        <p className={title}>Statistics</p>
-        <div className={grid}>
-          <p className={value}>{played}</p>
-          <p className={value}>{win}</p>
-          <p className={value}>{currStreak}</p>
-          <p className={value}>{maxStreak}</p>
-          <p className={label}>Played</p>
-          <p className={label}>Win %</p>
-          <p className={label}>
+      <div className={styles.statsContainer}>
+        <p className={styles.title}>Statistics</p>
+        <div className={styles.grid}>
+          <p className={styles.value}>{played}</p>
+          <p className={styles.value}>{win}</p>
+          <p className={styles.value}>{currStreak}</p>
+          <p className={styles.value}>{maxStreak}</p>
+          <p className={styles.label}>Played</p>
+          <p className={styles.label}>Win %</p>
+          <p className={styles.label}>
             Current
             <br />
             Streak
           </p>
-          <p className={label}>
+          <p className={styles.label}>
             Max
             <br />
             Streak
           </p>
         </div>
-        <p className={title}>Guess Distribution</p>
-        <div className={chart}>
+        <p className={styles.title}>Guess Distribution</p>
+        <div className={styles.chart}>
           {range(6).map((i) => (
             <Fragment key={i}>
               <p>{i + 32}</p>
-              <div className={barWrapper}>
-                <div className={bar} style={{ width: guessStyle[i] }}>
-                  <div className={barColor} />
+              <div className={styles.barWrapper}>
+                <div className={styles.bar} style={{ width: guessStyle[i] }}>
+                  <div className={styles.barColor} />
                   <p>{guessCount[i]}</p>
                 </div>
               </div>
             </Fragment>
           ))}
         </div>
-        <p className={title}>Times</p>
-        <div className={times}>
+        <p className={styles.title}>Times</p>
+        <div className={styles.times}>
           <p>Best Time:</p>
           <p>{bestTime}</p>
           <p>Average Time (last 7):</p>
@@ -229,9 +211,9 @@ function StatsEditor() {
   }
 
   return (
-    <div className={cn(editorContainer, isExpanded && expanded)}>
+    <div className={cn(styles.editorContainer, isExpanded && styles.expanded)}>
       {isExpanded ? (
-        <div className={buttons}>
+        <div className={styles.buttons}>
           <LinkButton onClick={handleSubmit}>Submit</LinkButton>
           <LinkButton onClick={handleReset}>Reset</LinkButton>
           <a
@@ -241,11 +223,11 @@ function StatsEditor() {
           >
             Help
           </a>
-          <div className={spacer} />
+          <div className={styles.spacer} />
           <LinkButton onClick={handleClose}>Close</LinkButton>
         </div>
       ) : (
-        <div className={buttons}>
+        <div className={styles.buttons}>
           <LinkButton onClick={handleExpand}>Edit</LinkButton>
           <a
             href="https://github.com/thesilican/duotrigordle/tree/main/docs/Inputting_Stats.md"
@@ -257,7 +239,7 @@ function StatsEditor() {
         </div>
       )}
       <textarea
-        className={editor}
+        className={styles.editor}
         rows={10}
         value={value}
         onChange={(e) => {
@@ -265,7 +247,7 @@ function StatsEditor() {
           setModified(true);
         }}
       />
-      <p className={hint}>
+      <p className={styles.hint}>
         Format: <code>id guesses time</code>
         <br />
         <code>id</code> - Game ID

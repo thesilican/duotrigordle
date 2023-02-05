@@ -1,9 +1,9 @@
 import cn from "classnames";
 import { useState } from "react";
 import {
+  Challenge,
   gameAction,
-  GameMode,
-  getTodaysId,
+  getDailyId,
   NUM_GUESSES,
   uiAction,
   useAppDispatch,
@@ -12,153 +12,131 @@ import {
 import { range } from "../../util";
 import { LinkButton } from "../common/LinkButton/LinkButton";
 import styles from "./Welcome.module.css";
-const {
-  archiveDescription,
-  gmDaily,
-  gmPractice,
-  highlight,
-  link,
-  practice,
-  tab,
-  tabs,
-  tabWrapper,
-  welcome,
-} = styles;
 
 export function Welcome() {
   const dispatch = useAppDispatch();
+  const todaysId = getDailyId(Date.now());
   const [practiceTab, setPracticeTab] = useState(false);
-  const [archiveId, setArchiveId] = useState(() => getTodaysId() - 1);
-  const isPractice = useAppSelector((s) => s.game.practice);
+  const [archiveId, setArchiveId] = useState(() => todaysId - 1);
+  const [archiveChallenge, setArchiveChallenge] = useState<Challenge>("normal");
+  const gameMode = useAppSelector((s) => s.game.gameMode);
   const gameId = useAppSelector((s) => s.game.id);
   const guessCount = useAppSelector((s) => s.game.guesses.length);
-  const gameMode = useAppSelector((s) => s.game.gameMode);
-  const showContinue = guessCount > 0 && !isPractice;
+  const challenge = useAppSelector((s) => s.game.challenge);
+  const showContinue = guessCount > 0 && gameMode === "daily";
+
+  const handleContinueClick = () => {
+    dispatch(uiAction.setView("game"));
+  };
+
+  const handleNewGameClick = (
+    gameMode: "daily" | "practice",
+    challenge: Challenge
+  ) => {
+    dispatch(gameAction.start({ gameMode, challenge, timestamp: Date.now() }));
+    dispatch(uiAction.setView("game"));
+  };
+
+  const handleNewArchiveClick = () => {
+    dispatch(
+      gameAction.start({
+        gameMode: "historic",
+        challenge: archiveChallenge,
+        timestamp: Date.now(),
+        id: archiveId,
+      })
+    );
+    dispatch(uiAction.setView("game"));
+  };
 
   const renderContinueText = () => {
     let text = "";
-    if (gameMode === "normal") {
+    if (challenge === "normal") {
       text += "Daily Duotrigordle";
-    } else if (gameMode === "sequence") {
+    } else if (challenge === "sequence") {
       text += "Daily Sequence";
-    } else if (gameMode === "jumble") {
+    } else if (challenge === "jumble") {
       text += "Daily Jumble";
     }
     text += ` #${gameId} (${guessCount}/${NUM_GUESSES})`;
     return text;
   };
 
-  const handleContinueClick = () => {
-    dispatch(uiAction.setView("game"));
-  };
-
-  const handleNewGameClick = (practice: boolean, gameMode: GameMode) => {
-    if (practice) {
-      dispatch(gameAction.startPractice({ gameMode, timestamp: Date.now() }));
+  function renderDailyTab() {
+    if (showContinue) {
+      return (
+        <div className={styles.gameMode}>
+          <LinkButton className={styles.link} onClick={handleContinueClick}>
+            Continue
+          </LinkButton>
+          <p>{renderContinueText()}</p>
+        </div>
+      );
     } else {
-      dispatch(
-        gameAction.start({ id: getTodaysId(), gameMode, timestamp: Date.now() })
+      return (
+        <>
+          <div className={styles.gameMode}>
+            <LinkButton
+              className={styles.link}
+              onClick={() => handleNewGameClick("daily", "normal")}
+            >
+              Daily Duotrigordle
+            </LinkButton>
+            <p>Solve 32 wordles at the same time</p>
+          </div>
+          <div className={styles.gameMode}>
+            <LinkButton
+              className={styles.link}
+              onClick={() => handleNewGameClick("daily", "sequence")}
+            >
+              Daily Sequence
+            </LinkButton>
+            <p>
+              The next board is revealed only after solving the current board
+            </p>
+          </div>
+          <div className={styles.gameMode}>
+            <LinkButton
+              className={styles.link}
+              onClick={() => handleNewGameClick("daily", "jumble")}
+            >
+              Daily Jumble
+            </LinkButton>
+            <p>
+              Tired of using the same starting words? The first 3 words are
+              randomly chosen for you
+            </p>
+          </div>
+        </>
       );
     }
-    dispatch(uiAction.setView("game"));
-  };
+  }
 
-  const handleArchiveClick = () => {
-    dispatch(gameAction.startHistoric({ id: archiveId }));
-    dispatch(uiAction.setView("game"));
-  };
-
-  return (
-    <div className={cn(welcome, practiceTab && practice)}>
-      <div className={tabs} role="tablist">
-        <div className={tabWrapper}>
-          <button
-            className={tab}
-            role="tab"
-            onClick={() => setPracticeTab(false)}
-          >
-            Daily
-          </button>
-        </div>
-        <div className={tabWrapper}>
-          <button
-            className={tab}
-            role="tab"
-            onClick={() => setPracticeTab(true)}
-          >
-            Practice
-          </button>
-        </div>
-        <div className={highlight} />
-      </div>
-      <div className={gmDaily}>
-        {showContinue ? (
-          <div className={gameMode}>
-            <LinkButton className={link} onClick={handleContinueClick}>
-              Continue
-            </LinkButton>
-            <p>{renderContinueText()}</p>
-          </div>
-        ) : (
-          <>
-            <div className={gameMode}>
-              <LinkButton
-                className={link}
-                onClick={() => handleNewGameClick(false, "normal")}
-              >
-                Daily Duotrigordle
-              </LinkButton>
-              <p>Solve 32 wordles at the same time</p>
-            </div>
-            <div className={gameMode}>
-              <LinkButton
-                className={link}
-                onClick={() => handleNewGameClick(false, "sequence")}
-              >
-                Daily Sequence
-              </LinkButton>
-              <p>
-                The next board is revealed only after solving the current board
-              </p>
-            </div>
-            <div className={gameMode}>
-              <LinkButton
-                className={link}
-                onClick={() => handleNewGameClick(false, "jumble")}
-              >
-                Daily Jumble
-              </LinkButton>
-              <p>
-                Tired of using the same starting words? The first 3 words are
-                randomly chosen for you
-              </p>
-            </div>
-          </>
-        )}
-      </div>
-      <div className={gmPractice}>
-        <div className={gameMode}>
+  function renderPracticeTab() {
+    return (
+      <>
+        <div className={styles.gameMode}>
           <LinkButton
-            className={link}
-            onClick={() => handleNewGameClick(true, "normal")}
+            className={styles.link}
+            onClick={() => handleNewGameClick("practice", "normal")}
           >
             Practice Duotrigordle
           </LinkButton>
           <p>Solve 32 wordles at the same time</p>
         </div>
-        <div className={gameMode}>
+        <div className={styles.gameMode}>
           <LinkButton
-            className={link}
-            onClick={() => handleNewGameClick(true, "sequence")}
+            className={styles.link}
+            onClick={() => handleNewGameClick("practice", "sequence")}
           >
             Practice Sequence
           </LinkButton>
           <p>The next board is revealed only after solving the current board</p>
         </div>
-        <div className={gameMode}>
+        <div className={styles.gameMode}>
           <LinkButton
-            className={link}
-            onClick={() => handleNewGameClick(true, "jumble")}
+            className={styles.link}
+            onClick={() => handleNewGameClick("practice", "jumble")}
           >
             Practice Jumble
           </LinkButton>
@@ -167,17 +145,27 @@ export function Welcome() {
             randomly chosen for you
           </p>
         </div>
-        <div className={gameMode}>
-          <LinkButton className={link} onClick={handleArchiveClick}>
+        <div className={styles.gameMode}>
+          <LinkButton className={styles.link} onClick={handleNewArchiveClick}>
             Archive
           </LinkButton>
-          <p className={archiveDescription}>
-            <span>Play historic duotrigordle </span>
+          <p className={styles.archiveDescription}>
+            <span>Play historic </span>
             <select
+              className={styles.archiveSelect}
+              value={archiveChallenge}
+              onChange={(e) => setArchiveChallenge(e.target.value as "normal")}
+            >
+              <option value="normal">duotrigordle</option>
+              <option value="sequence">sequence</option>
+              <option value="jumble">jumble</option>
+            </select>
+            <select
+              className={styles.archiveSelect}
               value={archiveId}
               onChange={(e) => setArchiveId(parseInt(e.target.value, 10))}
             >
-              {range(1, getTodaysId()).map((i) => (
+              {range(1, todaysId).map((i) => (
                 <option key={i} value={i}>
                   {i}
                 </option>
@@ -185,6 +173,35 @@ export function Welcome() {
             </select>
           </p>
         </div>
+      </>
+    );
+  }
+
+  return (
+    <div className={cn(styles.welcome, practiceTab && styles.practice)}>
+      <div className={styles.tabs} role="tablist">
+        <div className={styles.tabWrapper}>
+          <button
+            className={styles.tab}
+            role="tab"
+            onClick={() => setPracticeTab(false)}
+          >
+            Daily
+          </button>
+        </div>
+        <div className={styles.tabWrapper}>
+          <button
+            className={styles.tab}
+            role="tab"
+            onClick={() => setPracticeTab(true)}
+          >
+            Practice
+          </button>
+        </div>
+        <div className={styles.highlight} />
+      </div>
+      <div className={styles.tabContainer}>
+        {practiceTab ? renderPracticeTab() : renderDailyTab()}
       </div>
     </div>
   );

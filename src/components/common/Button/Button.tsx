@@ -1,7 +1,6 @@
 import cn from "classnames";
 import { ReactNode } from "react";
 import styles from "./Button.module.css";
-const { button } = styles;
 
 type ButtonProps = {
   className?: string;
@@ -10,7 +9,7 @@ type ButtonProps = {
 };
 export function Button({ className, onClick, children }: ButtonProps) {
   return (
-    <button onClick={onClick} className={cn(button, className)}>
+    <button onClick={onClick} className={cn(styles.button, className)}>
       {children}
     </button>
   );

@@ -11,7 +11,7 @@ export function KeyboardListener() {
   const dispatch = useAppDispatch();
   const view = useAppSelector((s) => s.ui.view);
   const modal = useAppSelector((s) => s.ui.modal);
-  const practice = useAppSelector((s) => s.game.practice);
+  const gameMode = useAppSelector((s) => s.game.gameMode);
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -20,7 +20,7 @@ export function KeyboardListener() {
           dispatch(uiAction.showModal(null));
         }
       } else if (!modal && view === "game") {
-        if (e.key === "r" && (e.ctrlKey || e.metaKey) && practice) {
+        if (e.key === "r" && (e.ctrlKey || e.metaKey) && gameMode !== "daily") {
           dispatch(gameAction.restart({ timestamp: Date.now() }));
           e.preventDefault();
         } else if (ALPHABET.has(e.key.toUpperCase())) {
@@ -48,6 +48,6 @@ export function KeyboardListener() {
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [dispatch, modal, view, practice]);
+  }, [dispatch, modal, view, gameMode]);
   return <Fragment />;
 }

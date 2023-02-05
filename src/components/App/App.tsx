@@ -12,7 +12,6 @@ import { Settings } from "../Settings/Settings";
 import Stats from "../Stats/Stats";
 import { Welcome } from "../Welcome/Welcome";
 import styles from "./App.module.css";
-const { main } = styles;
 
 export function App() {
   const view = useAppSelector((s) => s.ui.view);
@@ -26,7 +25,7 @@ export function App() {
 
   return (
     <>
-      <div className={main}>
+      <div className={styles.main}>
         <Header />
         {view === "welcome" ? <Welcome /> : <Boards />}
         {showKeyboard ? <Keyboard /> : null}

@@ -8,12 +8,11 @@ import {
 } from "../../store";
 import { range } from "../../util";
 import styles from "./Keyboard.module.css";
-const { key, keyboard, row1, row2, row3, spacer } = styles;
 
 export function Keyboard() {
   return (
-    <div className={keyboard}>
-      <div className={row1}>
+    <div className={styles.keyboard}>
+      <div className={styles.row1}>
         <Key char="Q" />
         <Key char="W" />
         <Key char="E" />
@@ -25,8 +24,8 @@ export function Keyboard() {
         <Key char="O" />
         <Key char="P" />
       </div>
-      <div className={row2}>
-        <div className={spacer} />
+      <div className={styles.row2}>
+        <div className={styles.spacer} />
         <Key char="A" />
         <Key char="S" />
         <Key char="D" />
@@ -36,9 +35,9 @@ export function Keyboard() {
         <Key char="J" />
         <Key char="K" />
         <Key char="L" />
-        <div className={spacer} />
+        <div className={styles.spacer} />
       </div>
-      <div className={row3}>
+      <div className={styles.row3}>
         <Key char="backspace" />
         <Key char="Z" />
         <Key char="X" />
@@ -103,7 +102,7 @@ function Key(props: KeyProps) {
   );
 
   return (
-    <button style={style} className={key} onClick={handleClick}>
+    <button style={style} className={styles.key} onClick={handleClick}>
       {char}
     </button>
   );

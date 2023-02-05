@@ -2,17 +2,16 @@ import { useEffect, useState } from "react";
 import { START_DATE, useAppSelector } from "../../store";
 import { Modal } from "../common/Modal/Modal";
 import styles from "./About.module.css";
-const { kofi, footer, seperator, title } = styles;
 
 export function About() {
   const shown = useAppSelector((s) => s.ui.modal === "about");
 
   return (
     <Modal shown={shown}>
-      <p className={title}>About</p>
+      <p className={styles.title}>About</p>
       <p>Guess all 32 Duotrigordle words in 37 tries!</p>
       <TimeRemaining />
-      <hr className={seperator} />
+      <hr className={styles.seperator} />
       <p>Duotrigordle by Bryan Chen</p>
       <p>Board highlight idea by Dr. Om Patel</p>
       <p>
@@ -25,13 +24,13 @@ export function About() {
           GitHub
         </a>
       </p>
-      <div className={kofi}>
+      <div className={styles.kofi}>
         💛 Duotrigordle?{" "}
         <a target="_blank" href="https://ko-fi.com/thesilican" rel="noreferrer">
           Buy me a ☕️!
         </a>
       </div>
-      <hr className={seperator} />
+      <hr className={styles.seperator} />
       <p>Based on</p>
       <ul>
         <li>
@@ -77,8 +76,8 @@ export function About() {
           by Josh Wardle
         </li>
       </ul>
-      <hr className={seperator} />
-      <div className={footer}>
+      <hr className={styles.seperator} />
+      <div className={styles.footer}>
         <a
           target="_blank"
           href="https://duotrigordle.com/privacy.html"

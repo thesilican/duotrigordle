@@ -3,7 +3,6 @@ import { ReactNode } from "react";
 import { uiAction, useAppDispatch } from "../../../store";
 import { Button } from "../Button/Button";
 import styles from "./Modal.module.css";
-const { modal, modalWrapper } = styles;
 
 type ModalProps = {
   shown?: boolean;
@@ -16,8 +15,8 @@ export function Modal(props: ModalProps) {
     return null;
   }
   return (
-    <div className={modalWrapper}>
-      <div className={cn(modal)}>
+    <div className={styles.modalWrapper}>
+      <div className={cn(styles.modal)}>
         {props.children}
         <Button onClick={() => dispatch(uiAction.showModal(null))}>
           close

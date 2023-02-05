@@ -47,10 +47,25 @@
   transition: transform 0.25s ease;
   border-radius: 8px;
 }
-.practice .highlight {
+.welcome.practice .highlight {
   transform: translateX(100%);
 }
 
+.tabContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+/*
+  Whenever the .practice class state changes,
+  play fade in animation
+*/
+.welcome:not(.practice) .tabContainer {
+  animation: fadeIn 0.5s ease;
+}
+.welcome .tabContainer {
+  animation: fadeIn2 0.5s ease;
+}
 @keyframes fadeIn {
   0% {
     opacity: 0;
@@ -59,25 +74,13 @@
     opacity: 1;
   }
 }
-
-.gmDaily,
-.gmPractice {
-  flex-direction: column;
-  gap: 30px;
-}
-.gmDaily {
-  display: flex;
-  animation: fadeIn 0.5s ease;
-}
-.gmPractice {
-  display: none;
-}
-.practice .gmDaily {
-  display: none;
-}
-.practice .gmPractice {
-  display: flex;
-  animation: fadeIn 0.5s ease;
+@keyframes fadeIn2 {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .gameMode {
@@ -92,6 +95,16 @@
 
 .archiveDescription {
   display: flex;
-  align-items: center;
   gap: 4px;
+  align-items: center;
+  line-height: 1;
+}
+
+.archiveSelect {
+  font-size: 16px;
+  padding: 0px;
+  background-color: transparent;
+  border: none;
+  border: 1px solid var(--white);
+  border-radius: 4px;
 }

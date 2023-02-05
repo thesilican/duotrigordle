@@ -4,21 +4,6 @@ import { settingsAction, useAppDispatch, useAppSelector } from "../../store";
 import { Checkbox } from "../common/Checkbox/Checkbox";
 import { Modal } from "../common/Modal/Modal";
 import styles from "./Settings.module.css";
-const {
-  description,
-  disabled,
-  email,
-  hint,
-  indented,
-  kofiEmailInput,
-  kofiInputGroup,
-  label,
-  name,
-  seperator,
-  setting,
-  settingsList,
-  title,
-} = styles;
 
 export function Settings() {
   const dispatch = useAppDispatch();
@@ -36,31 +21,31 @@ export function Settings() {
 
   return (
     <Modal shown={shown}>
-      <p className={title}>Settings</p>
-      <div className={settingsList}>
-        <div className={setting}>
+      <p className={styles.title}>Settings</p>
+      <div className={styles.settingsList}>
+        <div className={styles.setting}>
           <Checkbox
             checked={showTimer}
             onChange={(x) => dispatch(settingsAction.update({ showTimer: x }))}
             id="show-timer"
           />
-          <label className={label} htmlFor="show-timer">
-            <p className={name}>Show Speedrun Timer</p>
-            <p className={description}>For pro gamers</p>
+          <label className={styles.label} htmlFor="show-timer">
+            <p className={styles.name}>Show Speedrun Timer</p>
+            <p className={styles.description}>For pro gamers</p>
           </label>
         </div>
-        <div className={setting}>
+        <div className={styles.setting}>
           <Checkbox
             checked={wideMode}
             onChange={(x) => dispatch(settingsAction.update({ wideMode: x }))}
             id="wide-mode"
           />
-          <label className={label} htmlFor="wide-mode">
-            <p className={name}>Wide Mode</p>
-            <p className={description}>8 boards per column</p>
+          <label className={styles.label} htmlFor="wide-mode">
+            <p className={styles.name}>Wide Mode</p>
+            <p className={styles.description}>8 boards per column</p>
           </label>
         </div>
-        <div className={setting}>
+        <div className={styles.setting}>
           <Checkbox
             checked={hideCompletedBoards}
             onChange={(x) =>
@@ -68,13 +53,19 @@ export function Settings() {
             }
             id="hide-completed-boards"
           />
-          <label className={label} htmlFor="hide-completed-boards">
-            <p className={name}>Hide Completed Boards</p>
-            <p className={description}>Boards are hidden when completed</p>
+          <label className={styles.label} htmlFor="hide-completed-boards">
+            <p className={styles.name}>Hide Completed Boards</p>
+            <p className={styles.description}>
+              Boards are hidden when completed
+            </p>
           </label>
         </div>
         <div
-          className={cn(setting, indented, !hideCompletedBoards && disabled)}
+          className={cn(
+            styles.setting,
+            styles.indented,
+            !hideCompletedBoards && styles.disabled
+          )}
         >
           <Checkbox
             disabled={!hideCompletedBoards}
@@ -84,12 +75,14 @@ export function Settings() {
             }
             id="animate-hiding"
           />
-          <label className={label} htmlFor="animate-hiding">
-            <p className={name}>Fade Out</p>
-            <p className={description}>Hidden boards have fade out animation</p>
+          <label className={styles.label} htmlFor="animate-hiding">
+            <p className={styles.name}>Fade Out</p>
+            <p className={styles.description}>
+              Hidden boards have fade out animation
+            </p>
           </label>
         </div>
-        <div className={setting}>
+        <div className={styles.setting}>
           <Checkbox
             checked={stickyInput}
             onChange={(x) =>
@@ -97,37 +90,37 @@ export function Settings() {
             }
             id="sticky-input"
           />
-          <label className={label} htmlFor="sticky-input">
-            <p className={name}>Sticky Input Field</p>
-            <p className={description}>
+          <label className={styles.label} htmlFor="sticky-input">
+            <p className={styles.name}>Sticky Input Field</p>
+            <p className={styles.description}>
               Input fields stick to the bottom when scrolling
             </p>
           </label>
         </div>
-        <div className={setting}>
+        <div className={styles.setting}>
           <Checkbox
             checked={showHints}
             onChange={(x) => dispatch(settingsAction.update({ showHints: x }))}
             id="show-hints"
           />
-          <label className={label} htmlFor="show-hints">
-            <p className={name}>Show Hints</p>
-            <p className={description}>
+          <label className={styles.label} htmlFor="show-hints">
+            <p className={styles.name}>Show Hints</p>
+            <p className={styles.description}>
               Show ghost letters and inconsistency warnings
             </p>
           </label>
         </div>
-        <hr className={seperator} />
+        <hr className={styles.seperator} />
         <KofiEmailInput />
-        <div className={cn(setting, !kofiEmail && disabled)}>
+        <div className={cn(styles.setting, !kofiEmail && styles.disabled)}>
           <Checkbox
             disabled={!kofiEmail}
             checked={hideAds}
             onChange={(x) => dispatch(settingsAction.update({ hideAds: x }))}
             id="hide-ads"
           />
-          <label className={label} htmlFor="hide-ads">
-            <p className={name}>Hide Ads</p>
+          <label className={styles.label} htmlFor="hide-ads">
+            <p className={styles.name}>Hide Ads</p>
           </label>
         </div>
       </div>
@@ -180,8 +173,8 @@ function KofiEmailInput() {
     }
   }
   return (
-    <div className={kofiEmailInput}>
-      <p className={hint}>
+    <div className={styles.kofiEmailInput}>
+      <p className={styles.hint}>
         The following options are for{" "}
         <a target="_blank" href="https://ko-fi.com/thesilican" rel="noreferrer">
           ko-fi supporters
@@ -190,10 +183,10 @@ function KofiEmailInput() {
         <br />
         Enter the email you used to donate:
       </p>
-      <div className={kofiInputGroup}>
+      <div className={styles.kofiInputGroup}>
         <input
           type="email"
-          className={email}
+          className={styles.email}
           value={text}
           onChange={(e) => setText(e.target.value)}
         />
@@ -203,7 +196,7 @@ function KofiEmailInput() {
           value={kofiEmail ? "Reset" : "Submit"}
         />
       </div>
-      <p className={hint}>
+      <p className={styles.hint}>
         {statusCode === 1 ? (
           <>
             Not a valid supporter email

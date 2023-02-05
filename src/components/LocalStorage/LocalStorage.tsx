@@ -25,7 +25,7 @@ export function LocalStorage() {
 
   const game = useAppSelector((s) => s.game);
   useEffect(() => {
-    if (loaded && !game.practice) {
+    if (loaded && game.gameMode === "daily") {
       saveGameToLocalStorage(game);
     }
   }, [game, loaded]);

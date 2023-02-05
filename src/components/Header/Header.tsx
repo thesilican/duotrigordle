@@ -4,50 +4,41 @@ import aboutIcon from "../../assets/about.svg";
 import backIcon from "../../assets/back.svg";
 import fullscreenExitIcon from "../../assets/fullscreen-exit.svg";
 import fullscreenIcon from "../../assets/fullscreen.svg";
+import logoIcon from "../../assets/logo.svg";
 import restartIcon from "../../assets/restart.svg";
 import settingsIcon from "../../assets/settings.svg";
 import statsIcon from "../../assets/stats.svg";
-import logoIcon from "../../assets/logo.svg";
 import {
   gameAction,
   getCompletedBoards,
   loadGameFromLocalStorage,
   NUM_BOARDS,
   NUM_GUESSES,
-  PRACTICE_MODE_MIN_ID,
   uiAction,
   useAppDispatch,
   useAppSelector,
 } from "../../store";
-import { formatTimeElapsed } from "../../util";
+import { formatTimeElapsed, range } from "../../util";
 import { AdBox } from "../AdBox/AdBox";
 import { Button } from "../common/Button/Button";
 import styles from "./Header.module.css";
-const {
-  header,
-  hidden,
-  icon,
-  img,
-  red,
-  row1,
-  row2,
-  timer,
-  title,
-  titleWrapper,
-  welcome,
-  text,
-  wide,
-} = styles;
 
 export function Header() {
   const isWelcome = useAppSelector((s) => s.ui.view === "welcome");
   const wideMode = useAppSelector((s) => s.settings.wideMode);
 
   return (
-    <div className={cn(isWelcome && welcome, header, wideMode && wide)}>
+    <div
+      className={cn(
+        styles.header,
+        isWelcome && styles.welcome,
+        wideMode && styles.wide
+      )}
+    >
       <AdBox />
       <Row1 />
       <Row2 />
+      <Row3 />
     </div>
   );
 }
@@ -56,15 +47,15 @@ function Row1() {
   const dispatch = useAppDispatch();
   const { fullscreen, toggleFullscreen } = useFullscreen();
   const isGameView = useAppSelector((s) => s.ui.view === "game");
-  const isPractice = useAppSelector((s) => s.game.practice);
-  const gameId = useAppSelector((s) => s.game.id);
   const gameMode = useAppSelector((s) => s.game.gameMode);
-  const showRestart = isGameView && isPractice;
+  const gameId = useAppSelector((s) => s.game.id);
+  const challenge = useAppSelector((s) => s.game.challenge);
+  const showRestart = isGameView && gameMode !== "daily";
 
   const handleBackClick = () => {
-    if (isPractice) {
+    if (gameMode !== "daily") {
       const res = window.confirm(
-        "Are you sure you want to quick your practice game?"
+        "Are you sure you want to quit your current game?"
       );
       if (!res) return;
       loadGameFromLocalStorage(dispatch);
@@ -74,13 +65,12 @@ function Row1() {
 
   const handleRestartClick = () => {
     const res = window.confirm(
-      "Are you sure you want to restart your practice game? (You can also use ctrl+r)"
+      "Are you sure you want to restart your current game? (You can also use ctrl+r)"
     );
-    if (res) {
-      dispatch(gameAction.restart({ timestamp: Date.now() }));
-      if (document.activeElement instanceof HTMLElement) {
-        document.activeElement?.blur();
-      }
+    if (!res) return;
+    dispatch(gameAction.restart({ timestamp: Date.now() }));
+    if (document.activeElement instanceof HTMLElement) {
+      document.activeElement?.blur();
     }
   };
 
@@ -89,88 +79,90 @@ function Row1() {
       return "Duotrigordle";
     } else {
       const gameModeText =
-        gameMode === "normal"
+        gameMode === "daily"
+          ? "Daily"
+          : gameMode === "practice"
+          ? "Practice"
+          : gameMode === "historic"
+          ? "Historic"
+          : "?????";
+      const challengeText =
+        challenge === "normal"
           ? "Duotrigordle"
-          : gameMode === "jumble"
+          : challenge === "jumble"
           ? "Jumble"
-          : gameMode === "sequence"
+          : challenge === "sequence"
           ? "Sequence"
           : "??????";
-      if (isPractice) {
-        if (gameId < PRACTICE_MODE_MIN_ID) {
-          return `Historic Duotrigordle #${gameId}`;
-        } else {
-          return `Practice ${gameModeText}`;
-        }
-      } else {
-        return `Daily ${gameModeText} #${gameId}`;
-      }
+      const gameNumber =
+        gameMode === "daily" || gameMode === "historic" ? ` #${gameId}` : "";
+      return `${gameModeText} ${challengeText}${gameNumber}`;
     }
   };
 
   return (
-    <div className={row1}>
+    <div className={styles.row1}>
       <Button
-        className={cn(icon, !isGameView && hidden)}
+        className={cn(styles.icon, !isGameView && styles.hidden)}
         onClick={handleBackClick}
       >
         <img
-          className={img}
+          className={styles.img}
           src={backIcon}
           alt="back"
           title="Back to Homepage"
         />
       </Button>
       <Button
-        className={cn(icon, !showRestart && hidden)}
+        className={cn(styles.icon, !showRestart && styles.hidden)}
         onClick={handleRestartClick}
       >
         <img
-          className={img}
+          className={styles.img}
           src={restartIcon}
           alt="restart"
           title="Restart Game"
         />
       </Button>
-      <div className={titleWrapper}>
-        <div className={title}>
+      <div className={styles.titleWrapper}>
+        <div className={styles.title}>
           {!isGameView ? (
             <img src={logoIcon} width={30} height={30} alt="Logo" />
           ) : null}
-          <span className={text}>{renderTitle()}</span>
+          <span className={styles.text}>{renderTitle()}</span>
         </div>
       </div>
       <Button
-        className={icon}
+        className={styles.icon}
         onClick={() => dispatch(uiAction.showModal("stats"))}
       >
         <img
-          className={img}
+          className={styles.img}
           src={statsIcon}
           alt="statistics"
           title="Statistics"
         />
       </Button>
       <Button
-        className={icon}
+        className={styles.icon}
         onClick={() => dispatch(uiAction.showModal("about"))}
       >
-        <img className={img} src={aboutIcon} alt="about" title="About" />
+        <img className={styles.img} src={aboutIcon} alt="about" title="About" />
       </Button>
       <Button
-        className={icon}
+        className={styles.icon}
         onClick={() => dispatch(uiAction.showModal("settings"))}
       >
         <img
-          className={img}
+          className={styles.img}
           src={settingsIcon}
           alt="settings"
           title="Settings"
         />
       </Button>
-      <Button className={icon} onClick={toggleFullscreen}>
+      <Button className={styles.icon} onClick={toggleFullscreen}>
         <img
-          className={img}
+          className={styles.img}
           src={fullscreen ? fullscreenExitIcon : fullscreenIcon}
           alt="toggle fullscreen"
           title="Toggle Fullscreen"
@@ -197,12 +189,12 @@ function Row2() {
     extraGuessesNum > 0 ? "+" + extraGuessesNum : extraGuessesNum;
 
   return (
-    <div className={row2}>
+    <div className={styles.row2}>
       <span>
         Boards: {boardsCompleted}/{NUM_BOARDS}
       </span>
       <Timer />
-      <span className={cn(cannotWin && !gameOver && red)}>
+      <span className={cn(cannotWin && !gameOver && styles.red)}>
         Guesses: {numGuesses}/{NUM_GUESSES} ({extraGuesses})
       </span>
     </div>
@@ -237,7 +229,46 @@ function Timer() {
     return () => clearInterval(interval);
   }, [showTimer]);
 
-  return <span className={timer}>{timerText}</span>;
+  return <span className={styles.timer}>{timerText}</span>;
+}
+
+function Row3() {
+  const dispatch = useAppDispatch();
+  const targets = useAppSelector((s) => s.game.targets);
+  const guesses = useAppSelector((s) => s.game.guesses);
+  const highlightedBoard = useAppSelector((s) => s.ui.highlightedBoard);
+  const boardsCompleted = useMemo(
+    () => getCompletedBoards(targets, guesses),
+    [targets, guesses]
+  );
+
+  return (
+    <div className={styles.row3}>
+      {range(NUM_BOARDS).map((i) => (
+        <button
+          key={i}
+          className={cn(
+            styles.chip,
+            boardsCompleted[i]
+              ? styles.green
+              : highlightedBoard === i
+              ? styles.white
+              : null
+          )}
+          onClick={() =>
+            dispatch(
+              uiAction.createSideEffect({
+                type: "scroll-board-into-view",
+                board: i,
+              })
+            )
+          }
+        >
+          {i + 1}
+        </button>
+      ))}
+    </div>
+  );
 }
 
 // Type declarations for fullscreen stuff

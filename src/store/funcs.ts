@@ -6,12 +6,6 @@ import {
   WORDS_TARGET,
 } from "./consts";
 
-// Returns the id for today's duotrigordle
-export function getTodaysId(): number {
-  const diff = Date.now() - START_DATE;
-  return Math.ceil(diff / 1000 / 60 / 60 / 24);
-}
-
 // Given a duotrigordle id, return the corresponding 32 target wordles
 export function getTargetWords(id: number): string[] {
   const targetWords: string[] = [];
@@ -103,6 +97,12 @@ export function getJumbleWords(targets: string[], seed: number): string[] {
     }
   }
   return words;
+}
+
+// Returns the id for today's duotrigordle
+export function getDailyId(timestamp: number): number {
+  const diff = timestamp - START_DATE;
+  return Math.ceil(diff / 1000 / 60 / 60 / 24);
 }
 
 // Retuns a random practice mode id

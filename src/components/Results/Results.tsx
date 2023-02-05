@@ -1,6 +1,8 @@
 import cn from "classnames";
 import { useMemo, useState } from "react";
 import {
+  Challenge,
+  GameMode,
   getAllWordsGuessed,
   NUM_BOARDS,
   NUM_GUESSES,
@@ -11,12 +13,11 @@ import {
 import { formatTimeElapsed, range } from "../../util";
 import { Button } from "../common/Button/Button";
 import styles from "./Results.module.css";
-const { green, red, results, row, share, text, title, word, words, wide } =
-  styles;
 
 export function Results() {
   const dispatch = useAppDispatch();
-  const practice = useAppSelector((s) => s.game.practice);
+  const gameMode = useAppSelector((s) => s.game.gameMode);
+  const challenge = useAppSelector((s) => s.game.challenge);
   const id = useAppSelector((s) => s.game.id);
   const targets = useAppSelector((s) => s.game.targets);
   const guesses = useAppSelector((s) => s.game.guesses);
@@ -26,14 +27,15 @@ export function Results() {
 
   const shareableText = useMemo(() => {
     return getShareableText(
-      practice,
+      gameMode,
+      challenge,
       id,
       targets,
       guesses,
       showTimer,
       timeElapsed
     );
-  }, [practice, id, targets, guesses, showTimer, timeElapsed]);
+  }, [gameMode, challenge, id, targets, guesses, showTimer, timeElapsed]);
 
   // 0 - Normal
   // 1 - Copied!
@@ -66,20 +68,28 @@ export function Results() {
   const win = getAllWordsGuessed(targets, guesses);
 
   return (
-    <div className={cn(results, win ? green : red, wideMode && wide)}>
-      <p className={title}>{win ? "You win!" : "Better luck next time"}</p>
-      <div className={row}>
-        <div className={share}>
-          <pre className={text}>{shareableText}</pre>
+    <div
+      className={cn(
+        styles.results,
+        win ? styles.green : styles.red,
+        wideMode && styles.wide
+      )}
+    >
+      <p className={styles.title}>
+        {win ? "You win!" : "Better luck next time"}
+      </p>
+      <div className={styles.row}>
+        <div className={styles.share}>
+          <pre className={styles.text}>{shareableText}</pre>
           <Button onClick={handleCopyClick}>
             {copied ? "Copied!" : "Copy to clipboard"}
           </Button>
         </div>
-        <div className={words}>
+        <div className={styles.words}>
           {range(NUM_BOARDS).map((i) => (
             <button
               key={i}
-              className={cn(word, i === 0 && red)}
+              className={cn(styles.word)}
               onClick={() => handleWordClick(i)}
             >
               {targets[i]}
@@ -92,7 +102,8 @@ export function Results() {
 }
 
 function getShareableText(
-  practice: boolean,
+  gameMode: GameMode,
+  challenge: Challenge,
   id: number,
   targets: string[],
   guesses: string[],
@@ -102,11 +113,25 @@ function getShareableText(
   let text = "";
 
   // Title
-  if (practice) {
-    text += `Practice Duotrigordle\n`;
-  } else {
-    text += `Daily Duotrigordle #${id}\n`;
+  if (gameMode === "daily") {
+    text += "Daily";
+  } else if (gameMode === "practice") {
+    text += "Practice";
+  } else if (gameMode === "historic") {
+    text += "Historic";
   }
+  text += " ";
+  if (challenge === "normal") {
+    text += "Duotrigordle";
+  } else if (challenge === "sequence") {
+    text += "Sequence";
+  } else if (challenge === "jumble") {
+    text += "Jumble";
+  }
+  if (gameMode === "daily" || gameMode === "historic") {
+    text += ` #${id}`;
+  }
+  text += "\n";
 
   // Guesses
   const guessCount = getAllWordsGuessed(targets, guesses)

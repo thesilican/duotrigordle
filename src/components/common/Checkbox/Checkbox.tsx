@@ -1,6 +1,5 @@
 import cn from "classnames";
 import styles from "./Checkbox.module.css";
-const { checkbox } = styles;
 
 type CheckboxProps = {
   id?: string;
@@ -20,7 +19,7 @@ export function Checkbox({
     <input
       type="checkbox"
       id={id}
-      className={cn(className, checkbox)}
+      className={cn(className, styles.checkbox)}
       checked={checked}
       disabled={disabled}
       onChange={(e) => onChange?.(e.target.checked)}

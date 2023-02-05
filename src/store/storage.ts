@@ -1,12 +1,12 @@
 import { Dispatch } from "@reduxjs/toolkit";
 import {
+  Challenge,
   gameAction,
-  GameMode,
   GameState,
   getAllGuessColors,
   getAllWordsGuessed,
+  getDailyId,
   getTargetWords,
-  getTodaysId,
   settingsAction,
   SettingsState,
   statsAction,
@@ -17,7 +17,7 @@ import { NUM_GUESSES } from "./consts";
 // Serialization for game
 type GameSerialized = {
   id: number;
-  gameMode: GameMode;
+  challenge: Challenge;
   guesses: string[];
   startTime: number;
   endTime: number;
@@ -36,14 +36,14 @@ export function assertGameSerialized(obj: unknown): GameSerialized | null {
     typeof obj.startTime == "number" &&
     "endTime" in obj &&
     typeof obj.endTime == "number" &&
-    "gameMode" in obj &&
-    (obj.gameMode === "normal" ||
-      obj.gameMode === "sequence" ||
-      obj.gameMode === "jumble")
+    "challenge" in obj &&
+    (obj.challenge === "normal" ||
+      obj.challenge === "sequence" ||
+      obj.challenge === "jumble")
   ) {
     return {
       id: obj.id,
-      gameMode: obj.gameMode,
+      challenge: obj.challenge,
       guesses: obj.guesses,
       startTime: obj.startTime,
       endTime: obj.endTime,
@@ -55,7 +55,7 @@ export function assertGameSerialized(obj: unknown): GameSerialized | null {
 export function serializeGame(state: GameState): GameSerialized {
   return {
     id: state.id,
-    gameMode: state.gameMode,
+    challenge: state.challenge,
     guesses: state.guesses,
     startTime: state.startTime,
     endTime: state.endTime,
@@ -69,19 +69,19 @@ export function deserializeGame(serialized: GameSerialized): GameState {
   const colors = getAllGuessColors(targets, guesses);
   return {
     id: serialized.id,
-    gameMode: serialized.gameMode,
+    gameMode: "daily",
+    challenge: serialized.challenge,
     input: "",
     targets,
     guesses,
     colors,
     gameOver,
-    practice: false,
     startTime: serialized.startTime,
     endTime: serialized.endTime,
   };
 }
 export function loadGameFromLocalStorage(dispatch: Dispatch) {
-  const todaysId = getTodaysId();
+  const todaysId = getDailyId(Date.now());
   const text = localStorage.getItem("duotrigordle-state");
   const serialized = assertGameSerialized(text && JSON.parse(text));
   if (serialized && serialized.id === todaysId) {

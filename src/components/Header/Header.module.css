@@ -15,13 +15,9 @@
   max-width: var(--width);
   display: flex;
   align-items: center;
+  gap: 4px;
 }
-@media screen and (min-width: 600px) {
-  .row1 {
-    gap: 4px;
-  }
-}
-.wide .row1 {
+.header.wide .row1 {
   max-width: var(--width-wide);
 }
 
@@ -34,7 +30,7 @@
   align-items: center;
   gap: 4px;
 }
-.welcome .title {
+.header.welcome .title {
   margin-left: 40px;
   margin-right: -40px;
   transform: translateX(-36px);
@@ -44,7 +40,7 @@
   .title {
     font-size: 24px;
   }
-  .welcome .title {
+  .header.welcome .title {
     font-size: 30px;
   }
 }
@@ -88,12 +84,12 @@
     font-size: 16px;
   }
 }
-.welcome .row2 {
+.header.welcome .row2 {
   visibility: hidden;
   height: 0;
   opacity: 0;
 }
-.wide .row2 {
+.header.wide .row2 {
   max-width: var(--width-wide);
 }
 .red {
@@ -104,4 +100,37 @@
   flex-grow: 1;
   font-family: "Roboto Mono", monospace;
   text-align: center;
+}
+
+.row3 {
+  width: 100%;
+  max-width: var(--width);
+  display: flex;
+  gap: 1px;
+  transition: opacity 0.25s ease;
+}
+.header.welcome .row3 {
+  visibility: hidden;
+  height: 0;
+  opacity: 0;
+}
+.header.wide .row3 {
+  max-width: var(--width-wide);
+}
+
+.chip {
+  background-color: var(--gray-3);
+  font-size: 8px;
+  border: none;
+  padding: 4px 0px;
+  cursor: pointer;
+  flex: 1;
+}
+.chip.green {
+  background-color: var(--green);
+  color: var(--black);
+}
+.chip.white {
+  background-color: var(--white);
+  color: var(--black);
 }

@@ -10,31 +10,12 @@ import {
 } from "../../store";
 import { range } from "../../util";
 import styles from "./Boards.module.css";
-const {
-  animate,
-  black,
-  board,
-  boards,
-  cell,
-  dimmed,
-  green,
-  hidden,
-  highlighted,
-  letter,
-  sticky,
-  textGhost,
-  textRed,
-  textYellow,
-  yellow,
-  scrollIntoView,
-  wide,
-} = styles;
 
 export function Boards() {
   const wideMode = useAppSelector((s) => s.settings.wideMode);
 
   return (
-    <div className={cn(boards, wideMode && wide)}>
+    <div className={cn(styles.boards, wideMode && styles.wide)}>
       {range(32).map((i) => (
         <Board key={i} idx={i} />
       ))}
@@ -56,7 +37,7 @@ function Board(props: BoardProps) {
   const guessColors = useAppSelector((s) => s.game.colors[props.idx]);
   const hideBoard = useAppSelector((s) => s.settings.hideCompletedBoards);
   const animateHiding = useAppSelector((s) => s.settings.animateHiding);
-  const sequence = useAppSelector((s) => s.game.gameMode === "sequence");
+  const sequence = useAppSelector((s) => s.game.challenge === "sequence");
 
   const target = targets[props.idx];
   const isConcealed = useMemo(() => {
@@ -70,7 +51,6 @@ function Board(props: BoardProps) {
       return false;
     }
   }, [sequence, targets, guesses, props.idx]);
-  console.log(isConcealed);
   const guessedAt = guesses.indexOf(target);
   const complete = guessedAt !== -1;
   const coloredCount = complete ? guessedAt + 1 : guesses.length;
@@ -99,15 +79,15 @@ function Board(props: BoardProps) {
   return (
     <div
       className={cn(
-        board,
-        isHighlighted && highlighted,
-        isDimmed && dimmed,
-        isHidden && hidden,
-        animateHiding && animate
+        styles.board,
+        isHighlighted && styles.highlighted,
+        isDimmed && styles.dimmed,
+        isHidden && styles.hidden,
+        animateHiding && styles.animate
       )}
       onClick={() => dispatch(uiAction.highlightClick(props.idx))}
     >
-      <div ref={scrollRef} className={scrollIntoView} />
+      <div ref={scrollRef} className={styles.scrollIntoView} />
       <ColoredRows
         words={guesses}
         colors={guessColors}
@@ -276,17 +256,17 @@ const Cell = React.memo(function Cell(props: CellProps) {
   return (
     <div
       className={cn(
-        cell,
-        props.color === "B" && black,
-        props.color === "Y" && yellow,
-        props.color === "G" && green,
-        props.textColor === "red" && textRed,
-        props.textColor === "yellow" && textYellow,
-        props.textColor === "ghost" && textGhost,
-        props.sticky && sticky
+        styles.cell,
+        props.color === "B" && styles.black,
+        props.color === "Y" && styles.yellow,
+        props.color === "G" && styles.green,
+        props.textColor === "red" && styles.textRed,
+        props.textColor === "yellow" && styles.textYellow,
+        props.textColor === "ghost" && styles.textGhost,
+        props.sticky && styles.sticky
       )}
     >
-      <span className={letter}>{props.char}</span>
+      <span className={styles.letter}>{props.char}</span>
     </div>
   );
 });

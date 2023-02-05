@@ -15,14 +15,10 @@ type ModalState = "about" | "settings" | "stats" | null;
 type SideEffect = {
   id: number;
 } & SideEffectAction;
-type SideEffectAction =
-  | {
-      type: "scroll-board-into-view";
-      board: number;
-    }
-  | {
-      type: "load-ads";
-    };
+type SideEffectAction = {
+  type: "scroll-board-into-view";
+  board: number;
+};
 
 export const uiInitialState: UiState = {
   view: "welcome",

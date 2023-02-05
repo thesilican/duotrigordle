@@ -19,7 +19,6 @@
   display: grid;
   grid-template-columns: 3fr repeat(7, 2fr) 3fr;
 }
-
 .spacer {
   visibility: hidden;
 }

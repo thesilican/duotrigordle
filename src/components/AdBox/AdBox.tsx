@@ -12,11 +12,13 @@ export function AdBox() {
 
   useEffect(() => {
     if (!loaded && !hideAds && !overrideHideAds) {
-      // Load Google Adsense
-      try {
-        // @ts-ignore
-        (adsbygoogle = window.adsbygoogle || []).push({});
-      } catch {}
+      setTimeout(() => {
+        // Load Google Adsense
+        try {
+          // @ts-ignore
+          (adsbygoogle = window.adsbygoogle || []).push({});
+        } catch {}
+      }, 1000);
       setLoaded(true);
     }
   }, [loaded, hideAds]);

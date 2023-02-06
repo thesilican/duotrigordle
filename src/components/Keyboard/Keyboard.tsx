@@ -82,6 +82,7 @@ function Key(props: KeyProps) {
   );
   const highlightedBoard = useAppSelector((s) => s.ui.highlightedBoard);
   const challenge = useAppSelector((s) => s.game.challenge);
+  const colorBlind = useAppSelector((s) => s.settings.colorBlindMode);
   const style = useMemo(
     () =>
       generateStyles(
@@ -92,17 +93,19 @@ function Key(props: KeyProps) {
         wideMode,
         hideCompletedBoards,
         highlightedBoard,
-        challenge
+        challenge,
+        colorBlind
       ),
     [
-      guessColors,
-      guesses,
-      hideCompletedBoards,
-      highlightedBoard,
       props.char,
       targets,
+      guesses,
+      guessColors,
       wideMode,
+      hideCompletedBoards,
+      highlightedBoard,
       challenge,
+      colorBlind,
     ]
   );
 
@@ -121,7 +124,8 @@ function generateStyles(
   wideMode: boolean,
   hideCompletedBoards: boolean,
   highlightedBoard: number | null,
-  challenge: Challenge
+  challenge: Challenge,
+  colorBlind: boolean
 ): CSSProperties {
   // Don't generate style for backspace & enter keys
   if (!ALPHABET.has(char)) {
@@ -162,12 +166,12 @@ function generateStyles(
       };
     } else if (bestColor === "Y") {
       return {
-        backgroundColor: "var(--yellow)",
+        backgroundColor: colorBlind ? "var(--orange)" : "var(--yellow)",
         color: "var(--black)",
       };
     } else if (bestColor === "G") {
       return {
-        backgroundColor: "var(--green)",
+        backgroundColor: colorBlind ? "var(--blue)" : "var(--green)",
         color: "var(--black)",
       };
     }
@@ -219,26 +223,27 @@ function generateStyles(
 
   // Generate background image
   return wideMode
-    ? generateBackgroundGrid(colors, 4, 8)
-    : generateBackgroundGrid(colors, 8, 4);
+    ? generateBackgroundGrid(colors, 4, 8, colorBlind)
+    : generateBackgroundGrid(colors, 8, 4, colorBlind);
 }
 
 function generateBackgroundGrid(
   colors: string[],
   rows: number,
-  columns: number
+  columns: number,
+  colorBlind: boolean
 ): CSSProperties {
+  const yellow = colorBlind ? "var(--orange)" : "var(--yellow)";
+  const green = colorBlind ? "var(--blue)" : "var(--green)";
+  const gray = colorBlind ? "var(--gray-3)" : "var(--gray-6)";
+
   const backgroundImage = [];
   for (let i = 0; i < rows; i++) {
     const row = [];
     for (let j = 0; j < columns; j++) {
       const color = colors[i * columns + j];
       const colorVal =
-        color === "Y"
-          ? "var(--yellow)"
-          : color === "G"
-          ? "var(--green)"
-          : "transparent";
+        color === "Y" ? yellow : color === "G" ? green : "transparent";
       row.push(`${colorVal} calc(100%*${j}/${columns})`);
       row.push(`${colorVal} calc(100%*${j + 1}/${columns})`);
     }
@@ -250,7 +255,7 @@ function generateBackgroundGrid(
     .join(",");
 
   return {
-    backgroundColor: "var(--gray-6)",
+    backgroundColor: gray,
     backgroundImage: backgroundImage.join(","),
     backgroundSize,
     backgroundPosition,

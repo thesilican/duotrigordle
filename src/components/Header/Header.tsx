@@ -27,13 +27,15 @@ import styles from "./Header.module.css";
 export function Header() {
   const isWelcome = useAppSelector((s) => s.ui.view === "welcome");
   const wideMode = useAppSelector((s) => s.settings.wideMode);
+  const colorBlind = useAppSelector((s) => s.settings.colorBlindMode);
 
   return (
     <div
       className={cn(
         styles.header,
         isWelcome && styles.welcome,
-        wideMode && styles.wide
+        wideMode && styles.wide,
+        colorBlind && styles.colorBlind
       )}
     >
       <AdBox />

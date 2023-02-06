@@ -9,6 +9,7 @@ export function Settings() {
   const dispatch = useAppDispatch();
   const shown = useAppSelector((s) => s.ui.modal === "settings");
   const {
+    colorBlindMode,
     showTimer,
     wideMode,
     animateHiding,
@@ -23,6 +24,19 @@ export function Settings() {
     <Modal shown={shown}>
       <p className={styles.title}>Settings</p>
       <div className={styles.settingsList}>
+        <div className={styles.setting}>
+          <Checkbox
+            checked={colorBlindMode}
+            onChange={(x) =>
+              dispatch(settingsAction.update({ colorBlindMode: x }))
+            }
+            id="color-blind-mode"
+          />
+          <label className={styles.label} htmlFor="color-blind-mode">
+            <p className={styles.name}>Colorblind Mode</p>
+            <p className={styles.description}>Uses higher contrast colors</p>
+          </label>
+        </div>
         <div className={styles.setting}>
           <Checkbox
             checked={showTimer}

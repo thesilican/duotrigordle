@@ -16,9 +16,16 @@ import styles from "./Boards.module.css";
 
 export function Boards() {
   const wideMode = useAppSelector((s) => s.settings.wideMode);
+  const colorBlind = useAppSelector((s) => s.settings.colorBlindMode);
 
   return (
-    <div className={cn(styles.boards, wideMode && styles.wide)}>
+    <div
+      className={cn(
+        styles.boards,
+        wideMode && styles.wide,
+        colorBlind && styles.colorBlind
+      )}
+    >
       {range(32).map((i) => (
         <Board key={i} idx={i} />
       ))}

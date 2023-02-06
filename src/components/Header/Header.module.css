@@ -130,6 +130,10 @@
   background-color: var(--green);
   color: var(--black);
 }
+.header.colorBlind .chip.green {
+  background-color: var(--blue);
+  color: var(--black);
+}
 .chip.white {
   background-color: var(--white);
   color: var(--black);

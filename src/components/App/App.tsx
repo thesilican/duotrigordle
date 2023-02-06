@@ -23,6 +23,18 @@ export function App() {
     addDebugHooks();
   }, []);
 
+  // Prevent duotrigordle form working in iframes
+  if (window.top !== window) {
+    return (
+      <p>
+        Play Duotrigordle at{" "}
+        <a href="https://duotrigordle.com" target="_blank" rel="noreferrer">
+          https://duotrigordle.com
+        </a>
+      </p>
+    );
+  }
+
   return (
     <>
       <div className={styles.main}>

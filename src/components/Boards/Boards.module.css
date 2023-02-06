@@ -110,6 +110,20 @@
 .cell.textGhost {
   color: var(--gray-6);
 }
+.boards.colorBlind .cell.black {
+  background: var(--gray-3);
+}
+.boards.colorBlind .cell.yellow {
+  background: var(--orange);
+  color: var(--black);
+}
+.boards.colorBlind .cell.green {
+  background: var(--blue);
+  color: var(--black);
+}
+.cell.textYellow {
+  color: var(--blue);
+}
 
 .letter {
   user-select: none;

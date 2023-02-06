@@ -50,6 +50,9 @@
   grid-template-columns: repeat(4, 1fr);
   display: grid;
 }
+.results.wide .words {
+  grid-template-columns: repeat(8, 1fr);
+}
 .word {
   background-color: transparent;
   border: none;

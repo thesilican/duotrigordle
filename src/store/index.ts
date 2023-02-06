@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { AnyAction, configureStore, Dispatch } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { gameInitialState, gameReducer, GameState } from "./slice/game";
 import {
@@ -22,8 +22,6 @@ export const initialState: AppState = {
   ui: uiInitialState,
 };
 
-// Create root reducer by reducing reducers
-// (I don't really want to use https://github.com/redux-utilities/reduce-reducers)
 const reducers = [
   gameReducer,
   settingsReducer,
@@ -31,12 +29,14 @@ const reducers = [
   uiReducer,
 ] as const;
 
-export const store = configureStore<AppState>({
-  reducer: (state, action) => reducers.reduce((s, r) => r(s, action), state)!,
-});
+// Root redux reducer
+export const reducer = (state: AppState | undefined, action: AnyAction) =>
+  reducers.reduce((s, r) => r(s, action), state ?? initialState);
+
+export const store = configureStore<AppState>({ reducer });
 
 export const useAppSelector: TypedUseSelectorHook<AppState> = useSelector;
-export const useAppDispatch: () => typeof store.dispatch = useDispatch;
+export const useAppDispatch: () => Dispatch<AnyAction> = useDispatch;
 
 // Reexports
 export * from "./consts";

@@ -6,6 +6,18 @@ import {
 } from "../util";
 
 describe("MersenneTwister", () => {
+  it("should match snapshot", () => {
+    const rng1 = MersenneTwister(0);
+    expect(rng1.u32()).toMatchSnapshot();
+    expect(rng1.u32()).toMatchSnapshot();
+    expect(rng1.u32()).toMatchSnapshot();
+    expect(rng1.u32()).toMatchSnapshot();
+    const rng2 = MersenneTwister(54321);
+    expect(rng2.u32()).toMatchSnapshot();
+    expect(rng2.u32()).toMatchSnapshot();
+    expect(rng2.u32()).toMatchSnapshot();
+    expect(rng2.u32()).toMatchSnapshot();
+  });
   it("should be stable", () => {
     for (let i = 0; i < 100000; i += 123) {
       const rng1 = MersenneTwister(i);
@@ -22,6 +34,9 @@ describe("range", () => {
     expect(range(0)).toEqual([]);
     expect(range(1)).toEqual([0]);
     expect(range(10)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    expect(range(0, 10)).toEqual([0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    expect(range(1, 10)).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+    expect(range(9, 10)).toEqual([9]);
   });
 });
 

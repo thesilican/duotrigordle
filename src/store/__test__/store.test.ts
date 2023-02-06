@@ -1,10 +1,10 @@
-import { getJumbleWords, getTargetWords } from "../funcs";
+import { getGuessColors, getJumbleWords, getTargetWords } from "../funcs";
 
 describe("funcs", () => {
   test("getJumbleWords", () => {
     const targets = getTargetWords(12);
     const jumble = getJumbleWords(targets, 1);
-    expect(jumble).toEqual(["LUNCH", "CONDO", "FOAMY"]);
+    expect(jumble).toEqual(["CAPUT", "DILLY", "FROST"]);
 
     for (let i = 0; i < 100; i++) {
       const jumble = getJumbleWords(targets, i);
@@ -14,5 +14,8 @@ describe("funcs", () => {
         expect(targets).not.toContain(word);
       }
     }
+  });
+  test("guessColors", () => {
+    expect(getGuessColors("AAABC", "CXAAA")).toEqual("YBGYY");
   });
 });

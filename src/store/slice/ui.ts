@@ -2,7 +2,7 @@ import { createAction, createReducer } from "@reduxjs/toolkit";
 import {
   AppState,
   getCompletedBoards,
-  getCompletedBoardsCount,
+  getSequenceVisibleBoard,
   initialState,
 } from "..";
 
@@ -51,11 +51,11 @@ export const uiReducer = createReducer(
         state.ui.modal = action.payload;
       })
       .addCase(uiAction.highlightClick, (state, action) => {
-        const completedBoardsCount = getCompletedBoardsCount(
+        const completedBoards = getCompletedBoards(
           state.game.targets,
           state.game.guesses
         );
-        const completedBoards = getCompletedBoards(
+        const sequenceVisibleBoard = getSequenceVisibleBoard(
           state.game.targets,
           state.game.guesses
         );
@@ -63,7 +63,7 @@ export const uiReducer = createReducer(
           state.game.gameOver ||
           completedBoards[action.payload] !== null ||
           (state.game.challenge === "sequence" &&
-            action.payload > completedBoardsCount) ||
+            action.payload !== sequenceVisibleBoard) ||
           state.ui.highlightedBoard === action.payload
         ) {
           state.ui.highlightedBoard = null;

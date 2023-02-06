@@ -1,7 +1,9 @@
 import cn from "classnames";
 import React, { useEffect, useMemo, useRef } from "react";
 import {
-  getCompletedBoardsCount,
+  getGhostLetters,
+  getSequenceVisibleBoard,
+  getWarnHint,
   NUM_GUESSES,
   uiAction,
   useAppDispatch,
@@ -42,7 +44,7 @@ function Board(props: BoardProps) {
   const target = targets[props.idx];
   const isConcealed = useMemo(() => {
     if (sequence) {
-      return props.idx > getCompletedBoardsCount(targets, guesses);
+      return props.idx > getSequenceVisibleBoard(targets, guesses);
     } else {
       return false;
     }
@@ -153,8 +155,9 @@ function InputRow(props: InputRowProps) {
   const sticky = useAppSelector((s) => s.settings.stickyInput);
 
   const ghostLetters = useMemo(
-    () => getGhostLetters(guesses, colors),
-    [guesses, colors]
+    () =>
+      showHints ? getGhostLetters(guesses, colors) : range(5).map(() => ""),
+    [showHints, guesses, colors]
   );
 
   const isError = input.length === 5 && !WORDS_VALID.has(input);
@@ -166,19 +169,18 @@ function InputRow(props: InputRowProps) {
   return (
     <>
       {range(5).map((i) => {
+        let char: string;
         let textColor: "red" | "yellow" | "ghost" | undefined;
         if (!showHints) {
-          textColor = isError ? "red" : undefined;
-        } else if (input[i]) {
-          textColor = isError ? "red" : isWarn ? "yellow" : undefined;
-        } else {
-          textColor = ghostLetters[i] ? "ghost" : undefined;
-        }
-        let char: string;
-        if (!showHints) {
           char = input[i];
+          textColor = isError ? "red" : undefined;
         } else {
           char = input[i] ?? ghostLetters[i];
+          if (input[i]) {
+            textColor = isError ? "red" : isWarn ? "yellow" : undefined;
+          } else {
+            textColor = ghostLetters[i] ? "ghost" : undefined;
+          }
         }
         return (
           <Cell key={i} char={char} textColor={textColor} sticky={sticky} />
@@ -186,60 +188,6 @@ function InputRow(props: InputRowProps) {
       })}
     </>
   );
-}
-
-function getGhostLetters(guesses: string[], colors: string[]): string[] {
-  const ghostLetters: string[] = range(5).map(() => "");
-  for (let i = 0; i < 5; i++) {
-    for (let row = 0; row < guesses.length; row++) {
-      if (colors[row][i] === "G") {
-        ghostLetters[i] = guesses[row][i];
-        break;
-      }
-    }
-  }
-  return ghostLetters;
-}
-
-function getWarnHint(input: string, guesses: string[], colors: string[]) {
-  const include = new Set<string>();
-  for (let col = 0; col < 5; col++) {
-    for (let row = 0; row < guesses.length; row++) {
-      if (colors[row][col] === "Y" || colors[row][col] === "G") {
-        include.add(guesses[row][col]);
-      }
-    }
-  }
-  const exclude = new Set<string>();
-  for (let col = 0; col < 5; col++) {
-    for (let row = 0; row < guesses.length; row++) {
-      if (colors[row][col] === "B" && !include.has(guesses[row][col])) {
-        exclude.add(guesses[row][col]);
-      }
-    }
-  }
-  for (const letter of exclude) {
-    if (input.includes(letter)) {
-      return true;
-    }
-  }
-  for (const letter of include) {
-    if (input.length === 5 && !input.includes(letter)) {
-      return true;
-    }
-  }
-
-  for (let col = 0; col < input.length; col++) {
-    for (let row = 0; row < guesses.length; row++) {
-      if (colors[row][col] === "G" && input[col] !== guesses[row][col]) {
-        return true;
-      }
-      if (colors[row][col] === "Y" && input[col] === guesses[row][col]) {
-        return true;
-      }
-    }
-  }
-  return false;
 }
 
 type CellProps = {

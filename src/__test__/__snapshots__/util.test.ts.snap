@@ -1,0 +1,17 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MersenneTwister should match snapshot 1`] = `2357136044`;
+
+exports[`MersenneTwister should match snapshot 2`] = `2546248239`;
+
+exports[`MersenneTwister should match snapshot 3`] = `3071714933`;
+
+exports[`MersenneTwister should match snapshot 4`] = `3626093760`;
+
+exports[`MersenneTwister should match snapshot 5`] = `3915467345`;
+
+exports[`MersenneTwister should match snapshot 6`] = `2189234826`;
+
+exports[`MersenneTwister should match snapshot 7`] = `2679307290`;
+
+exports[`MersenneTwister should match snapshot 8`] = `787501152`;

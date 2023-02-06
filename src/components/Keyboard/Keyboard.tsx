@@ -1,8 +1,10 @@
 import { CSSProperties, useMemo } from "react";
 import {
   ALPHABET,
+  Challenge,
   gameAction,
   getCompletedBoards,
+  getSequenceVisibleBoard,
   useAppDispatch,
   useAppSelector,
 } from "../../store";
@@ -79,6 +81,7 @@ function Key(props: KeyProps) {
     (s) => s.settings.hideCompletedBoards
   );
   const highlightedBoard = useAppSelector((s) => s.ui.highlightedBoard);
+  const challenge = useAppSelector((s) => s.game.challenge);
   const style = useMemo(
     () =>
       generateStyles(
@@ -88,7 +91,8 @@ function Key(props: KeyProps) {
         guessColors,
         wideMode,
         hideCompletedBoards,
-        highlightedBoard
+        highlightedBoard,
+        challenge
       ),
     [
       guessColors,
@@ -98,6 +102,7 @@ function Key(props: KeyProps) {
       props.char,
       targets,
       wideMode,
+      challenge,
     ]
   );
 
@@ -115,10 +120,9 @@ function generateStyles(
   guessColors: string[][],
   wideMode: boolean,
   hideCompletedBoards: boolean,
-  highlightedBoard: number | null
+  highlightedBoard: number | null,
+  challenge: Challenge
 ): CSSProperties {
-  const completedBoards = getCompletedBoards(targets, guesses);
-
   // Don't generate style for backspace & enter keys
   if (!ALPHABET.has(char)) {
     return {};
@@ -129,17 +133,59 @@ function generateStyles(
     return {};
   }
 
-  // For board i, colors[i]
+  // Special case: key is just a single solid color
+  if (highlightedBoard !== null || challenge === "sequence") {
+    let idx: number;
+    if (highlightedBoard !== null) {
+      idx = highlightedBoard;
+    } else if (challenge === "sequence") {
+      idx = getSequenceVisibleBoard(targets, guesses);
+    } else {
+      throw new Error("unreachable");
+    }
+
+    let bestColor = "B";
+    for (let row = 0; row < guesses.length; row++) {
+      for (let i = 0; i < 5; i++) {
+        if (guesses[row][i] !== char) continue;
+        const color = guessColors[idx][row][i];
+        if (bestColor === "B" || color === "G") {
+          bestColor = color;
+        }
+      }
+    }
+
+    if (bestColor === "B") {
+      return {
+        backgroundColor: "var(--black)",
+        filter: "contrast(0.5) brightness(0.5)",
+      };
+    } else if (bestColor === "Y") {
+      return {
+        backgroundColor: "var(--yellow)",
+        color: "var(--black)",
+      };
+    } else if (bestColor === "G") {
+      return {
+        backgroundColor: "var(--green)",
+        color: "var(--black)",
+      };
+    }
+  }
+
+  // For the ith board, colors[i]
   // is B if the letter is wrong, or the board is completed
   // is Y if any guess has Y (but no G)
   // is G if any guess has G
+  // If hideCompletedBoards is on, don't push a color
+  // instead increment the pad count
   let colors = [];
-  // Pad count if hideCompletedBoards is on
   let pad = 0;
-  for (let i = 0; i < targets.length; i++) {
+  const completedBoards = getCompletedBoards(targets, guesses);
+  for (let board = 0; board < targets.length; board++) {
     // Check if board is complete
-    if (completedBoards[i] !== null) {
-      if (hideCompletedBoards && highlightedBoard === null) {
+    if (completedBoards[board] !== null) {
+      if (hideCompletedBoards) {
         pad++;
       } else {
         colors.push("B");
@@ -148,12 +194,10 @@ function generateStyles(
     }
     // Push best color
     let bestColor = "B";
-    for (let j = 0; j < guesses.length; j++) {
-      const guess = guesses[j];
-      const results = guessColors[i][j];
-      for (let k = 0; k < 5; k++) {
-        if (guess[k] !== char) continue;
-        const color = results[k];
+    for (let row = 0; row < guesses.length; row++) {
+      for (let i = 0; i < 5; i++) {
+        if (guesses[row][i] !== char) continue;
+        const color = guessColors[board][row][i];
         if (bestColor === "B" || color === "G") {
           bestColor = color;
         }
@@ -165,27 +209,7 @@ function generateStyles(
     colors.push("B");
   }
 
-  // Special case: if highlighted board, then the array contains just one element
-  if (highlightedBoard !== null) {
-    if (colors[highlightedBoard] === "B") {
-      return {
-        backgroundColor: "var(--black)",
-        filter: "contrast(0.5) brightness(0.5)",
-      };
-    } else if (colors[highlightedBoard] === "Y") {
-      return {
-        backgroundColor: "var(--yellow)",
-        color: "var(--black)",
-      };
-    } else if (colors[highlightedBoard] === "G") {
-      return {
-        backgroundColor: "var(--green)",
-        color: "var(--black)",
-      };
-    }
-  }
-
-  // If all B, then fade style
+  // If all B, then fade key out
   if (!colors.find((x) => x !== "B")) {
     return {
       backgroundColor: "var(--black)",

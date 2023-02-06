@@ -1,4 +1,4 @@
-import { MersenneTwister } from "../util";
+import { MersenneTwister, range } from "../util";
 import {
   NUM_BOARDS,
   PRACTICE_MODE_MIN_ID,
@@ -52,6 +52,7 @@ export function getGuessColors(target: string, guess: string): string {
   return guessResult.join("");
 }
 
+// Returns a list of all colors for every board
 export function getAllGuessColors(
   targets: string[],
   guesses: string[]
@@ -90,10 +91,11 @@ export function getAllWordsGuessed(targets: string[], guesses: string[]) {
 }
 
 // Generate 3 random words
+// it is guarenteed that at least 12 different letters are used among the 3 words
 export function getJumbleWords(targets: string[], seed: number): string[] {
   const rng = MersenneTwister(seed);
   const words: string[] = [];
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 1000; i++) {
     words.splice(0, words.length);
     const letterPool = new Set<string>();
     for (let i = 0; i < 3; i++) {
@@ -107,7 +109,7 @@ export function getJumbleWords(targets: string[], seed: number): string[] {
         letterPool.add(letter);
       }
     }
-    if (letterPool.size >= 10) {
+    if (letterPool.size >= 12) {
       break;
     }
   }
@@ -129,4 +131,76 @@ export function getPracticeId(seed: number) {
       return num;
     }
   }
+}
+
+// Returns the current visible board for the sequence challenge
+export function getSequenceVisibleBoard(targets: string[], guesses: string[]) {
+  for (let i = 0; i < targets.length; i++) {
+    if (!guesses.includes(targets[i])) {
+      return i;
+    }
+  }
+  return targets.length;
+}
+
+// Given a list of guesses and their colors, returns an array with 5 elements where
+// the ith element is the green letter in that column, or "" if it is not yet known
+export function getGhostLetters(guesses: string[], colors: string[]): string[] {
+  const ghostLetters: string[] = range(5).map(() => "");
+  for (let i = 0; i < 5; i++) {
+    for (let row = 0; row < guesses.length; row++) {
+      if (colors[row][i] === "G") {
+        ghostLetters[i] = guesses[row][i];
+        break;
+      }
+    }
+  }
+  return ghostLetters;
+}
+
+// Given an input, a list of guesses, and their corresponding colors,
+// returns a hint for whether the
+export function getWarnHint(
+  input: string,
+  guesses: string[],
+  colors: string[]
+) {
+  const include = new Set<string>();
+  for (let col = 0; col < 5; col++) {
+    for (let row = 0; row < guesses.length; row++) {
+      if (colors[row][col] === "Y" || colors[row][col] === "G") {
+        include.add(guesses[row][col]);
+      }
+    }
+  }
+  const exclude = new Set<string>();
+  for (let col = 0; col < 5; col++) {
+    for (let row = 0; row < guesses.length; row++) {
+      if (colors[row][col] === "B" && !include.has(guesses[row][col])) {
+        exclude.add(guesses[row][col]);
+      }
+    }
+  }
+  for (const letter of exclude) {
+    if (input.includes(letter)) {
+      return true;
+    }
+  }
+  for (const letter of include) {
+    if (input.length === 5 && !input.includes(letter)) {
+      return true;
+    }
+  }
+
+  for (let col = 0; col < input.length; col++) {
+    for (let row = 0; row < guesses.length; row++) {
+      if (colors[row][col] === "G" && input[col] !== guesses[row][col]) {
+        return true;
+      }
+      if (colors[row][col] === "Y" && input[col] === guesses[row][col]) {
+        return true;
+      }
+    }
+  }
+  return false;
 }

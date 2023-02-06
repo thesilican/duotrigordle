@@ -121,7 +121,7 @@
   background: var(--blue);
   color: var(--black);
 }
-.cell.textYellow {
+.boards.colorBlind .cell.textYellow {
   color: var(--blue);
 }
 

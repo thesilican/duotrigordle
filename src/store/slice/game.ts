@@ -13,7 +13,7 @@ import {
   normalizeHistory,
 } from "..";
 import { range } from "../../util";
-import { NUM_BOARDS, NUM_GUESSES, WORDS_VALID } from "../consts";
+import { NUM_BOARDS, WORDS_VALID } from "../consts";
 
 export type GameState = {
   // Daily Duotrigordle number (seed for target words)

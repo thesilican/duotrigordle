@@ -4,7 +4,6 @@ import {
   gameAction,
   GameState,
   getAllGuessColors,
-  getAllWordsGuessed,
   getDailyId,
   getIsGameOver,
   getTargetWords,
@@ -13,7 +12,6 @@ import {
   statsAction,
   StatsState,
 } from ".";
-import { NUM_GUESSES } from "./consts";
 
 // Serialization for game
 type GameSerialized = {

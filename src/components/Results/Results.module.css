@@ -50,11 +50,6 @@
   grid-template-columns: repeat(4, 1fr);
   display: grid;
 }
-@media screen and (min-width: 600px) {
-  .words {
-    display: grid;
-  }
-}
 .word {
   background-color: transparent;
   border: none;

@@ -29,18 +29,6 @@ export function KeyboardListener() {
           dispatch(gameAction.inputBackspace());
         } else if (e.key === "Enter") {
           dispatch(gameAction.inputEnter({ timestamp: Date.now() }));
-        } else if (e.key === "ArrowLeft") {
-          dispatch(uiAction.highlightArrowLeft());
-          e.preventDefault();
-        } else if (e.key === "ArrowRight") {
-          dispatch(uiAction.highlightArrowRight());
-          e.preventDefault();
-        } else if (e.key === "ArrowUp") {
-          dispatch(uiAction.highlightArrowUp());
-          e.preventDefault();
-        } else if (e.key === "ArrowDown") {
-          dispatch(uiAction.highlightArrowDown());
-          e.preventDefault();
         } else if (e.key === "Escape") {
           dispatch(uiAction.highlightEsc());
         }

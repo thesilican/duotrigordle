@@ -11,6 +11,7 @@ import statsIcon from "../../assets/stats.svg";
 import {
   gameAction,
   getCompletedBoards,
+  getCompletedBoardsCount,
   loadGameFromLocalStorage,
   NUM_BOARDS,
   NUM_GUESSES,
@@ -177,9 +178,8 @@ function Row2() {
   const guesses = useAppSelector((s) => s.game.guesses);
   const gameOver = useAppSelector((s) => s.game.gameOver);
   const boardsCompleted = useMemo(
-    () =>
-      getCompletedBoards(targets, guesses).reduce((a, v) => a + (v ? 1 : 0), 0),
-    [targets, guesses]
+    () => getCompletedBoardsCount(targets, guesses),
+    [guesses, targets]
   );
   const numGuesses = guesses.length;
   const extraGuessesNum =

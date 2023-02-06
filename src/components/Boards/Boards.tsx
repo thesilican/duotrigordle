@@ -1,7 +1,7 @@
 import cn from "classnames";
 import React, { useEffect, useMemo, useRef } from "react";
 import {
-  getCompletedBoards,
+  getCompletedBoardsCount,
   NUM_GUESSES,
   uiAction,
   useAppDispatch,
@@ -42,11 +42,7 @@ function Board(props: BoardProps) {
   const target = targets[props.idx];
   const isConcealed = useMemo(() => {
     if (sequence) {
-      const completedBoards = getCompletedBoards(targets, guesses).reduce(
-        (a, v) => a + (v ? 1 : 0),
-        0
-      );
-      return props.idx > completedBoards;
+      return props.idx > getCompletedBoardsCount(targets, guesses);
     } else {
       return false;
     }

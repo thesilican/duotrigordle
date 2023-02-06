@@ -61,17 +61,32 @@ export function getAllGuessColors(
   );
 }
 
-// Return all boards that are completed
+// Returns the guess index which the board was completed
+// Otherwise returns null
 export function getCompletedBoards(
   targets: string[],
   guesses: string[]
-): boolean[] {
-  return targets.map((target) => guesses.includes(target));
+): (number | null)[] {
+  return targets.map((target) => {
+    const idx = guesses.indexOf(target);
+    return idx === -1 ? null : idx;
+  });
+}
+
+// Returns the number of boards that are completed
+export function getCompletedBoardsCount(
+  targets: string[],
+  guesses: string[]
+): number {
+  return targets.reduce(
+    (a, target) => a + (guesses.includes(target) ? 1 : 0),
+    0
+  );
 }
 
 // Check if every target word has been guessed
 export function getAllWordsGuessed(targets: string[], guesses: string[]) {
-  return getCompletedBoards(targets, guesses).indexOf(false) === -1;
+  return getCompletedBoards(targets, guesses).indexOf(null) === -1;
 }
 
 // Generate 3 random words

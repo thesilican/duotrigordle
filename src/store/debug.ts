@@ -17,10 +17,6 @@ export function addDebugHooks() {
     window.solveGame = () => {
       batch(() => {
         const state = store.getState();
-        if (state.game.guesses.length !== 0) {
-          console.warn("You must have an empty game board to solve the game");
-          return;
-        }
         const timestamp = Date.now();
         store.dispatch(gameAction.inputEnter({ timestamp }));
         for (let i = 0; i < state.game.targets.length; i++) {

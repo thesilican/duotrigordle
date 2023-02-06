@@ -4,6 +4,7 @@ import {
   getGhostLetters,
   getSequenceVisibleBoard,
   getWarnHint,
+  NUM_BOARDS,
   NUM_GUESSES,
   uiAction,
   useAppDispatch,
@@ -39,21 +40,22 @@ function Board(props: BoardProps) {
   const guessColors = useAppSelector((s) => s.game.colors[props.idx]);
   const hideBoard = useAppSelector((s) => s.settings.hideCompletedBoards);
   const animateHiding = useAppSelector((s) => s.settings.animateHiding);
-  const sequence = useAppSelector((s) => s.game.challenge === "sequence");
+  const challenge = useAppSelector((s) => s.game.challenge);
 
   const target = targets[props.idx];
   const isConcealed = useMemo(() => {
-    if (sequence) {
+    if (challenge === "sequence") {
       return props.idx > getSequenceVisibleBoard(targets, guesses);
     } else {
       return false;
     }
-  }, [sequence, targets, guesses, props.idx]);
+  }, [challenge, props.idx, targets, guesses]);
   const guessedAt = guesses.indexOf(target);
   const complete = guessedAt !== -1;
   const coloredCount = complete ? guessedAt + 1 : guesses.length;
   const showInput = !complete && !gameOver && !isConcealed;
-  const emptyCount = NUM_GUESSES - coloredCount - (showInput ? 1 : 0);
+  const maxGuesses = challenge === "perfect" ? NUM_BOARDS : NUM_GUESSES;
+  const emptyCount = maxGuesses - coloredCount - (showInput ? 1 : 0);
 
   const isDimmed = !gameOver && complete && !hideBoard;
   const isHidden = !gameOver && complete && hideBoard;

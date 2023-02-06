@@ -1,10 +1,12 @@
 import { MersenneTwister, range } from "../util";
 import {
   NUM_BOARDS,
+  NUM_GUESSES,
   PRACTICE_MODE_MIN_ID,
   START_DATE,
   WORDS_TARGET,
 } from "./consts";
+import { Challenge } from "./slice/game";
 
 // Given a duotrigordle id, return the corresponding 32 target wordles
 export function getTargetWords(id: number): string[] {
@@ -62,16 +64,12 @@ export function getAllGuessColors(
   );
 }
 
-// Returns the guess index which the board was completed
-// Otherwise returns null
+// Returns whether each board is completed
 export function getCompletedBoards(
   targets: string[],
   guesses: string[]
-): (number | null)[] {
-  return targets.map((target) => {
-    const idx = guesses.indexOf(target);
-    return idx === -1 ? null : idx;
-  });
+): boolean[] {
+  return targets.map((target) => guesses.includes(target));
 }
 
 // Returns the number of boards that are completed
@@ -87,7 +85,7 @@ export function getCompletedBoardsCount(
 
 // Check if every target word has been guessed
 export function getAllWordsGuessed(targets: string[], guesses: string[]) {
-  return getCompletedBoards(targets, guesses).indexOf(null) === -1;
+  return getCompletedBoards(targets, guesses).indexOf(false) === -1;
 }
 
 // Generate 3 random words
@@ -203,4 +201,14 @@ export function getWarnHint(
     }
   }
   return false;
+}
+
+// Returns whether or not the current game is over
+export function getIsGameOver(
+  targets: string[],
+  guesses: string[],
+  challenge: Challenge
+) {
+  const maxGuesses = challenge === "perfect" ? NUM_BOARDS : NUM_GUESSES;
+  return getAllWordsGuessed(targets, guesses) || guesses.length >= maxGuesses;
 }

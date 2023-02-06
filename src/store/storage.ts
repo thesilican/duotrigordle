@@ -6,6 +6,7 @@ import {
   getAllGuessColors,
   getAllWordsGuessed,
   getDailyId,
+  getIsGameOver,
   getTargetWords,
   settingsAction,
   SettingsState,
@@ -64,8 +65,7 @@ export function serializeGame(state: GameState): GameSerialized {
 export function deserializeGame(serialized: GameSerialized): GameState {
   const targets = getTargetWords(serialized.id);
   const guesses = serialized.guesses;
-  const gameOver =
-    guesses.length === NUM_GUESSES || getAllWordsGuessed(targets, guesses);
+  const gameOver = getIsGameOver(targets, guesses, serialized.challenge);
   const colors = getAllGuessColors(targets, guesses);
   return {
     id: serialized.id,

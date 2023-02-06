@@ -76,7 +76,7 @@ export function Results() {
       )}
     >
       <p className={styles.title}>
-        {win ? "You win!" : "Better luck next time"}
+        {win ? "🎉 You win! 🎉" : "Better luck next time 😓"}
       </p>
       <div className={styles.row}>
         <div className={styles.share}>
@@ -113,23 +113,27 @@ function getShareableText(
   let text = "";
 
   // Title
-  if (gameMode === "daily") {
-    text += "Daily";
-  } else if (gameMode === "practice") {
-    text += "Practice";
-  } else if (gameMode === "historic") {
-    text += "Historic";
-  }
-  text += " ";
-  if (challenge === "normal") {
-    text += "Duotrigordle";
-  } else if (challenge === "sequence") {
-    text += "Sequence";
-  } else if (challenge === "jumble") {
-    text += "Jumble";
-  }
-  if (gameMode === "daily" || gameMode === "historic") {
-    text += ` #${id}`;
+  if (challenge === "perfect") {
+    text += "Perfect Duotrigordle Challenge";
+  } else {
+    if (gameMode === "daily") {
+      text += "Daily";
+    } else if (gameMode === "practice") {
+      text += "Practice";
+    } else if (gameMode === "historic") {
+      text += "Historic";
+    }
+    text += " ";
+    if (challenge === "normal") {
+      text += "Duotrigordle";
+    } else if (challenge === "sequence") {
+      text += "Sequence";
+    } else if (challenge === "jumble") {
+      text += "Jumble";
+    }
+    if (gameMode === "daily" || gameMode === "historic") {
+      text += ` #${id}`;
+    }
   }
   text += "\n";
 
@@ -137,7 +141,8 @@ function getShareableText(
   const guessCount = getAllWordsGuessed(targets, guesses)
     ? guesses.length
     : "X";
-  text += `Guesses: ${guessCount}/${NUM_GUESSES}\n`;
+  const maxGuesses = challenge === "perfect" ? NUM_BOARDS : NUM_GUESSES;
+  text += `Guesses: ${guessCount}/${maxGuesses}\n`;
 
   // Timer
   if (showTimer) {

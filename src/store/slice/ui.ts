@@ -61,7 +61,7 @@ export const uiReducer = createReducer(
         );
         if (
           state.game.gameOver ||
-          completedBoards[action.payload] !== null ||
+          completedBoards[action.payload] ||
           (state.game.challenge === "sequence" &&
             action.payload !== sequenceVisibleBoard) ||
           state.ui.highlightedBoard === action.payload

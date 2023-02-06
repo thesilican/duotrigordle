@@ -5,6 +5,7 @@ import {
   getCompletedBoards,
   getDailyId,
   getGuessColors,
+  getIsGameOver,
   getJumbleWords,
   getPracticeId,
   getTargetWords,
@@ -37,7 +38,7 @@ export type GameState = {
   endTime: number;
 };
 export type GameMode = "daily" | "practice" | "historic";
-export type Challenge = "normal" | "sequence" | "jumble";
+export type Challenge = "normal" | "sequence" | "jumble" | "perfect";
 
 export const gameInitialState: GameState = {
   id: 0,
@@ -101,8 +102,7 @@ export const gameReducer = createReducer(
             ? getJumbleWords(targets, action.payload.timestamp)
             : [];
         const colors = getAllGuessColors(targets, guesses);
-        const startTime =
-          action.payload.challenge === "jumble" ? action.payload.timestamp : 0;
+        const startTime = guesses.length > 0 ? action.payload.timestamp : 0;
 
         state.game = {
           id,
@@ -131,6 +131,7 @@ export const gameReducer = createReducer(
             ? getJumbleWords(targets, action.payload.timestamp)
             : [];
         const colors = getAllGuessColors(targets, guesses);
+        const startTime = guesses.length > 0 ? action.payload.timestamp : 0;
 
         state.game = {
           id,
@@ -141,7 +142,7 @@ export const gameReducer = createReducer(
           colors,
           input: "",
           gameOver: false,
-          startTime: 0,
+          startTime,
           endTime: 0,
         };
         state.ui.highlightedBoard = null;
@@ -168,6 +169,16 @@ export const gameReducer = createReducer(
           return;
         }
         game.guesses.push(guess);
+
+        // Fudge the guess if in perfect mode
+        if (game.guesses.length === 1 && game.challenge === "perfect") {
+          const idx = game.targets.indexOf(guess);
+          if (idx !== -1) {
+            game.targets[idx] = game.targets[0];
+          }
+          game.targets[0] = guess;
+        }
+
         for (let i = 0; i < game.targets.length; i++) {
           const colors = getGuessColors(game.targets[i], guess);
           game.colors[i].push(colors);
@@ -178,10 +189,7 @@ export const gameReducer = createReducer(
         }
 
         // Check if game over
-        if (
-          game.guesses.length === NUM_GUESSES ||
-          getAllWordsGuessed(game.targets, game.guesses)
-        ) {
+        if (getIsGameOver(game.targets, game.guesses, game.challenge)) {
           game.gameOver = true;
           game.endTime = action.payload.timestamp;
 

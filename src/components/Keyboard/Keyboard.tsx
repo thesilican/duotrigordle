@@ -184,7 +184,7 @@ function generateStyles(
   const completedBoards = getCompletedBoards(targets, guesses);
   for (let board = 0; board < targets.length; board++) {
     // Check if board is complete
-    if (completedBoards[board] !== null) {
+    if (completedBoards[board]) {
       if (hideCompletedBoards) {
         pad++;
       } else {

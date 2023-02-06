@@ -146,6 +146,18 @@ export function Welcome() {
           </p>
         </div>
         <div className={styles.gameMode}>
+          <LinkButton
+            className={styles.link}
+            onClick={() => handleNewGameClick("practice", "perfect")}
+          >
+            Perfect Challenge
+          </LinkButton>
+          <p>
+            The ultimate duotrigordle challenge! Can you complete 32 boards
+            without making a single mistake?
+          </p>
+        </div>
+        <div className={styles.gameMode}>
           <LinkButton className={styles.link} onClick={handleNewArchiveClick}>
             Archive
           </LinkButton>

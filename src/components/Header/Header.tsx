@@ -79,6 +79,9 @@ function Row1() {
     if (!isGameView) {
       return "Duotrigordle";
     } else {
+      if (challenge === "perfect") {
+        return "Perfect Challenge";
+      }
       const gameModeText =
         gameMode === "daily"
           ? "Daily"
@@ -181,9 +184,11 @@ function Row2() {
     () => getCompletedBoardsCount(targets, guesses),
     [guesses, targets]
   );
+  const challenge = useAppSelector((s) => s.game.challenge);
   const numGuesses = guesses.length;
+  const maxGuesses = challenge === "perfect" ? NUM_BOARDS : NUM_GUESSES;
   const extraGuessesNum =
-    NUM_GUESSES - NUM_BOARDS - (numGuesses - boardsCompleted);
+    maxGuesses - NUM_BOARDS - (numGuesses - boardsCompleted);
   const cannotWin = extraGuessesNum < 0;
   const extraGuesses =
     extraGuessesNum > 0 ? "+" + extraGuessesNum : extraGuessesNum;
@@ -195,7 +200,7 @@ function Row2() {
       </span>
       <Timer />
       <span className={cn(cannotWin && !gameOver && styles.red)}>
-        Guesses: {numGuesses}/{NUM_GUESSES} ({extraGuesses})
+        Guesses: {numGuesses}/{maxGuesses} ({extraGuesses})
       </span>
     </div>
   );

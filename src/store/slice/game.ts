@@ -2,6 +2,7 @@ import { createAction, createReducer } from "@reduxjs/toolkit";
 import {
   getAllGuessColors,
   getAllWordsGuessed,
+  getCompletedBoards,
   getDailyId,
   getGuessColors,
   getIsGameOver,
@@ -213,7 +214,14 @@ export const gameReducer = createReducer(
           state.ui.highlightedBoard = null;
         } else {
           // Check if highlighted board is invalid, then shift right until it isn't
-          if (state.ui.highlightedBoard !== null) {
+          const completedBoards = getCompletedBoards(
+            game.targets,
+            game.guesses
+          );
+          if (
+            state.ui.highlightedBoard !== null &&
+            completedBoards[state.ui.highlightedBoard]
+          ) {
             highlightNextBoard(state);
           }
         }

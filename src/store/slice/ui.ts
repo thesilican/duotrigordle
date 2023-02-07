@@ -127,7 +127,7 @@ export function highlightNextBoard(state: AppState) {
     state.game.guesses
   );
   for (let i = 0; i < NUM_BOARDS; i++) {
-    if (completedBoards[idx]) {
+    if (!completedBoards[idx]) {
       state.ui.highlightedBoard = idx;
       return;
     }
@@ -153,7 +153,7 @@ export function highlightPreviousBoard(state: AppState) {
     state.game.guesses
   );
   for (let i = 0; i < NUM_BOARDS; i++) {
-    if (completedBoards[idx]) {
+    if (!completedBoards[idx]) {
       state.ui.highlightedBoard = idx;
       return;
     }

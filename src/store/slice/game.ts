@@ -213,7 +213,9 @@ export const gameReducer = createReducer(
           state.ui.highlightedBoard = null;
         } else {
           // Check if highlighted board is invalid, then shift right until it isn't
-          highlightNextBoard(state);
+          if (state.ui.highlightedBoard !== null) {
+            highlightNextBoard(state);
+          }
         }
       })
 );

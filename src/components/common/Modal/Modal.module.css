@@ -1,0 +1,42 @@
+.modalWrapper {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  background-color: #00000055;
+}
+
+.modal {
+  width: 100%;
+  max-width: 400px;
+  max-height: 100%;
+  padding: 24px;
+  margin: 4px;
+  background-color: var(--gray-1);
+  border: 1px solid var(--white);
+  border-radius: 4px;
+
+  overflow-y: scroll;
+
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(36px);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+.modalWrapper:not(.hidden) .modal {
+  animation: fadeIn 0.25s ease;
+}

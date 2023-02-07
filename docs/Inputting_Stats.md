@@ -7,7 +7,7 @@ in case you've been tracking them on your own.
 
 ## Editing Stats
 
-To edit your duotrigordle statistics, click "Edit" at the bottom of the statistics popup.
+To edit your duotrigordle statistics, click "Edit" at the bottom of the statistics dialog.
 
 Each line of text represents one game of duotrigordle, and contains the following three pieces of data seperated by spaces:
 

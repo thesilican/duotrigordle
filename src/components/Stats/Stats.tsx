@@ -1,21 +1,22 @@
 import cn from "classnames";
-import { Fragment, useEffect, useMemo, useState } from "react";
-import { useDispatch } from "react-redux";
-import { PRACTICE_MODE_MIN_ID } from "../consts";
-import { formatTimeElapsed, parseTimeElapsed, range } from "../funcs";
+import { Fragment, useMemo, useState } from "react";
 import {
-  GameEntry,
+  HistoryEntry,
   normalizeHistory,
-  setHistory,
-  showPopup,
+  PRACTICE_MODE_MIN_ID,
+  statsAction,
   StatsState,
-  useSelector,
-} from "../store";
+  useAppDispatch,
+  useAppSelector,
+} from "../../store";
+import { formatTimeElapsed, parseTimeElapsed, range } from "../../util";
+import { LinkButton } from "../common/LinkButton/LinkButton";
+import { Modal } from "../common/Modal/Modal";
+import styles from "./Stats.module.css";
 
 export default function Stats() {
-  const dispatch = useDispatch();
-  const shown = useSelector((s) => s.ui.popup === "stats");
-  const stats = useSelector((s) => s.stats);
+  const shown = useAppSelector((s) => s.ui.modal === "stats");
+  const stats = useAppSelector((s) => s.stats);
   const {
     played,
     win,
@@ -29,42 +30,43 @@ export default function Stats() {
   } = useMemo(() => calculateStatsInfo(stats), [stats]);
 
   return (
-    <div className={cn("popup-wrapper", !shown && "hidden")}>
-      <div className="popup">
-        <p className="stats-title">Statistics</p>
-        <div className="stats-grid">
-          <p className="value">{played}</p>
-          <p className="value">{win}</p>
-          <p className="value">{currStreak}</p>
-          <p className="value">{maxStreak}</p>
-          <p className="label">Played</p>
-          <p className="label">Win %</p>
-          <p className="label">
+    <Modal shown={shown}>
+      <div className={styles.statsContainer}>
+        <p className={styles.title}>Statistics</p>
+        <div className={styles.grid}>
+          <p className={styles.value}>{played}</p>
+          <p className={styles.value}>{win}</p>
+          <p className={styles.value}>{currStreak}</p>
+          <p className={styles.value}>{maxStreak}</p>
+          <p className={styles.label}>Played</p>
+          <p className={styles.label}>Win %</p>
+          <p className={styles.label}>
             Current
             <br />
             Streak
           </p>
-          <p className="label">
+          <p className={styles.label}>
             Max
             <br />
             Streak
           </p>
         </div>
-        <p className="stats-title">Guess Distribution</p>
-        <div className="stats-chart">
+        <p className={styles.title}>Guess Distribution</p>
+        <div className={styles.chart}>
           {range(6).map((i) => (
             <Fragment key={i}>
               <p>{i + 32}</p>
-              <div className="bar-wrapper">
-                <div className="bar" style={{ width: guessStyle[i] }}>
+              <div className={styles.barWrapper}>
+                <div className={styles.bar} style={{ width: guessStyle[i] }}>
+                  <div className={styles.barColor} />
                   <p>{guessCount[i]}</p>
                 </div>
               </div>
             </Fragment>
           ))}
         </div>
-        <p className="stats-title">Times</p>
-        <div className="stats-times">
+        <p className={styles.title}>Times</p>
+        <div className={styles.times}>
           <p>Best Time:</p>
           <p>{bestTime}</p>
           <p>Average Time (last 7):</p>
@@ -73,11 +75,8 @@ export default function Stats() {
           <p>{avgTimeAll}</p>
         </div>
         <StatsEditor />
-        <button className="close" onClick={() => dispatch(showPopup(null))}>
-          close
-        </button>
       </div>
-    </div>
+    </Modal>
   );
 }
 
@@ -117,7 +116,8 @@ function calculateStatsInfo(stats: StatsState) {
   const guessMax = Math.max(...guessCount);
   const guessStyle = guessCount.map((count) => {
     const percent = guessMax === 0 ? 0 : count / guessMax;
-    const width = Math.max(5, percent * 100);
+    // Add 3% to account for text
+    const width = Math.max(5, percent * 100) + 3;
     return `${width.toFixed(0)}%`;
   });
 
@@ -151,11 +151,11 @@ function calculateStatsInfo(stats: StatsState) {
 }
 
 function StatsEditor() {
-  const [expanded, setExpanded] = useState(false);
+  const [isExpanded, setExpanded] = useState(false);
   const [value, setValue] = useState("");
   const [modified, setModified] = useState(false);
-  const dispatch = useDispatch();
-  const history = useSelector((s) => s.stats.history);
+  const dispatch = useAppDispatch();
+  const history = useAppSelector((s) => s.stats.history);
 
   function handleExpand() {
     const res = window.confirm(
@@ -193,7 +193,7 @@ function StatsEditor() {
         "Are you sure you want to submit these changes? (they cannot be undone)"
       );
       if (!res) return;
-      dispatch(setHistory(parsedHistory));
+      dispatch(statsAction.setHistory(parsedHistory));
       setValue(stringifyHistory(parsedHistory));
       setModified(false);
     }
@@ -211,15 +211,11 @@ function StatsEditor() {
   }
 
   return (
-    <div className={cn("stats-editor", expanded && "expanded")}>
-      {expanded ? (
-        <div className="buttons">
-          <button className="link" onClick={handleSubmit}>
-            Submit
-          </button>
-          <button className="link" onClick={handleReset}>
-            Reset
-          </button>
+    <div className={cn(styles.editorContainer, isExpanded && styles.expanded)}>
+      {isExpanded ? (
+        <div className={styles.buttons}>
+          <LinkButton onClick={handleSubmit}>Submit</LinkButton>
+          <LinkButton onClick={handleReset}>Reset</LinkButton>
           <a
             href="https://github.com/thesilican/duotrigordle/tree/main/docs/Inputting_Stats.md"
             target="_blank"
@@ -227,16 +223,12 @@ function StatsEditor() {
           >
             Help
           </a>
-          <div />
-          <button className="link" onClick={handleClose}>
-            Close
-          </button>
+          <div className={styles.spacer} />
+          <LinkButton onClick={handleClose}>Close</LinkButton>
         </div>
       ) : (
-        <div className="buttons">
-          <button className="link edit" onClick={handleExpand}>
-            Edit
-          </button>
+        <div className={styles.buttons}>
+          <LinkButton onClick={handleExpand}>Edit</LinkButton>
           <a
             href="https://github.com/thesilican/duotrigordle/tree/main/docs/Inputting_Stats.md"
             target="_blank"
@@ -247,7 +239,7 @@ function StatsEditor() {
         </div>
       )}
       <textarea
-        className="editor"
+        className={styles.editor}
         rows={10}
         value={value}
         onChange={(e) => {
@@ -255,20 +247,20 @@ function StatsEditor() {
           setModified(true);
         }}
       />
-      <p className="hint">
+      <p className={styles.hint}>
         Format: <code>id guesses time</code>
         <br />
         <code>id</code> - Game ID
         <br />
-        <code>guesses</code> - Number of guesses or "X"
+        <code>guesses</code> - Number of guesses or &quot;X&quot;
         <br />
-        <code>time</code> - Time elapsed or "-"
+        <code>time</code> - Time elapsed or &quot;-&quot;
       </p>
     </div>
   );
 }
 
-function stringifyHistory(history: GameEntry[]): string {
+function stringifyHistory(history: HistoryEntry[]): string {
   history = normalizeHistory(history);
   const lines = [];
   for (const stat of history) {
@@ -281,8 +273,8 @@ function stringifyHistory(history: GameEntry[]): string {
   return lines.join("\n");
 }
 
-function parseHistory(text: string): GameEntry[] | string {
-  const history: GameEntry[] = [];
+function parseHistory(text: string): HistoryEntry[] | string {
+  const history: HistoryEntry[] = [];
   if (text.trim() === "") {
     return [];
   }

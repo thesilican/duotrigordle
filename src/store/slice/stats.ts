@@ -1,53 +1,53 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
 import { initialState } from "..";
-import { PRACTICE_MODE_MIN_ID } from "../../consts";
+import { PRACTICE_MODE_MIN_ID } from "../consts";
 
-export type GameEntry = {
+export type HistoryEntry = {
   id: number;
   guesses: number | null;
   time: number | null;
 };
 export type StatsState = {
-  history: GameEntry[];
+  history: HistoryEntry[];
 };
 export const statsInitialState: StatsState = {
   history: [],
 };
 
-export const loadStats = createAction<StatsState>("stats/loadStats");
-export const addHistory = createAction<GameEntry>("stats/addHistory");
-export const removeHistory = createAction<{ id: number }>(
-  "stats/removeHistory"
-);
-export const setHistory = createAction<GameEntry[]>("stats/setHistory");
+export const statsAction = {
+  load: createAction<StatsState>("stats/loadStats"),
+  addEntry: createAction<HistoryEntry>("stats/addEntry"),
+  removeEntry: createAction<{ id: number }>("stats/removeEntry"),
+  setHistory: createAction<HistoryEntry[]>("stats/setHistory"),
+};
 
 export const statsReducer = createReducer(
   () => initialState,
   (builder) =>
     builder
-      .addCase(loadStats, (state, action) => {
+      .addCase(statsAction.load, (state, action) => {
         state.stats = action.payload;
         normalizeHistory(state.stats.history);
       })
-      .addCase(addHistory, (state, action) => {
+      .addCase(statsAction.addEntry, (state, action) => {
         const entry = action.payload;
         const newHistory = state.stats.history.filter((x) => x.id !== entry.id);
         newHistory.push(entry);
         state.stats.history = normalizeHistory(newHistory);
       })
-      .addCase(removeHistory, (state, action) => {
+      .addCase(statsAction.removeEntry, (state, action) => {
         const newHistory = state.stats.history.filter(
           (x) => x.id !== action.payload.id
         );
         state.stats.history = normalizeHistory(newHistory);
       })
-      .addCase(setHistory, (state, action) => {
+      .addCase(statsAction.setHistory, (state, action) => {
         state.stats.history = normalizeHistory(action.payload);
       })
 );
 
-export function normalizeHistory(history: GameEntry[]): GameEntry[] {
-  const newHistory: GameEntry[] = [];
+export function normalizeHistory(history: HistoryEntry[]): HistoryEntry[] {
+  const newHistory: HistoryEntry[] = [];
   // Remove invalid ids
   const visited = new Set();
   for (const entry of history) {

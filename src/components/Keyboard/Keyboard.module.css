@@ -1,0 +1,47 @@
+.keyboard {
+  width: 100%;
+  max-width: var(--width);
+  margin: auto;
+  padding: 4px;
+
+  display: flex;
+  flex-direction: column;
+}
+.row1 {
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+}
+.row2 {
+  display: grid;
+  grid-template-columns: 1fr repeat(9, 2fr) 1fr;
+}
+.row3 {
+  display: grid;
+  grid-template-columns: 3fr repeat(7, 2fr) 3fr;
+}
+.spacer {
+  visibility: hidden;
+}
+.key {
+  margin: 2px;
+  flex: 1;
+  height: 50px;
+  background-color: var(--gray-4);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 25px;
+  user-select: none;
+  transition: filter 0.1s ease, background-color 0.1s ease;
+  padding: 0;
+}
+@media screen and (min-width: 600px) {
+  .key {
+    font-size: 30px;
+    height: 50px;
+  }
+}
+.key:active {
+  transform: translateY(2px);
+  filter: brightness(125%);
+}

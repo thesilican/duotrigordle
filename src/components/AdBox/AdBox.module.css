@@ -1,0 +1,7 @@
+.adBox {
+  height: 60px;
+}
+
+.adBox.hidden {
+  display: none;
+}

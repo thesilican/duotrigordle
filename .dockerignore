@@ -1,4 +1,8 @@
-.git
-node_modules
-build
-docs
+.git/
+node_modules/
+build/
+docs/
+LICENSE
+README.md
+.gitignore
+**/__test__/

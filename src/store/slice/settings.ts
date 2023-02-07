@@ -4,36 +4,34 @@ import { initialState } from "..";
 export type SettingsState = {
   colorBlindMode: boolean;
   showTimer: boolean;
-  useFloatingInput: boolean;
   wideMode: boolean;
   hideCompletedBoards: boolean;
   animateHiding: boolean;
-  hideKeyboard: boolean;
-  hideEmptyRows: boolean;
+  stickyInput: boolean;
+  showHints: boolean;
   hideAds: boolean;
   kofiEmail: string | null;
 };
 export const settingsInitialState: SettingsState = {
   colorBlindMode: false,
   showTimer: false,
-  useFloatingInput: false,
   wideMode: false,
   hideCompletedBoards: false,
   animateHiding: true,
-  hideKeyboard: false,
-  hideEmptyRows: false,
+  stickyInput: true,
+  showHints: true,
   hideAds: false,
   kofiEmail: null,
 };
 
-export const updateSettings = createAction<Partial<SettingsState>>(
-  "settings/updateSettings"
-);
+export const settingsAction = {
+  update: createAction<Partial<SettingsState>>("settings/updateSettings"),
+};
 
 export const settingsReducer = createReducer(
   () => initialState,
   (builder) => {
-    builder.addCase(updateSettings, (state, action) => {
+    builder.addCase(settingsAction.update, (state, action) => {
       state.settings = {
         ...state.settings,
         ...action.payload,

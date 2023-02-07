@@ -1,0 +1,139 @@
+.header {
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: var(--gray-1);
+  padding: 4px 4px;
+  border-bottom: 1px solid var(--gray-3);
+}
+
+.row1 {
+  width: 100%;
+  max-width: var(--width);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.header.wide .row1 {
+  max-width: var(--width-wide);
+}
+
+.titleWrapper {
+  flex-grow: 1;
+}
+.title {
+  transition: transform 0.25s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.header.welcome .title {
+  margin-left: 40px;
+  margin-right: -40px;
+  transform: translateX(-36px);
+  font-size: 24px;
+}
+@media screen and (min-width: 600px) {
+  .title {
+    font-size: 24px;
+  }
+  .header.welcome .title {
+    font-size: 30px;
+  }
+}
+.text {
+  text-align: center;
+  flex: 1;
+}
+.welcome .text {
+  text-align: left;
+}
+
+.icon {
+  background-color: transparent;
+  border: none;
+  padding: 0px;
+  transition: opacity 0.25s ease;
+}
+.img {
+  width: 30px;
+  height: 30px;
+}
+
+.icon.hidden {
+  visibility: hidden;
+  position: fixed;
+  opacity: 0;
+}
+
+.row2 {
+  width: 100%;
+  padding-left: 4px;
+  padding-right: 4px;
+  max-width: var(--width);
+  display: flex;
+  justify-content: stretch;
+  transition: opacity 0.25s ease;
+  font-size: 12px;
+}
+@media screen and (min-width: 600px) {
+  .row2 {
+    font-size: 16px;
+  }
+}
+.header.welcome .row2 {
+  visibility: hidden;
+  height: 0;
+  opacity: 0;
+}
+.header.wide .row2 {
+  max-width: var(--width-wide);
+}
+.red {
+  color: var(--red);
+}
+
+.timer {
+  flex-grow: 1;
+  font-family: "Roboto Mono", monospace;
+  text-align: center;
+}
+
+.row3 {
+  width: 100%;
+  max-width: var(--width);
+  display: flex;
+  gap: 1px;
+  transition: opacity 0.25s ease;
+}
+.header.welcome .row3 {
+  visibility: hidden;
+  height: 0;
+  opacity: 0;
+}
+.header.wide .row3 {
+  max-width: var(--width-wide);
+}
+
+.chip {
+  background-color: var(--gray-3);
+  font-size: 8px;
+  border: none;
+  padding: 4px 0px;
+  cursor: pointer;
+  flex: 1;
+}
+.chip.green {
+  background-color: var(--green);
+  color: var(--black);
+}
+.header.colorBlind .chip.green {
+  background-color: var(--blue);
+  color: var(--black);
+}
+.chip.white {
+  background-color: var(--white);
+  color: var(--black);
+}

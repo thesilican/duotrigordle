@@ -31,6 +31,12 @@ export function KeyboardListener() {
           dispatch(gameAction.inputEnter({ timestamp: Date.now() }));
         } else if (e.key === "Escape") {
           dispatch(uiAction.highlightEsc());
+        } else if (e.key === "ArrowLeft") {
+          dispatch(uiAction.highlightArrow({ direction: "left" }));
+          e.preventDefault();
+        } else if (e.key === "ArrowRight") {
+          dispatch(uiAction.highlightArrow({ direction: "right" }));
+          e.preventDefault();
         }
       }
     };

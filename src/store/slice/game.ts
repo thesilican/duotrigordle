@@ -2,13 +2,13 @@ import { createAction, createReducer } from "@reduxjs/toolkit";
 import {
   getAllGuessColors,
   getAllWordsGuessed,
-  getCompletedBoards,
   getDailyId,
   getGuessColors,
   getIsGameOver,
   getJumbleWords,
   getPracticeId,
   getTargetWords,
+  highlightNextBoard,
   initialState,
   normalizeHistory,
 } from "..";
@@ -213,20 +213,7 @@ export const gameReducer = createReducer(
           state.ui.highlightedBoard = null;
         } else {
           // Check if highlighted board is invalid, then shift right until it isn't
-          if (state.ui.highlightedBoard === null) return;
-          const completedBoards = getCompletedBoards(
-            game.targets,
-            game.guesses
-          );
-          let i = state.ui.highlightedBoard;
-          const start = i;
-          while (completedBoards[i]) {
-            i = (i + 1) % completedBoards.length;
-            if (i === start) {
-              break;
-            }
-          }
-          state.ui.highlightedBoard = i;
+          highlightNextBoard(state);
         }
       })
 );

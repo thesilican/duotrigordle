@@ -4,6 +4,7 @@ import {
   getCompletedBoards,
   getSequenceVisibleBoard,
   initialState,
+  NUM_BOARDS,
 } from "..";
 
 export type UiState = {
@@ -36,6 +37,9 @@ export const uiAction = {
   showModal: createAction<ModalState>("ui/showModal"),
   highlightClick: createAction<number>("ui/clickBoard"),
   highlightEsc: createAction("ui/highlightEsc"),
+  highlightArrow: createAction<{ direction: "left" | "right" }>(
+    "ui/highlightArrow"
+  ),
   createSideEffect: createAction<SideEffectAction>("ui/createSideEffect"),
   resolveSideEffect: createAction<number>("ui/resolveSideEffect"),
 };
@@ -60,6 +64,7 @@ export const uiReducer = createReducer(
           state.game.guesses
         );
         if (
+          state.ui.view !== "game" ||
           state.game.gameOver ||
           completedBoards[action.payload] ||
           (state.game.challenge === "sequence" &&
@@ -82,6 +87,19 @@ export const uiReducer = createReducer(
           (x) => x.id !== action.payload
         );
       })
+      .addCase(uiAction.highlightArrow, (state, action) => {
+        if (action.payload.direction === "left") {
+          highlightPreviousBoard(state);
+        } else {
+          highlightNextBoard(state);
+        }
+        if (state.ui.highlightedBoard !== null) {
+          addSideEffect(state, {
+            type: "scroll-board-into-view",
+            board: state.ui.highlightedBoard,
+          });
+        }
+      })
 );
 
 function addSideEffect(state: AppState, effect: SideEffectAction) {
@@ -90,4 +108,56 @@ function addSideEffect(state: AppState, effect: SideEffectAction) {
     ...effect,
   });
   state.ui.sideEffectCount++;
+}
+
+export function highlightNextBoard(state: AppState) {
+  if (state.game.gameOver) {
+    state.ui.highlightedBoard = null;
+    return;
+  }
+
+  let idx = state.ui.highlightedBoard;
+  if (idx === null) {
+    idx = 0;
+  } else {
+    idx = (idx + 1) % NUM_BOARDS;
+  }
+  const completedBoards = getCompletedBoards(
+    state.game.targets,
+    state.game.guesses
+  );
+  for (let i = 0; i < NUM_BOARDS; i++) {
+    if (completedBoards[idx] !== null) {
+      state.ui.highlightedBoard = idx;
+      return;
+    }
+    idx = (idx + 1) % NUM_BOARDS;
+  }
+  state.ui.highlightedBoard = null;
+}
+
+export function highlightPreviousBoard(state: AppState) {
+  if (state.game.gameOver) {
+    state.ui.highlightedBoard = null;
+    return;
+  }
+
+  let idx = state.ui.highlightedBoard;
+  if (idx === null) {
+    idx = NUM_BOARDS - 1;
+  } else {
+    idx = (idx + NUM_BOARDS - 1) % NUM_BOARDS;
+  }
+  const completedBoards = getCompletedBoards(
+    state.game.targets,
+    state.game.guesses
+  );
+  for (let i = 0; i < NUM_BOARDS; i++) {
+    if (completedBoards[idx] !== null) {
+      state.ui.highlightedBoard = idx;
+      return;
+    }
+    idx = (idx + NUM_BOARDS - 1) % NUM_BOARDS;
+  }
+  state.ui.highlightedBoard = null;
 }

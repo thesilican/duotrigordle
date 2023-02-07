@@ -1,10 +1,11 @@
 import cn from "classnames";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Challenge,
   gameAction,
+  getCompletedBoardsCount,
   getDailyId,
-  NUM_GUESSES,
+  NUM_BOARDS,
   uiAction,
   useAppDispatch,
   useAppSelector,
@@ -23,6 +24,12 @@ export function Welcome() {
   const gameId = useAppSelector((s) => s.game.id);
   const guessCount = useAppSelector((s) => s.game.guesses.length);
   const challenge = useAppSelector((s) => s.game.challenge);
+  const targets = useAppSelector((s) => s.game.targets);
+  const guesses = useAppSelector((s) => s.game.guesses);
+  const boardsComplete = useMemo(
+    () => getCompletedBoardsCount(targets, guesses),
+    [guesses, targets]
+  );
   const showContinue = guessCount > 0 && gameMode === "daily";
 
   const handleContinueClick = () => {
@@ -58,7 +65,7 @@ export function Welcome() {
     } else if (challenge === "jumble") {
       text += "Daily Jumble";
     }
-    text += ` #${gameId} (${guessCount}/${NUM_GUESSES})`;
+    text += ` #${gameId} (${boardsComplete}/${NUM_BOARDS})`;
     return text;
   };
 

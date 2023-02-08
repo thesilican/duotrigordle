@@ -31,6 +31,7 @@
   transition: filter 0.25s ease, background-color 0.1s ease,
     box-shadow 0.1s ease;
   position: relative;
+  align-content: start;
 }
 .board.highlighted {
   background-color: var(--white);

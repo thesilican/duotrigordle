@@ -15,6 +15,7 @@ export function Settings() {
     disableAnimations,
     hideAds,
     hideCompletedBoards,
+    hideEmptyRows,
     kofiEmail,
     stickyInput,
     showHints,
@@ -87,6 +88,19 @@ export function Settings() {
             <p className={styles.description}>
               Input fields stick to the bottom when scrolling
             </p>
+          </label>
+        </div>
+        <div className={styles.setting}>
+          <Checkbox
+            checked={hideEmptyRows}
+            onChange={(x) =>
+              dispatch(settingsAction.update({ hideEmptyRows: x }))
+            }
+            id="hide-empty-rows"
+          />
+          <label className={styles.label} htmlFor="hide-empty-rows">
+            <p className={styles.name}>Hide Empty Rows</p>
+            <p className={styles.description}>Empty rows are collapsed</p>
           </label>
         </div>
         <div className={styles.setting}>

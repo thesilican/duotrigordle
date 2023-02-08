@@ -7,6 +7,7 @@ export type SettingsState = {
   wideMode: boolean;
   hideCompletedBoards: boolean;
   disableAnimations: boolean;
+  hideEmptyRows: boolean;
   stickyInput: boolean;
   showHints: boolean;
   hideAds: boolean;
@@ -18,6 +19,7 @@ export const settingsInitialState: SettingsState = {
   wideMode: false,
   hideCompletedBoards: false,
   disableAnimations: false,
+  hideEmptyRows: false,
   stickyInput: true,
   showHints: true,
   hideAds: false,

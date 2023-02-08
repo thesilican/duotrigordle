@@ -60,6 +60,7 @@ export function Settings() {
             <p className={styles.description}>8 boards per column</p>
           </label>
         </div>
+        <hr className={styles.seperator} />
         <div className={styles.setting}>
           <Checkbox
             checked={hideCompletedBoards}
@@ -77,6 +78,19 @@ export function Settings() {
         </div>
         <div className={styles.setting}>
           <Checkbox
+            checked={hideEmptyRows}
+            onChange={(x) =>
+              dispatch(settingsAction.update({ hideEmptyRows: x }))
+            }
+            id="hide-empty-rows"
+          />
+          <label className={styles.label} htmlFor="hide-empty-rows">
+            <p className={styles.name}>Hide Empty Rows</p>
+            <p className={styles.description}>Empty rows are collapsed</p>
+          </label>
+        </div>
+        <div className={styles.setting}>
+          <Checkbox
             checked={stickyInput}
             onChange={(x) =>
               dispatch(settingsAction.update({ stickyInput: x }))
@@ -88,19 +102,6 @@ export function Settings() {
             <p className={styles.description}>
               Input fields stick to the bottom when scrolling
             </p>
-          </label>
-        </div>
-        <div className={styles.setting}>
-          <Checkbox
-            checked={hideEmptyRows}
-            onChange={(x) =>
-              dispatch(settingsAction.update({ hideEmptyRows: x }))
-            }
-            id="hide-empty-rows"
-          />
-          <label className={styles.label} htmlFor="hide-empty-rows">
-            <p className={styles.name}>Hide Empty Rows</p>
-            <p className={styles.description}>Empty rows are collapsed</p>
           </label>
         </div>
         <div className={styles.setting}>

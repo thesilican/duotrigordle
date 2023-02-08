@@ -9,6 +9,7 @@
   column-gap: 4px;
   overflow-y: scroll;
   padding: 4px 4px 4px 4px;
+  align-content: start;
 }
 @media screen and (min-width: 600px) {
   .boards {

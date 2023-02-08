@@ -24,6 +24,7 @@ export function Results() {
   const showTimer = useAppSelector((s) => s.settings.showTimer);
   const timeElapsed = useAppSelector((s) => s.game.endTime - s.game.startTime);
   const wideMode = useAppSelector((s) => s.settings.wideMode);
+  const colorBlind = useAppSelector((s) => s.settings.colorBlindMode);
 
   const shareableText = useMemo(() => {
     return getShareableText(
@@ -71,7 +72,7 @@ export function Results() {
     <div
       className={cn(
         styles.results,
-        win ? styles.green : styles.red,
+        colorBlind ? null : win ? styles.green : styles.red,
         wideMode && styles.wide
       )}
     >

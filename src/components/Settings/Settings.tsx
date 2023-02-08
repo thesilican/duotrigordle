@@ -213,6 +213,7 @@ function KofiEmailInput() {
           onChange={(e) => setText(e.target.value)}
         />
         <input
+          className={styles.submit}
           type="button"
           onClick={handleClick}
           value={kofiEmail ? "Reset" : "Submit"}

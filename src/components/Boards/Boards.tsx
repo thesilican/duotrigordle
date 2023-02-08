@@ -47,6 +47,7 @@ function Board(props: BoardProps) {
   const guessColors = useAppSelector((s) => s.game.colors[props.idx]);
   const hideBoard = useAppSelector((s) => s.settings.hideCompletedBoards);
   const animateHiding = useAppSelector((s) => s.settings.animateHiding);
+  const hideEmptyRows = useAppSelector((s) => s.settings.hideEmptyRows);
   const challenge = useAppSelector((s) => s.game.challenge);
 
   const target = targets[props.idx];
@@ -62,7 +63,9 @@ function Board(props: BoardProps) {
   const coloredCount = complete ? guessedAt + 1 : guesses.length;
   const showInput = !complete && !gameOver && !isConcealed;
   const maxGuesses = challenge === "perfect" ? NUM_BOARDS : NUM_GUESSES;
-  const emptyCount = maxGuesses - coloredCount - (showInput ? 1 : 0);
+  const emptyCount = hideEmptyRows
+    ? 0
+    : maxGuesses - coloredCount - (showInput ? 1 : 0);
 
   const isDimmed = !gameOver && complete && !hideBoard;
   const isHidden = !gameOver && complete && hideBoard;

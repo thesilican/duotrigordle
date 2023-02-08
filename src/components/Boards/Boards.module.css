@@ -44,14 +44,15 @@
 .board.dimmed {
   filter: contrast(0.5) brightness(0.25);
 }
-.board.hidden:not(.animate) {
-  display: none;
+.boards.disableAnimations .board {
+  transition: none;
 }
-.board.hidden.animate {
-  animation-name: hide;
-  animation-duration: 0.5s;
-  animation-timing-function: ease-out;
-  animation-fill-mode: forwards;
+.boards.disableAnimations .board.hidden {
+  display: none;
+  animation: none;
+}
+.board.hidden {
+  animation: hide 0.5s ease-out 0s 1 forwards;
 }
 @keyframes hide {
   0% {

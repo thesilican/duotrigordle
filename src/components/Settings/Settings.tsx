@@ -12,7 +12,7 @@ export function Settings() {
     colorBlindMode,
     showTimer,
     wideMode,
-    animateHiding,
+    disableAnimations,
     hideAds,
     hideCompletedBoards,
     kofiEmail,
@@ -74,28 +74,6 @@ export function Settings() {
             </p>
           </label>
         </div>
-        <div
-          className={cn(
-            styles.setting,
-            styles.indented,
-            !hideCompletedBoards && styles.disabled
-          )}
-        >
-          <Checkbox
-            disabled={!hideCompletedBoards}
-            checked={animateHiding}
-            onChange={(x) =>
-              dispatch(settingsAction.update({ animateHiding: x }))
-            }
-            id="animate-hiding"
-          />
-          <label className={styles.label} htmlFor="animate-hiding">
-            <p className={styles.name}>Fade Out</p>
-            <p className={styles.description}>
-              Hidden boards have fade out animation
-            </p>
-          </label>
-        </div>
         <div className={styles.setting}>
           <Checkbox
             checked={stickyInput}
@@ -121,6 +99,21 @@ export function Settings() {
             <p className={styles.name}>Show Hints</p>
             <p className={styles.description}>
               Show ghost letters and inconsistency warnings
+            </p>
+          </label>
+        </div>
+        <div className={styles.setting}>
+          <Checkbox
+            checked={disableAnimations}
+            onChange={(x) =>
+              dispatch(settingsAction.update({ disableAnimations: x }))
+            }
+            id="disable-animations"
+          />
+          <label className={styles.label} htmlFor="disable-animations">
+            <p className={styles.name}>Disable Animations</p>
+            <p className={styles.description}>
+              Disable all game animations. May improve performance
             </p>
           </label>
         </div>

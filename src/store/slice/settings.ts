@@ -6,7 +6,7 @@ export type SettingsState = {
   showTimer: boolean;
   wideMode: boolean;
   hideCompletedBoards: boolean;
-  animateHiding: boolean;
+  disableAnimations: boolean;
   stickyInput: boolean;
   showHints: boolean;
   hideAds: boolean;
@@ -17,7 +17,7 @@ export const settingsInitialState: SettingsState = {
   showTimer: false,
   wideMode: false,
   hideCompletedBoards: false,
-  animateHiding: true,
+  disableAnimations: false,
   stickyInput: true,
   showHints: true,
   hideAds: false,

@@ -8,12 +8,20 @@ import {
   useAppDispatch,
   useAppSelector,
 } from "../../store";
+import cn from "classnames";
 import { range } from "../../util";
 import styles from "./Keyboard.module.css";
 
 export function Keyboard() {
+  const disableAnimations = useAppSelector((s) => s.settings.disableAnimations);
+
   return (
-    <div className={styles.keyboard}>
+    <div
+      className={cn(
+        styles.keyboard,
+        disableAnimations && styles.disableAnimations
+      )}
+    >
       <div className={styles.row1}>
         <Key char="Q" />
         <Key char="W" />

@@ -17,11 +17,13 @@ import styles from "./Boards.module.css";
 export function Boards() {
   const wideMode = useAppSelector((s) => s.settings.wideMode);
   const colorBlind = useAppSelector((s) => s.settings.colorBlindMode);
+  const disableAnimations = useAppSelector((s) => s.settings.disableAnimations);
 
   return (
     <div
       className={cn(
         styles.boards,
+        disableAnimations && styles.disableAnimations,
         wideMode && styles.wide,
         colorBlind && styles.colorBlind
       )}
@@ -46,8 +48,8 @@ function Board(props: BoardProps) {
   );
   const guessColors = useAppSelector((s) => s.game.colors[props.idx]);
   const hideBoard = useAppSelector((s) => s.settings.hideCompletedBoards);
-  const animateHiding = useAppSelector((s) => s.settings.animateHiding);
   const challenge = useAppSelector((s) => s.game.challenge);
+  const disableAnimations = useAppSelector((s) => s.settings.disableAnimations);
 
   const target = targets[props.idx];
   const isConcealed = useMemo(() => {
@@ -76,12 +78,12 @@ function Board(props: BoardProps) {
       sideEffect.board === props.idx
     ) {
       scrollRef.current?.scrollIntoView({
-        behavior: "smooth",
+        behavior: disableAnimations ? "auto" : "smooth",
         block: "nearest",
       });
       dispatch(uiAction.resolveSideEffect(sideEffect.id));
     }
-  }, [dispatch, props.idx, sideEffect]);
+  }, [disableAnimations, dispatch, props.idx, sideEffect]);
 
   return (
     <div
@@ -89,8 +91,7 @@ function Board(props: BoardProps) {
         styles.board,
         isHighlighted && styles.highlighted,
         isDimmed && styles.dimmed,
-        isHidden && styles.hidden,
-        animateHiding && styles.animate
+        isHidden && styles.hidden
       )}
       onClick={() => dispatch(uiAction.highlightClick(props.idx))}
     >

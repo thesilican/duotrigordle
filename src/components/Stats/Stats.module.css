@@ -1,0 +1,68 @@
+.statsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.title {
+  text-align: center;
+  font-size: 20px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  text-align: center;
+}
+.value {
+  font-size: 36px;
+}
+
+.label {
+  font-size: 16px;
+}
+.chart {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 4px;
+}
+.barWrapper {
+  position: relative;
+}
+.bar {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+
+  display: flex;
+  gap: 4px;
+}
+.barColor {
+  flex: 1;
+  background: var(--green);
+}
+.times {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 8px;
+}
+
+.editorContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.buttons {
+  display: flex;
+  gap: 8px;
+}
+.spacer {
+  flex: 1;
+}
+.editorContainer:not(.expanded) .editor {
+  display: none;
+}
+.editorContainer:not(.expanded) .hint {
+  display: none;
+}

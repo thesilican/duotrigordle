@@ -1,11 +1,13 @@
 import React from "react";
-import { createRoot } from "react-dom/client";
+import ReactDOM from "react-dom/client";
 import { Provider } from "react-redux";
-import App from "./components/App";
+import { App } from "./components/App/App";
 import "./index.css";
 import { store } from "./store";
 
-const root = createRoot(document.getElementById("root")!);
+const root = ReactDOM.createRoot(
+  document.getElementById("root") as HTMLElement
+);
 root.render(
   <React.StrictMode>
     <Provider store={store}>

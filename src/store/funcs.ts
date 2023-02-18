@@ -64,6 +64,70 @@ export function getAllGuessColors(
   );
 }
 
+export function getDeductions(
+    guesses: string[],
+    colors: string[]
+): string {
+  const deductions: string[] = range(5).map(x => ' ');
+  // build a map of yellow letters to positions in the row
+  // (false means "can't be in this cell")
+  const map: {[key: string]: boolean[]} = {};
+  guesses.forEach((guess, g) => {
+    guess.split('').forEach((letter, l) => {
+      if (colors[g][l] === 'Y') {
+        map[letter] = map[letter] || range(5).map(x => true);
+        map[letter][l] = false;
+      }
+    });
+  });
+
+  // eliminate green letter cells
+  guesses.forEach((guess, g) => {
+    guess.split('').forEach((letter, l) => {
+      if (colors[g][l] === 'G') {
+        // mark green letters as all false to remove them from deductions
+        map[letter] = range(5).map(x => false);
+        Object.keys(map)
+            .forEach(candidate => {
+              map[candidate][l] = false;
+            });
+      }
+    });
+  });
+
+  // iterate deductively
+  let hasNewDeduction = true;
+  while (hasNewDeduction) {
+    hasNewDeduction = false;
+    Object.keys(map).forEach(candidate => {
+      const positions = map[candidate];
+      if (positions.filter(x => x).length === 1) {
+        const position = positions.indexOf(true);
+        if (deductions[position] === candidate) {
+          return;
+        }
+
+        // by the process of elimination, this letter must be in this cell
+        hasNewDeduction = true;
+        deductions[position] = candidate;
+
+        // eliminate this cell for other letters
+        Object.keys(map).forEach(other => {
+          map[other][position] = false;
+        });
+      }
+    });
+  }
+  return deductions.join('');
+}
+
+export function getAllDeductions(
+    guesses: string[],
+    colors: string[][]
+): string[] {
+  return colors.map(color => getDeductions(guesses, color));
+}
+
 // Returns whether each board is completed
 export function getCompletedBoards(
   targets: string[],
@@ -143,13 +207,23 @@ export function getSequenceVisibleBoard(targets: string[], guesses: string[]) {
 
 // Given a list of guesses and their colors, returns an array with 5 elements where
 // the ith element is the green letter in that column, or "" if it is not yet known
-export function getGhostLetters(guesses: string[], colors: string[]): string[] {
+export function getGhostLetters(
+    guesses: string[],
+    colors: string[],
+    deductions: string|null = null
+): string[] {
   const ghostLetters: string[] = range(5).map(() => "");
   for (let i = 0; i < 5; i++) {
     for (let row = 0; row < guesses.length; row++) {
       if (colors[row][i] === "G") {
         ghostLetters[i] = guesses[row][i];
         break;
+      }
+      if (deductions) {
+        if (deductions[i] !== ' ') {
+          ghostLetters[i] = deductions[i];
+          break;
+        }
       }
     }
   }

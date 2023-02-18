@@ -113,6 +113,9 @@
 .cell.textGhost {
   color: var(--gray-6);
 }
+.cell.textPink {
+  color: var(--pink);
+}
 .boards.colorBlind .cell.black {
   background: var(--gray-3);
 }

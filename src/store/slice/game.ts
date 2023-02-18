@@ -1,10 +1,12 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
 import {
   getAllGuessColors,
+  getAllDeductions,
   getAllWordsGuessed,
   getCompletedBoards,
   getDailyId,
   getGuessColors,
+  getDeductions,
   getIsGameOver,
   getJumbleWords,
   getPracticeId,
@@ -29,8 +31,10 @@ export type GameState = {
   guesses: string[];
   // 32 wordle targets
   targets: string[];
-  // Word colors e.g. "BBYGG" (indexed by board, row)
+  // Word colors e.g. "BPYGG" (indexed by board, row)
   colors: string[][];
+  // Deduced letters e.g. "   EF" (indexed by board)
+  deductions: string[];
   // Whether or not the game is finished
   gameOver: boolean;
   // Start timestamp (milliseconds from unix epoch)
@@ -49,6 +53,7 @@ export const gameInitialState: GameState = {
   guesses: [],
   targets: range(NUM_BOARDS).map((_) => "AAAAA"),
   colors: range(NUM_BOARDS).map(() => []),
+  deductions: range(NUM_BOARDS).map((_) => "     "),
   gameOver: false,
   startTime: 0,
   endTime: 0,
@@ -103,6 +108,7 @@ export const gameReducer = createReducer(
             ? getJumbleWords(targets, action.payload.timestamp)
             : [];
         const colors = getAllGuessColors(targets, guesses);
+        const deductions = getAllDeductions(guesses, colors);
         const startTime = guesses.length > 0 ? action.payload.timestamp : 0;
 
         state.game = {
@@ -112,6 +118,7 @@ export const gameReducer = createReducer(
           targets,
           guesses,
           colors,
+          deductions,
           input: "",
           gameOver: false,
           startTime,
@@ -132,6 +139,7 @@ export const gameReducer = createReducer(
             ? getJumbleWords(targets, action.payload.timestamp)
             : [];
         const colors = getAllGuessColors(targets, guesses);
+        const deductions = getAllDeductions(guesses, colors);
         const startTime = guesses.length > 0 ? action.payload.timestamp : 0;
 
         state.game = {
@@ -141,6 +149,7 @@ export const gameReducer = createReducer(
           targets,
           guesses,
           colors,
+          deductions,
           input: "",
           gameOver: false,
           startTime,
@@ -183,6 +192,7 @@ export const gameReducer = createReducer(
         for (let i = 0; i < game.targets.length; i++) {
           const colors = getGuessColors(game.targets[i], guess);
           game.colors[i].push(colors);
+          game.deductions[i] = getDeductions(game.guesses, game.colors[i]);
         }
         // Start timer on first guess
         if (game.guesses.length === 1) {

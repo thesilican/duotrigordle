@@ -2,7 +2,7 @@ import { Dispatch } from "@reduxjs/toolkit";
 import {
   Challenge,
   gameAction,
-  GameState,
+  GameState, getAllDeductions,
   getAllGuessColors,
   getDailyId,
   getIsGameOver,
@@ -65,6 +65,7 @@ export function deserializeGame(serialized: GameSerialized): GameState {
   const guesses = serialized.guesses;
   const gameOver = getIsGameOver(targets, guesses, serialized.challenge);
   const colors = getAllGuessColors(targets, guesses);
+  const deductions = getAllDeductions(guesses, colors);
   return {
     id: serialized.id,
     gameMode: "daily",
@@ -73,6 +74,7 @@ export function deserializeGame(serialized: GameSerialized): GameState {
     targets,
     guesses,
     colors,
+    deductions,
     gameOver,
     startTime: serialized.startTime,
     endTime: serialized.endTime,

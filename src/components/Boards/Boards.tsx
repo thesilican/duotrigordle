@@ -47,6 +47,7 @@ function Board(props: BoardProps) {
     (s) => s.ui.highlightedBoard === props.idx
   );
   const guessColors = useAppSelector((s) => s.game.colors[props.idx]);
+  const deductions = useAppSelector((s) => s.game.deductions[props.idx]);
   const hideBoard = useAppSelector((s) => s.settings.hideCompletedBoards);
   const hideEmptyRows = useAppSelector((s) => s.settings.hideEmptyRows);
   const challenge = useAppSelector((s) => s.game.challenge);
@@ -105,7 +106,7 @@ function Board(props: BoardProps) {
         count={coloredCount}
         concealed={isConcealed}
       />
-      {showInput ? <InputRow guesses={guesses} colors={guessColors} /> : null}
+      {showInput ? <InputRow guesses={guesses} colors={guessColors} deductions={deductions} /> : null}
       <EmptyRows count={emptyCount} />
     </div>
   );
@@ -160,17 +161,21 @@ const EmptyRows = React.memo(function EmptyRows(props: EmptyRowsProps) {
 type InputRowProps = {
   guesses: string[];
   colors: string[];
+  deductions: string;
 };
 function InputRow(props: InputRowProps) {
-  const { guesses, colors } = props;
+  const { guesses, colors, deductions } = props;
   const showHints = useAppSelector((s) => s.settings.showHints);
+  const performDeductions = useAppSelector((s) => s.settings.performDeductions);
   const input = useAppSelector((s) => s.game.input);
   const sticky = useAppSelector((s) => s.settings.stickyInput);
 
   const ghostLetters = useMemo(
     () =>
-      showHints ? getGhostLetters(guesses, colors) : range(5).map(() => ""),
-    [showHints, guesses, colors]
+      showHints
+          ? getGhostLetters(guesses, colors, performDeductions ? deductions : null)
+          : range(5).map(() => ""),
+    [showHints, guesses, colors, performDeductions, deductions]
   );
 
   const isError = input.length === 5 && !WORDS_VALID.has(input);
@@ -183,7 +188,7 @@ function InputRow(props: InputRowProps) {
     <>
       {range(5).map((i) => {
         let char: string;
-        let textColor: "red" | "yellow" | "ghost" | undefined;
+        let textColor: "red" | "yellow" | "ghost" | "pink" | undefined;
         if (!showHints) {
           char = input[i];
           textColor = isError ? "red" : undefined;
@@ -192,7 +197,7 @@ function InputRow(props: InputRowProps) {
           if (input[i]) {
             textColor = isError ? "red" : isWarn ? "yellow" : undefined;
           } else {
-            textColor = ghostLetters[i] ? "ghost" : undefined;
+            textColor = deductions[i] !== " " ? "pink" : ghostLetters[i] ? "ghost" : undefined;
           }
         }
         return (
@@ -206,7 +211,7 @@ function InputRow(props: InputRowProps) {
 type CellProps = {
   char?: string;
   color?: "B" | "Y" | "G";
-  textColor?: "red" | "yellow" | "ghost";
+  textColor?: "red" | "yellow" | "ghost" | "pink";
   sticky?: boolean;
 };
 const Cell = React.memo(function Cell(props: CellProps) {
@@ -220,6 +225,7 @@ const Cell = React.memo(function Cell(props: CellProps) {
         props.textColor === "red" && styles.textRed,
         props.textColor === "yellow" && styles.textYellow,
         props.textColor === "ghost" && styles.textGhost,
+        props.textColor === "pink" && styles.textPink,
         props.sticky && styles.sticky
       )}
     >

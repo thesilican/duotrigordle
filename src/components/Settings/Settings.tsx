@@ -19,6 +19,7 @@ export function Settings() {
     kofiEmail,
     stickyInput,
     showHints,
+    performDeductions,
   } = useAppSelector((s) => s.settings);
 
   return (
@@ -114,6 +115,19 @@ export function Settings() {
             <p className={styles.name}>Show Hints</p>
             <p className={styles.description}>
               Show ghost letters and inconsistency warnings
+            </p>
+          </label>
+        </div>
+        <div className={styles.setting}>
+          <Checkbox
+              checked={performDeductions}
+              onChange={(x) => dispatch(settingsAction.update({ performDeductions: x }))}
+              id="deductions"
+          />
+          <label className={styles.label} htmlFor="deductions">
+            <p className={styles.name}>Perform Deductions</p>
+            <p className={styles.description}>
+              Solve yellow letters whose placement can be deduced.
             </p>
           </label>
         </div>

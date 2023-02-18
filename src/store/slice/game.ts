@@ -31,7 +31,7 @@ export type GameState = {
   guesses: string[];
   // 32 wordle targets
   targets: string[];
-  // Word colors e.g. "BPYGG" (indexed by board, row)
+  // Word colors e.g. "BBYGG" (indexed by board, row)
   colors: string[][];
   // Deduced letters e.g. "   EF" (indexed by board)
   deductions: string[];

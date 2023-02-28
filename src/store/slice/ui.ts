@@ -88,6 +88,9 @@ export const uiReducer = createReducer(
         );
       })
       .addCase(uiAction.highlightArrow, (state, action) => {
+        if (state.game.challenge === "sequence") {
+          return;
+        }
         if (action.payload.direction === "left") {
           highlightPreviousBoard(state);
         } else {

@@ -1,6 +1,7 @@
 import cn from "classnames";
 import { Fragment, useMemo, useState } from "react";
 import {
+  Challenge,
   HistoryEntry,
   normalizeHistory,
   PRACTICE_MODE_MIN_ID,
@@ -12,11 +13,13 @@ import {
 import { formatTimeElapsed, parseTimeElapsed, range } from "../../util";
 import { LinkButton } from "../common/LinkButton/LinkButton";
 import { Modal } from "../common/Modal/Modal";
+import { TabButtons } from "../common/TabButtons/TabButtons";
 import styles from "./Stats.module.css";
 
 export default function Stats() {
   const shown = useAppSelector((s) => s.ui.modal === "stats");
   const stats = useAppSelector((s) => s.stats);
+  const [tabIdx, setTabIdx] = useState(0);
   const {
     played,
     win,
@@ -27,12 +30,28 @@ export default function Stats() {
     bestTime,
     avgTime7,
     avgTimeAll,
-  } = useMemo(() => calculateStatsInfo(stats), [stats]);
+  } = useMemo(() => {
+    const challenge =
+      tabIdx === 0
+        ? "normal"
+        : tabIdx === 1
+        ? "sequence"
+        : tabIdx === 2
+        ? "jumble"
+        : "normal";
+    return calculateStatsInfo(stats, challenge);
+  }, [stats, tabIdx]);
 
   return (
     <Modal shown={shown}>
       <div className={styles.statsContainer}>
         <p className={styles.title}>Statistics</p>
+        <TabButtons
+          tabs={["Normal", "Sequence", "Jumble"]}
+          idx={tabIdx}
+          onTabChange={setTabIdx}
+          size="small"
+        />
         <div className={styles.grid}>
           <p className={styles.value}>{played}</p>
           <p className={styles.value}>{win}</p>
@@ -74,14 +93,15 @@ export default function Stats() {
           <p>Average Time (all):</p>
           <p>{avgTimeAll}</p>
         </div>
+        <hr />
         <StatsEditor />
       </div>
     </Modal>
   );
 }
 
-function calculateStatsInfo(stats: StatsState) {
-  const history = stats.history;
+function calculateStatsInfo(stats: StatsState, challenge: Challenge) {
+  const history = stats.history.filter((x) => x.challenge === challenge);
   const played = history.length;
   const wonGames = history.filter((x) => x.guesses !== null).length;
   const win = played === 0 ? 0 : ((wonGames / played) * 100).toFixed(0);
@@ -248,9 +268,12 @@ function StatsEditor() {
         }}
       />
       <p className={styles.hint}>
-        Format: <code>id guesses time</code>
+        Format: <code>id challenge guesses time</code>
         <br />
         <code>id</code> - Game ID
+        <br />
+        <code>challenge</code> - &quot;N&quot; for normal, &quot;S&quot; for
+        sequence, &quot;J&quot; for jumble
         <br />
         <code>guesses</code> - Number of guesses or &quot;X&quot;
         <br />
@@ -260,20 +283,30 @@ function StatsEditor() {
   );
 }
 
-function stringifyHistory(history: HistoryEntry[]): string {
+export function stringifyHistory(history: HistoryEntry[]): string {
   history = normalizeHistory(history);
   const lines = [];
   for (const stat of history) {
     const id = stat.id;
+    const challenge =
+      stat.challenge === "normal"
+        ? "N"
+        : stat.challenge === "sequence"
+        ? "S"
+        : stat.challenge === "jumble"
+        ? "J"
+        : stat.challenge === "perfect"
+        ? "P"
+        : undefined;
     const guesses = stat.guesses ?? "X";
     const time = stat.time === null ? "-" : formatTimeElapsed(stat.time);
-    const line = `${id} ${guesses} ${time}`;
+    const line = `${id} ${challenge} ${guesses} ${time}`;
     lines.push(line);
   }
   return lines.join("\n");
 }
 
-function parseHistory(text: string): HistoryEntry[] | string {
+export function parseHistory(text: string): HistoryEntry[] | string {
   const history: HistoryEntry[] = [];
   if (text.trim() === "") {
     return [];
@@ -282,28 +315,39 @@ function parseHistory(text: string): HistoryEntry[] | string {
     .trim()
     .split("\n")
     .map((x) => x.trim());
-  const ids = new Set();
   for (let i = 0; i < lines.length; i++) {
-    // Format: <id> <guesses> <time>
+    // Format: <id> <challenge> <guesses> <time>
     // id is a positive integer
+    // challenge is "N", "S", "J", or "P"
     // guesses is an integer or "X"
-    // time is a positive real number or "-" for untimed
-    const match = lines[i].match(/^(\d+)\s+(\d+|X)\s+([\d.:-]+)$/);
+    // time is a time format or "-" for untimed
+    const match = lines[i].match(/^(\d+)\s+([a-zA-Z])\s+(\d+|X)\s+([\d.:-]+)$/);
     if (!match) {
       return `Line ${i + 1} invalid syntax: "${lines[i]}"`;
     }
 
     const id = parseInt(match[1], 10);
-    const guesses = match[2] === "X" ? null : parseInt(match[2], 10);
-    const time = parseTimeElapsed(match[3]);
+    const challenge =
+      match[2].toUpperCase() === "N"
+        ? "normal"
+        : match[2].toUpperCase() === "S"
+        ? "sequence"
+        : match[2].toUpperCase() === "J"
+        ? "jumble"
+        : match[2].toUpperCase() === "P"
+        ? "perfect"
+        : null;
+    const guesses = match[3] === "X" ? null : parseInt(match[3], 10);
+    const time = parseTimeElapsed(match[4]);
 
     if (id <= 0 || id >= PRACTICE_MODE_MIN_ID) {
       return `Line ${i + 1} has invalid id ("${lines[i]}")`;
     }
-    if (ids.has(id)) {
-      return `Line ${i + 1} has duplicate id ("${lines[i]}")`;
-    } else {
-      ids.add(id);
+    if (challenge === null) {
+      return `Line ${i + 1} has invalid challenge, must be "N", "S", or "J")`;
+    }
+    if (history.find((x) => x.challenge === challenge && x.id === id)) {
+      return `Line ${i + 1} has duplicate challenge and id ("${lines[i]}")`;
     }
     if (guesses !== null && (guesses < 32 || guesses > 37)) {
       return (
@@ -318,7 +362,7 @@ function parseHistory(text: string): HistoryEntry[] | string {
         `("${lines[i]}")`
       );
     }
-    if (time === null && match[3] !== "-") {
+    if (time === null && match[4] !== "-") {
       return (
         `Line ${i + 1} has invalid time format, ` +
         `must be "-" or formatted like 00:00.00 ` +
@@ -326,7 +370,7 @@ function parseHistory(text: string): HistoryEntry[] | string {
       );
     }
 
-    history.push({ id, guesses, time });
+    history.push({ id, guesses, time, challenge });
   }
   return history;
 }

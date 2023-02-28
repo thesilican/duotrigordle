@@ -1,11 +1,11 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
-import { initialState } from "..";
-import { PRACTICE_MODE_MIN_ID } from "../consts";
+import { Challenge, initialState } from "..";
 
 export type HistoryEntry = {
   id: number;
   guesses: number | null;
   time: number | null;
+  challenge: Challenge;
 };
 export type StatsState = {
   history: HistoryEntry[];
@@ -17,7 +17,6 @@ export const statsInitialState: StatsState = {
 export const statsAction = {
   load: createAction<StatsState>("stats/loadStats"),
   addEntry: createAction<HistoryEntry>("stats/addEntry"),
-  removeEntry: createAction<{ id: number }>("stats/removeEntry"),
   setHistory: createAction<HistoryEntry[]>("stats/setHistory"),
 };
 
@@ -30,41 +29,53 @@ export const statsReducer = createReducer(
         normalizeHistory(state.stats.history);
       })
       .addCase(statsAction.addEntry, (state, action) => {
-        const entry = action.payload;
-        const newHistory = state.stats.history.filter((x) => x.id !== entry.id);
-        newHistory.push(entry);
-        state.stats.history = normalizeHistory(newHistory);
-      })
-      .addCase(statsAction.removeEntry, (state, action) => {
-        const newHistory = state.stats.history.filter(
-          (x) => x.id !== action.payload.id
+        state.stats.history = addHistoryEntry(
+          state.stats.history,
+          action.payload
         );
-        state.stats.history = normalizeHistory(newHistory);
       })
       .addCase(statsAction.setHistory, (state, action) => {
         state.stats.history = normalizeHistory(action.payload);
       })
 );
 
-export function normalizeHistory(history: HistoryEntry[]): HistoryEntry[] {
+export function addHistoryEntry(
+  history: HistoryEntry[],
+  entry: HistoryEntry
+): HistoryEntry[] {
+  const newHistory = history.filter(
+    (x) => !(x.id === entry.id && x.challenge === entry.challenge)
+  );
+  newHistory.push(entry);
+  return normalizeHistory(newHistory);
+}
+
+export function normalizeHistory(history: HistoryEntry[]) {
   const newHistory: HistoryEntry[] = [];
-  // Remove invalid ids
-  const visited = new Set();
   for (const entry of history) {
     if (
-      entry.id > 0 &&
-      entry.id < PRACTICE_MODE_MIN_ID &&
-      !visited.has(entry.id)
+      !newHistory.find(
+        (x) => x.challenge === entry.challenge && x.id === entry.id
+      )
     ) {
       newHistory.push({
         id: entry.id,
+        challenge: entry.challenge,
         guesses: entry.guesses,
         time: entry.time,
       });
     }
   }
-  // Sort ids
-  newHistory.sort((a, b) => a.id - b.id);
+  // Sort by id then challenge
+  const challengeOrder = {
+    normal: 0,
+    sequence: 1,
+    jumble: 2,
+    perfect: 3,
+  };
+  newHistory
+    .sort((a, b) => challengeOrder[a.challenge] - challengeOrder[b.challenge])
+    .sort((a, b) => a.id - b.id);
   // Round times to nearest 0.01
   for (let i = 0; i < newHistory.length; i++) {
     const time = newHistory[i].time;

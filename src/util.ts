@@ -80,7 +80,7 @@ export function formatTimeElapsed(miliseconds: number) {
 
 // Parse time elapsed in 00:00.00 format
 export function parseTimeElapsed(text: string): number | null {
-  const match = text.match(/(?:(\d+):)?(\d+(?:\.\d+)?)/);
+  const match = text.match(/^(?:(\d+):)?(\d+(?:\.\d+)?)$/);
   if (!match) {
     return null;
   }

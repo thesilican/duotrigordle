@@ -2,6 +2,7 @@ import { MersenneTwister, range } from "../util";
 import {
   NUM_BOARDS,
   NUM_GUESSES,
+  PRACTICE_MODE_MAX_ID,
   PRACTICE_MODE_MIN_ID,
   START_DATE,
   WORDS_TARGET,
@@ -9,9 +10,17 @@ import {
 import { Challenge } from "./slice/game";
 
 // Given a duotrigordle id, return the corresponding 32 target wordles
-export function getTargetWords(id: number): string[] {
+export function getTargetWords(id: number, challenge: Challenge): string[] {
+  // Add offsets to the seed depending on the challenge
+  let seed = id;
+  if (challenge === "normal" || challenge === "perfect") {
+  } else if (challenge === "sequence") {
+    seed += Math.floor(PRACTICE_MODE_MIN_ID / 3);
+  } else if (challenge === "jumble") {
+    seed += Math.floor((PRACTICE_MODE_MIN_ID * 2) / 3);
+  }
   const targetWords: string[] = [];
-  const rng = MersenneTwister(id);
+  const rng = MersenneTwister(seed);
   while (targetWords.length < NUM_BOARDS) {
     const idx = rng.u32() % WORDS_TARGET.length;
     const word = WORDS_TARGET[idx];
@@ -123,12 +132,10 @@ export function getDailyId(timestamp: number): number {
 // Retuns a random practice mode id
 export function getPracticeId(seed: number) {
   const rng = MersenneTwister(seed);
-  while (true) {
-    const num = rng.u32();
-    if (num >= PRACTICE_MODE_MIN_ID) {
-      return num;
-    }
-  }
+  return (
+    (rng.u32() % (PRACTICE_MODE_MAX_ID - PRACTICE_MODE_MIN_ID)) +
+    PRACTICE_MODE_MIN_ID
+  );
 }
 
 // Returns the current visible board for the sequence challenge

@@ -6,6 +6,10 @@ import styles from "./AdBox.module.css";
 // If you're develping Duotrigordle locally and would like to hide ads, set this to true
 const overrideHideAds = false;
 
+declare global {
+  const ezstandalone: any;
+}
+
 export function AdBox() {
   const hideAds = useAppSelector((s) => s.settings.hideAds);
   const [loaded, setLoaded] = useState(false);
@@ -13,10 +17,16 @@ export function AdBox() {
   useEffect(() => {
     if (!loaded && !hideAds && !overrideHideAds) {
       setTimeout(() => {
-        // Load Google Adsense
+        // Load Ezoic ads
         try {
           // @ts-ignore
-          (adsbygoogle = window.adsbygoogle || []).push({});
+          window.ezstandalone = window.ezstandalone || {};
+          ezstandalone.cmd = ezstandalone.cmd || [];
+          ezstandalone.cmd.push(function () {
+            ezstandalone.define(101);
+            ezstandalone.enable();
+            ezstandalone.display();
+          });
         } catch {}
       }, 1000);
       setLoaded(true);
@@ -29,16 +39,7 @@ export function AdBox() {
 
   return (
     <div className={cn("ads-box", styles.adBox)}>
-      <ins
-        className="adsbygoogle"
-        style={{
-          display: "inline-block",
-          width: "min(100vw, 600px)",
-          height: "60px",
-        }}
-        data-ad-client="ca-pub-4459769759726497"
-        data-ad-slot="5019524864"
-      />
+      <div id="ezoic-pub-ad-placeholder-101"> </div>
     </div>
   );
 }

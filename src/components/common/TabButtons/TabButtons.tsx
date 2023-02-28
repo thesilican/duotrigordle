@@ -16,7 +16,7 @@ export function TabButtons(props: TabButtonsProps) {
       role="tablist"
     >
       {props.tabs.map((label, idx) => (
-        <div className={styles.tabWrapper}>
+        <div key={idx} className={styles.tabWrapper}>
           <button
             className={styles.tab}
             role="tab"

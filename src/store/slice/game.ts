@@ -72,7 +72,10 @@ export const gameInitialState: GameState = {
 };
 
 export const gameAction = {
-  load: createAction<{ game: GameState }>("game/loadGame"),
+  loadSave: createAction<{
+    timestamp: number;
+    challenge: "normal" | "sequence" | "jumble";
+  }>("game/loadSave"),
   // Start a Daily game
   start: createAction<GameStartOptions>("game/startGame"),
   // Restart the current game
@@ -86,8 +89,31 @@ export const gameReducer = createReducer(
   () => initialState,
   (builder) =>
     builder
-      .addCase(gameAction.load, (state, action) => {
-        state.game = action.payload.game;
+      .addCase(gameAction.loadSave, (state, action) => {
+        const gameSave = state.saves.daily[action.payload.challenge];
+        if (!gameSave) {
+          return;
+        }
+        if (getDailyId(action.payload.timestamp) !== gameSave.id) {
+          return;
+        }
+        const id = gameSave.id;
+        const challenge = action.payload.challenge;
+        const targets = getTargetWords(id, challenge);
+        const guesses = gameSave.guesses;
+
+        state.game = {
+          id,
+          gameMode: "daily",
+          challenge,
+          targets,
+          guesses,
+          colors: getAllGuessColors(targets, guesses),
+          startTime: gameSave.startTime,
+          endTime: gameSave.endTime,
+          input: "",
+          gameOver: getIsGameOver(targets, guesses, challenge),
+        };
         state.ui.highlightedBoard = null;
       })
       .addCase(gameAction.start, (state, action) => {
@@ -184,6 +210,16 @@ export const gameReducer = createReducer(
           ) {
             highlightNextBoard(state);
           }
+        }
+
+        // Save game state
+        if (game.gameMode === "daily" && game.challenge !== "perfect") {
+          state.saves.daily[game.challenge] = {
+            id: game.id,
+            guesses: game.guesses,
+            startTime: game.startTime,
+            endTime: game.endTime,
+          };
         }
       })
 );

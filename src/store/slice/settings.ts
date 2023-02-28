@@ -19,7 +19,7 @@ export const settingsInitialState: SettingsState = {
   wideMode: false,
   hideCompletedBoards: false,
   disableAnimations: false,
-  hideEmptyRows: false,
+  hideEmptyRows: true,
   stickyInput: true,
   showHints: true,
   hideAds: false,

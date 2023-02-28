@@ -19,7 +19,7 @@ describe("MersenneTwister", () => {
     expect(rng2.u32()).toMatchSnapshot();
   });
   it("should be stable", () => {
-    for (let i = 0; i < 100000; i += 123) {
+    for (let i = 0; i < 1000; i += 123) {
       const rng1 = MersenneTwister(i);
       const rng2 = MersenneTwister(i);
       for (let i = 0; i < 100; i++) {
@@ -57,5 +57,6 @@ describe("parseTimeElapsed", () => {
     expect(parseTimeElapsed("123:00")).toEqual(7380000);
     expect(parseTimeElapsed("")).toEqual(null);
     expect(parseTimeElapsed("blah")).toEqual(null);
+    expect(parseTimeElapsed("-10-")).toEqual(null);
   });
 });

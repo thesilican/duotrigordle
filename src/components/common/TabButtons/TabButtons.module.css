@@ -1,0 +1,37 @@
+.tabs {
+  display: grid;
+  position: relative;
+  height: 40px;
+  animation: fadeIn 0.5s ease;
+}
+.tabWrapper {
+  position: relative;
+}
+.tab {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  z-index: 2;
+  color: var(--white);
+  background-color: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+.tabs.small .tab {
+  font-size: 16px;
+}
+.highlight {
+  position: absolute;
+  z-index: 1;
+  user-select: none;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  background-color: var(--gray-3);
+  transition: transform 0.25s ease;
+  border-radius: 8px;
+}

@@ -1,5 +1,5 @@
 import cn from "classnames";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Challenge,
   gameAction,
@@ -7,6 +7,7 @@ import {
   getDailyId,
   getTargetWords,
   NUM_BOARDS,
+  savesAction,
   uiAction,
   useAppDispatch,
   useAppSelector,
@@ -34,6 +35,12 @@ export function Welcome() {
 }
 
 function DailyTab() {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(savesAction.prune({ timestamp: Date.now() }));
+  }, [dispatch]);
+
   return (
     <>
       <DailyLink

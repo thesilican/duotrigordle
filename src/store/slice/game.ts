@@ -213,7 +213,7 @@ export const gameReducer = createReducer(
         }
 
         // Save game state
-        if (game.challenge !== "perfect") {
+        if (game.gameMode === "daily" && game.challenge !== "perfect") {
           state.saves.daily[game.challenge] = {
             id: game.id,
             guesses: game.guesses,

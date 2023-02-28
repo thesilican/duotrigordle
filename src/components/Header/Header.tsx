@@ -12,7 +12,6 @@ import {
   gameAction,
   getCompletedBoards,
   getCompletedBoardsCount,
-  loadGameFromLocalStorage,
   NUM_BOARDS,
   NUM_GUESSES,
   uiAction,
@@ -61,7 +60,6 @@ function Row1() {
         "Are you sure you want to quit your current game?"
       );
       if (!res) return;
-      loadGameFromLocalStorage(dispatch);
     }
     dispatch(uiAction.setView("welcome"));
   };

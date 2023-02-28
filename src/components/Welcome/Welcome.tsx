@@ -1,10 +1,11 @@
 import cn from "classnames";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import {
   Challenge,
   gameAction,
   getCompletedBoardsCount,
   getDailyId,
+  getTargetWords,
   NUM_BOARDS,
   uiAction,
   useAppDispatch,
@@ -33,83 +34,77 @@ export function Welcome() {
 }
 
 function DailyTab() {
-  const dispatch = useAppDispatch();
-  const gameMode = useAppSelector((s) => s.game.gameMode);
-  const gameId = useAppSelector((s) => s.game.id);
-  const guessCount = useAppSelector((s) => s.game.guesses.length);
-  const challenge = useAppSelector((s) => s.game.challenge);
-  const targets = useAppSelector((s) => s.game.targets);
-  const guesses = useAppSelector((s) => s.game.guesses);
-  const boardsComplete = useMemo(
-    () => getCompletedBoardsCount(targets, guesses),
-    [guesses, targets]
+  return (
+    <>
+      <DailyLink
+        title="Daily Duotrigordle"
+        description="Solve 32 wordles at the same time"
+        challenge="normal"
+      />
+      <DailyLink
+        title="Daily Sequence"
+        description="The next board is revealed only after solving the current board"
+        challenge="sequence"
+      />
+      <DailyLink
+        title="Daily Jumble"
+        description="Tired of using the same starting words? The first 3 words are randomly chosen for you"
+        challenge="jumble"
+      />
+    </>
   );
-  const showContinue = guessCount > 0 && gameMode === "daily";
+}
 
-  const handleContinueClick = () => {
-    dispatch(uiAction.setView("game"));
-  };
+type DailyLinkProps = {
+  title: string;
+  description: string;
+  challenge: "normal" | "sequence" | "jumble";
+};
+function DailyLink(props: DailyLinkProps) {
+  const dispatch = useAppDispatch();
+  const gameSave = useAppSelector((s) => s.saves.daily)[props.challenge];
 
-  const handleNewGameClick = (challenge: Challenge) => {
-    dispatch(
-      gameAction.start({ gameMode: "daily", challenge, timestamp: Date.now() })
-    );
-    dispatch(uiAction.setView("game"));
-  };
-
-  if (showContinue) {
-    let text = "";
-    if (challenge === "normal") {
-      text += "Daily Duotrigordle";
-    } else if (challenge === "sequence") {
-      text += "Daily Sequence";
-    } else if (challenge === "jumble") {
-      text += "Daily Jumble";
+  const handleClick = () => {
+    const timestamp = Date.now();
+    const dailyId = getDailyId(timestamp);
+    if (gameSave && gameSave.id === dailyId) {
+      dispatch(gameAction.loadSave({ timestamp, challenge: props.challenge }));
+    } else {
+      dispatch(
+        gameAction.start({
+          gameMode: "daily",
+          challenge: props.challenge,
+          timestamp,
+        })
+      );
     }
-    text += ` #${gameId} (${boardsComplete}/${NUM_BOARDS})`;
+    dispatch(uiAction.setView("game"));
+  };
+
+  if (!gameSave) {
     return (
       <div className={styles.gameMode}>
-        <LinkButton className={styles.link} onClick={handleContinueClick}>
-          Continue
+        <LinkButton className={styles.link} onClick={handleClick}>
+          {props.title}
         </LinkButton>
-        <p>{text}</p>
+        <p>{props.description}</p>
       </div>
     );
   }
 
+  const targets = getTargetWords(gameSave.id, props.challenge);
+  const guesses = gameSave.guesses;
+  const boardsComplete = getCompletedBoardsCount(targets, guesses);
+
   return (
-    <>
-      <div className={styles.gameMode}>
-        <LinkButton
-          className={styles.link}
-          onClick={() => handleNewGameClick("normal")}
-        >
-          Daily Duotrigordle
-        </LinkButton>
-        <p>Solve 32 wordles at the same time</p>
-      </div>
-      <div className={styles.gameMode}>
-        <LinkButton
-          className={styles.link}
-          onClick={() => handleNewGameClick("sequence")}
-        >
-          Daily Sequence
-        </LinkButton>
-        <p>The next board is revealed only after solving the current board</p>
-      </div>
-      <div className={styles.gameMode}>
-        <LinkButton
-          className={styles.link}
-          onClick={() => handleNewGameClick("jumble")}
-        >
-          Daily Jumble
-        </LinkButton>
-        <p>
-          Tired of using the same starting words? The first 3 words are randomly
-          chosen for you
-        </p>
-      </div>
-    </>
+    <div className={styles.gameMode}>
+      <LinkButton className={styles.link} onClick={handleClick}>
+        Continue
+      </LinkButton>
+      <p>
+        {props.title} #{gameSave.id} ({boardsComplete}/{NUM_BOARDS})
+      </p>
+    </div>
   );
 }
 

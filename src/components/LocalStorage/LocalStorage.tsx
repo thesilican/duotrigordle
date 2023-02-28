@@ -1,44 +1,63 @@
 import { Fragment, useEffect, useLayoutEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { useAppSelector } from "../../store";
 import {
-  loadGameFromLocalStorage,
-  loadSettingsFromLocalStorage,
-  loadStatsFromLocalStorage,
-  saveGameToLocalStorage,
-  saveSettingsToLocalStorage,
-  saveStatsToLocalStorage,
-} from "../../store/storage";
+  savesAction,
+  settingsAction,
+  statsAction,
+  useAppDispatch,
+  useAppSelector,
+} from "../../store";
+import {
+  loadFromLocalStorage,
+  STORAGE_KEY_SAVES,
+  parseSaves,
+  STORAGE_KEY_SETTINGS,
+  parseSettings,
+  STORAGE_KEY_STATS,
+  parseStats,
+  saveToLocalStorage,
+} from "./storage";
 
 export function LocalStorage() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const [loaded, setLoaded] = useState(false);
 
   useLayoutEffect(() => {
     if (!loaded) {
-      loadGameFromLocalStorage(dispatch);
-      loadSettingsFromLocalStorage(dispatch);
-      loadStatsFromLocalStorage(dispatch);
+      const saves = loadFromLocalStorage(STORAGE_KEY_SAVES, parseSaves);
+      if (saves) {
+        dispatch(savesAction.load(saves));
+      }
+      const settings = loadFromLocalStorage(
+        STORAGE_KEY_SETTINGS,
+        parseSettings
+      );
+      if (settings) {
+        dispatch(settingsAction.update(settings));
+      }
+      const stats = loadFromLocalStorage(STORAGE_KEY_STATS, parseStats);
+      if (stats) {
+        dispatch(statsAction.load(stats));
+      }
       setLoaded(true);
     }
   }, [dispatch, loaded]);
 
-  const game = useAppSelector((s) => s.game);
+  const saves = useAppSelector((s) => s.saves);
   useEffect(() => {
-    if (loaded && game.gameMode === "daily") {
-      saveGameToLocalStorage(game);
+    if (loaded) {
+      saveToLocalStorage(STORAGE_KEY_SAVES, saves);
     }
-  }, [game, loaded]);
+  }, [saves, loaded]);
   const settings = useAppSelector((s) => s.settings);
   useEffect(() => {
     if (loaded) {
-      saveSettingsToLocalStorage(settings);
+      saveToLocalStorage(STORAGE_KEY_SETTINGS, settings);
     }
   }, [settings, loaded]);
   const stats = useAppSelector((s) => s.stats);
   useEffect(() => {
     if (loaded) {
-      saveStatsToLocalStorage(stats);
+      saveToLocalStorage(STORAGE_KEY_STATS, stats);
     }
   }, [stats, loaded]);
 

@@ -68,4 +68,10 @@
   border: none;
   border: 1px solid var(--white);
   border-radius: 4px;
+  color: var(--white);
+}
+
+.archiveSelect option {
+  background-color: var(--black);
+  color: var(--white);
 }

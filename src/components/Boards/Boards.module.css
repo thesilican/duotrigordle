@@ -29,18 +29,26 @@
   gap: 1px;
   /* Safari force gpu render */
   transform: translateZ(0);
-  transition: filter 0.25s ease, background-color 0.1s ease,
-    box-shadow 0.1s ease;
+  transition: filter 0.25s ease;
   position: relative;
   align-content: start;
 }
 .board.highlighted {
   background-color: var(--white);
   box-shadow: 0px 0px 0px 2px var(--white);
+  animation: highlighted 0.1s ease;
 }
 @media screen and (min-width: 600px) {
   .board.highlighted {
     box-shadow: 0px 0px 0px 4px var(--white);
+  }
+}
+@keyframes highlighted {
+  0% {
+    background-color: initial;
+  }
+  100% {
+    background-color: var(--white);
   }
 }
 .board.dimmed {

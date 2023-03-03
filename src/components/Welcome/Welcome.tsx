@@ -5,6 +5,7 @@ import {
   gameAction,
   getCompletedBoardsCount,
   getDailyId,
+  getIsGameOver,
   getTargetWords,
   NUM_BOARDS,
   savesAction,
@@ -102,11 +103,12 @@ function DailyLink(props: DailyLinkProps) {
   const targets = getTargetWords(gameSave.id, props.challenge);
   const guesses = gameSave.guesses;
   const boardsComplete = getCompletedBoardsCount(targets, guesses);
+  const gameOver = getIsGameOver(targets, guesses, props.challenge);
 
   return (
     <div className={styles.gameMode}>
       <LinkButton className={styles.link} onClick={handleClick}>
-        Continue
+        {gameOver ? "View Results" : "Continue"}
       </LinkButton>
       <p>
         {props.title} #{gameSave.id} ({boardsComplete}/{NUM_BOARDS})

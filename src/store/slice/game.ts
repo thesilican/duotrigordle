@@ -14,7 +14,7 @@ import {
   initialState,
 } from "..";
 import { range } from "../../util";
-import { NUM_BOARDS, WORDS_VALID } from "../consts";
+import { NUM_BOARDS, PRACTICE_MODE_MIN_ID, WORDS_VALID } from "../consts";
 
 export type GameState = {
   // Daily Duotrigordle number (seed for target words)
@@ -236,7 +236,7 @@ function startGame(options: GameStartOptions): GameState {
   const targets = getTargetWords(id, options.challenge);
   const guesses =
     options.challenge === "jumble"
-      ? getJumbleWords(targets, options.timestamp)
+      ? getJumbleWords(targets, id + PRACTICE_MODE_MIN_ID)
       : [];
   const colors = getAllGuessColors(targets, guesses);
   const startTime = guesses.length > 0 ? options.timestamp : 0;

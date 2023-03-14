@@ -10,6 +10,7 @@ export type SettingsState = {
   hideEmptyRows: boolean;
   stickyInput: boolean;
   showHints: boolean;
+  swapBackspaceEnter: boolean;
   hideAds: boolean;
   kofiEmail: string | null;
 };
@@ -22,6 +23,7 @@ export const settingsInitialState: SettingsState = {
   hideEmptyRows: true,
   stickyInput: true,
   showHints: true,
+  swapBackspaceEnter: false,
   hideAds: false,
   kofiEmail: null,
 };

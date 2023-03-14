@@ -19,6 +19,7 @@ export function Settings() {
     kofiEmail,
     stickyInput,
     showHints,
+    swapBackspaceEnter,
   } = useAppSelector((s) => s.settings);
 
   return (
@@ -114,6 +115,21 @@ export function Settings() {
             <p className={styles.name}>Show Hints</p>
             <p className={styles.description}>
               Show ghost letters and inconsistency warnings
+            </p>
+          </label>
+        </div>
+        <div className={styles.setting}>
+          <Checkbox
+            checked={swapBackspaceEnter}
+            onChange={(x) =>
+              dispatch(settingsAction.update({ swapBackspaceEnter: x }))
+            }
+            id="swap-backspace-enter"
+          />
+          <label className={styles.label} htmlFor="swap-backspace-enter">
+            <p className={styles.name}>Swap Backspace/Enter</p>
+            <p className={styles.description}>
+              Makes keyboard consistent with Wordle
             </p>
           </label>
         </div>

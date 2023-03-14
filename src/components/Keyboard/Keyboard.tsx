@@ -14,6 +14,9 @@ import styles from "./Keyboard.module.css";
 
 export function Keyboard() {
   const disableAnimations = useAppSelector((s) => s.settings.disableAnimations);
+  const swapBackspaceEnter = useAppSelector(
+    (s) => s.settings.swapBackspaceEnter
+  );
 
   return (
     <div
@@ -48,7 +51,7 @@ export function Keyboard() {
         <div className={styles.spacer} />
       </div>
       <div className={styles.row3}>
-        <Key char="backspace" />
+        {swapBackspaceEnter ? <Key char="enter" /> : <Key char="backspace" />}
         <Key char="Z" />
         <Key char="X" />
         <Key char="C" />
@@ -56,7 +59,7 @@ export function Keyboard() {
         <Key char="B" />
         <Key char="N" />
         <Key char="M" />
-        <Key char="enter" />
+        {swapBackspaceEnter ? <Key char="backspace" /> : <Key char="enter" />}
       </div>
     </div>
   );

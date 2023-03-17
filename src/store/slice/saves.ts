@@ -2,11 +2,13 @@ import { createAction, createReducer } from "@reduxjs/toolkit";
 import { getDailyId, initialState } from "..";
 
 export type SavesState = {
-  daily: {
-    normal: GameSave | null;
-    sequence: GameSave | null;
-    jumble: GameSave | null;
-  };
+  daily: DailySaves;
+  lastUpdated: string;
+};
+export type DailySaves = {
+  normal: GameSave | null;
+  sequence: GameSave | null;
+  jumble: GameSave | null;
 };
 export type GameSave = {
   id: number;
@@ -21,11 +23,13 @@ export const savesInitialState: SavesState = {
     sequence: null,
     jumble: null,
   },
+  lastUpdated: "1970-01-01",
 };
 
 export const savesAction = {
   load: createAction<SavesState>("saves/load"),
-  prune: createAction<{ timestamp: number }>("saves/prune"),
+  setLastUpdated: createAction<string>("saves/setLastUpdated"),
+  pruneSaves: createAction<{ timestamp: number }>("saves/prune"),
 };
 
 export const savesReducer = createReducer(
@@ -35,7 +39,10 @@ export const savesReducer = createReducer(
       .addCase(savesAction.load, (state, action) => {
         state.saves = action.payload;
       })
-      .addCase(savesAction.prune, (state, action) => {
+      .addCase(savesAction.setLastUpdated, (state, action) => {
+        state.saves.lastUpdated = action.payload;
+      })
+      .addCase(savesAction.pruneSaves, (state, action) => {
         const dailyId = getDailyId(action.payload.timestamp);
         const challenges = ["normal", "sequence", "jumble"] as const;
         for (const challenge of challenges) {

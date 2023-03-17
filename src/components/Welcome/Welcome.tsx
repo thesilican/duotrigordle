@@ -39,7 +39,7 @@ function DailyTab() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(savesAction.prune({ timestamp: Date.now() }));
+    dispatch(savesAction.pruneSaves({ timestamp: Date.now() }));
   }, [dispatch]);
 
   return (

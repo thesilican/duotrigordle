@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useLayoutEffect, useState } from "react";
 import {
-  savesAction,
+  storageAction,
   settingsAction,
   statsAction,
   useAppDispatch,
@@ -8,8 +8,8 @@ import {
 } from "../../store";
 import {
   loadFromLocalStorage,
-  STORAGE_KEY_SAVES,
-  parseSaves,
+  STORAGE_KEY_STORAGE,
+  parseStorage,
   STORAGE_KEY_SETTINGS,
   parseSettings,
   STORAGE_KEY_STATS,
@@ -23,9 +23,9 @@ export function LocalStorage() {
 
   useLayoutEffect(() => {
     if (!loaded) {
-      const saves = loadFromLocalStorage(STORAGE_KEY_SAVES, parseSaves);
-      if (saves) {
-        dispatch(savesAction.load(saves));
+      const storage = loadFromLocalStorage(STORAGE_KEY_STORAGE, parseStorage);
+      if (storage) {
+        dispatch(storageAction.load(storage));
       }
       const settings = loadFromLocalStorage(
         STORAGE_KEY_SETTINGS,
@@ -42,12 +42,12 @@ export function LocalStorage() {
     }
   }, [dispatch, loaded]);
 
-  const saves = useAppSelector((s) => s.saves);
+  const storage = useAppSelector((s) => s.storage);
   useEffect(() => {
     if (loaded) {
-      saveToLocalStorage(STORAGE_KEY_SAVES, saves);
+      saveToLocalStorage(STORAGE_KEY_STORAGE, storage);
     }
-  }, [saves, loaded]);
+  }, [storage, loaded]);
   const settings = useAppSelector((s) => s.settings);
   useEffect(() => {
     if (loaded) {

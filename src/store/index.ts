@@ -1,7 +1,11 @@
 import { AnyAction, configureStore, Dispatch } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { gameInitialState, gameReducer, GameState } from "./slice/game";
-import { savesInitialState, savesReducer, SavesState } from "./slice/saves";
+import {
+  storageInitialState,
+  storageReducer,
+  StorageState,
+} from "./slice/storage";
 import {
   settingsInitialState,
   settingsReducer,
@@ -12,14 +16,14 @@ import { uiInitialState, uiReducer, UiState } from "./slice/ui";
 
 export type AppState = {
   game: GameState;
-  saves: SavesState;
+  storage: StorageState;
   settings: SettingsState;
   stats: StatsState;
   ui: UiState;
 };
 export const initialState: AppState = {
   game: gameInitialState,
-  saves: savesInitialState,
+  storage: storageInitialState,
   settings: settingsInitialState,
   stats: statsInitialState,
   ui: uiInitialState,
@@ -27,7 +31,7 @@ export const initialState: AppState = {
 
 const reducers = [
   gameReducer,
-  savesReducer,
+  storageReducer,
   settingsReducer,
   statsReducer,
   uiReducer,
@@ -46,7 +50,7 @@ export const useAppDispatch: () => Dispatch<AnyAction> = useDispatch;
 export * from "./consts";
 export * from "./funcs";
 export * from "./slice/game";
-export * from "./slice/saves";
+export * from "./slice/storage";
 export * from "./slice/settings";
 export * from "./slice/stats";
 export * from "./slice/ui";

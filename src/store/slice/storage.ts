@@ -1,7 +1,7 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
 import { getDailyId, initialState } from "..";
 
-export type SavesState = {
+export type StorageState = {
   daily: DailySaves;
   lastUpdated: string;
 };
@@ -17,7 +17,7 @@ export type GameSave = {
   endTime: number;
 };
 
-export const savesInitialState: SavesState = {
+export const storageInitialState: StorageState = {
   daily: {
     normal: null,
     sequence: null,
@@ -26,28 +26,28 @@ export const savesInitialState: SavesState = {
   lastUpdated: "1970-01-01",
 };
 
-export const savesAction = {
-  load: createAction<SavesState>("saves/load"),
-  setLastUpdated: createAction<string>("saves/setLastUpdated"),
-  pruneSaves: createAction<{ timestamp: number }>("saves/prune"),
+export const storageAction = {
+  load: createAction<StorageState>("storage/load"),
+  setLastUpdated: createAction<string>("storage/setLastUpdated"),
+  pruneSaves: createAction<{ timestamp: number }>("storage/pruneSaves"),
 };
 
-export const savesReducer = createReducer(
+export const storageReducer = createReducer(
   () => initialState,
   (builder) =>
     builder
-      .addCase(savesAction.load, (state, action) => {
-        state.saves = action.payload;
+      .addCase(storageAction.load, (state, action) => {
+        state.storage = action.payload;
       })
-      .addCase(savesAction.setLastUpdated, (state, action) => {
-        state.saves.lastUpdated = action.payload;
+      .addCase(storageAction.setLastUpdated, (state, action) => {
+        state.storage.lastUpdated = action.payload;
       })
-      .addCase(savesAction.pruneSaves, (state, action) => {
+      .addCase(storageAction.pruneSaves, (state, action) => {
         const dailyId = getDailyId(action.payload.timestamp);
         const challenges = ["normal", "sequence", "jumble"] as const;
         for (const challenge of challenges) {
-          if (state.saves.daily[challenge]?.id !== dailyId) {
-            state.saves.daily[challenge] = null;
+          if (state.storage.daily[challenge]?.id !== dailyId) {
+            state.storage.daily[challenge] = null;
           }
         }
       })

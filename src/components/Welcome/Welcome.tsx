@@ -8,7 +8,7 @@ import {
   getIsGameOver,
   getTargetWords,
   NUM_BOARDS,
-  savesAction,
+  storageAction,
   uiAction,
   useAppDispatch,
   useAppSelector,
@@ -39,7 +39,7 @@ function DailyTab() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(savesAction.pruneSaves({ timestamp: Date.now() }));
+    dispatch(storageAction.pruneSaves({ timestamp: Date.now() }));
   }, [dispatch]);
 
   return (
@@ -70,7 +70,7 @@ type DailyLinkProps = {
 };
 function DailyLink(props: DailyLinkProps) {
   const dispatch = useAppDispatch();
-  const gameSave = useAppSelector((s) => s.saves.daily)[props.challenge];
+  const gameSave = useAppSelector((s) => s.storage.daily)[props.challenge];
 
   const handleClick = () => {
     const timestamp = Date.now();

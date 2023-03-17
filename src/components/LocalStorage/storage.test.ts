@@ -1,4 +1,4 @@
-import { parseGameSave, parseSaves, parseStats } from "./storage";
+import { parseGameSave, parseStorage, parseStats } from "./storage";
 
 describe("serialization", () => {
   test("game serialization", () => {
@@ -49,7 +49,7 @@ describe("serialization", () => {
     };
     expect(parseStats(test2)).toEqual(expect2);
   });
-  test("saves serialization", () => {
+  test("storage serialization", () => {
     const test1 = {};
     const expect1 = {
       daily: {
@@ -59,7 +59,7 @@ describe("serialization", () => {
       },
       lastUpdated: "1970-01-01",
     };
-    expect(parseSaves(test1)).toEqual(expect1);
+    expect(parseStorage(test1)).toEqual(expect1);
     const test2 = {
       daily: {
         normal: null,
@@ -75,7 +75,7 @@ describe("serialization", () => {
       },
       lastUpdated: "1970-01-01",
     };
-    expect(parseSaves(test2)).toEqual(expect2);
+    expect(parseStorage(test2)).toEqual(expect2);
     const test3 = {
       daily: {
         normal: {
@@ -110,6 +110,6 @@ describe("serialization", () => {
       },
       lastUpdated: "2023-03-03",
     };
-    expect(parseSaves(test3)).toEqual(expect3);
+    expect(parseStorage(test3)).toEqual(expect3);
   });
 });

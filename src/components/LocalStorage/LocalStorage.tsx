@@ -5,6 +5,8 @@ import {
   statsAction,
   useAppDispatch,
   useAppSelector,
+  LAST_UPDATED,
+  uiAction,
 } from "../../store";
 import {
   loadFromLocalStorage,
@@ -38,6 +40,14 @@ export function LocalStorage() {
       if (stats) {
         dispatch(statsAction.load(stats));
       }
+
+      // Check last updated, if so open changelog
+      if (storage?.lastUpdated !== LAST_UPDATED) {
+        dispatch(storageAction.setLastUpdated(LAST_UPDATED));
+        dispatch(uiAction.showModal("about"));
+        dispatch(uiAction.createSideEffect({ type: "show-changelog-tab" }));
+      }
+
       setLoaded(true);
     }
   }, [dispatch, loaded]);

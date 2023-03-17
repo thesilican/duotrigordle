@@ -14,6 +14,8 @@ export const START_DATE = (() => {
   return utcDate + offset * 60 * 1000;
 })();
 
+export const LAST_UPDATED = "2023-03-17";
+
 export const ALPHABET = new Set([
   "A",
   "B",

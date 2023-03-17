@@ -1,4 +1,4 @@
-import { parseGameSave, parseStats } from "./storage";
+import { parseGameSave, parseStorage, parseStats } from "./storage";
 
 describe("serialization", () => {
   test("game serialization", () => {
@@ -48,5 +48,68 @@ describe("serialization", () => {
       history: [],
     };
     expect(parseStats(test2)).toEqual(expect2);
+  });
+  test("storage serialization", () => {
+    const test1 = {};
+    const expect1 = {
+      daily: {
+        normal: null,
+        sequence: null,
+        jumble: null,
+      },
+      lastUpdated: "1970-01-01",
+    };
+    expect(parseStorage(test1)).toEqual(expect1);
+    const test2 = {
+      daily: {
+        normal: null,
+        sequence: 2,
+      },
+      lastUpdated: 0,
+    };
+    const expect2 = {
+      daily: {
+        normal: null,
+        sequence: null,
+        jumble: null,
+      },
+      lastUpdated: "1970-01-01",
+    };
+    expect(parseStorage(test2)).toEqual(expect2);
+    const test3 = {
+      daily: {
+        normal: {
+          id: 1,
+          guesses: [],
+        },
+        sequence: {
+          id: "1",
+          guesses: ["HELLO"],
+          startTime: 0,
+          endTime: 100,
+        },
+        jumble: {
+          id: 2,
+          guesses: ["HELLO", "WORLD", "THERE"],
+          startTime: 12345,
+          endTime: 67890,
+        },
+      },
+      lastUpdated: "2023-03-03",
+    };
+    const expect3 = {
+      daily: {
+        normal: null,
+        sequence: null,
+        jumble: {
+          id: 2,
+          guesses: ["HELLO", "WORLD", "THERE"],
+          startTime: 12345,
+          endTime: 67890,
+        },
+      },
+      lastUpdated: "2023-03-03",
+    };
+    expect(parseStorage(test3)).toEqual(expect3);
   });
 });

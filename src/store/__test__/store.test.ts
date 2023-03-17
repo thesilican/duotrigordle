@@ -100,7 +100,7 @@ describe("game", () => {
     store.dispatch(gameAction.inputLetter({ letter: "L" }));
     store.dispatch(gameAction.inputLetter({ letter: "O" }));
     store.dispatch(gameAction.inputEnter({ timestamp: 1677609625570 }));
-    expect(store.getState().saves).toEqual({
+    expect(store.getState().storage).toEqual({
       daily: {
         normal: {
           id: 363,
@@ -111,6 +111,7 @@ describe("game", () => {
         sequence: null,
         jumble: null,
       },
+      lastUpdated: "1970-01-01",
     });
   });
 });

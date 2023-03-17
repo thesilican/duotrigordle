@@ -90,7 +90,7 @@ export const gameReducer = createReducer(
   (builder) =>
     builder
       .addCase(gameAction.loadSave, (state, action) => {
-        const gameSave = state.saves.daily[action.payload.challenge];
+        const gameSave = state.storage.daily[action.payload.challenge];
         if (!gameSave) {
           return;
         }
@@ -214,7 +214,7 @@ export const gameReducer = createReducer(
 
         // Save game state
         if (game.gameMode === "daily" && game.challenge !== "perfect") {
-          state.saves.daily[game.challenge] = {
+          state.storage.daily[game.challenge] = {
             id: game.id,
             guesses: game.guesses,
             startTime: game.startTime,

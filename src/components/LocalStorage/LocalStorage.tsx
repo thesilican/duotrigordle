@@ -1,15 +1,17 @@
 import { Fragment, useEffect, useLayoutEffect, useState } from "react";
 import {
-  savesAction,
+  storageAction,
   settingsAction,
   statsAction,
   useAppDispatch,
   useAppSelector,
+  LAST_UPDATED,
+  uiAction,
 } from "../../store";
 import {
   loadFromLocalStorage,
-  STORAGE_KEY_SAVES,
-  parseSaves,
+  STORAGE_KEY_STORAGE,
+  parseStorage,
   STORAGE_KEY_SETTINGS,
   parseSettings,
   STORAGE_KEY_STATS,
@@ -23,9 +25,9 @@ export function LocalStorage() {
 
   useLayoutEffect(() => {
     if (!loaded) {
-      const saves = loadFromLocalStorage(STORAGE_KEY_SAVES, parseSaves);
-      if (saves) {
-        dispatch(savesAction.load(saves));
+      const storage = loadFromLocalStorage(STORAGE_KEY_STORAGE, parseStorage);
+      if (storage) {
+        dispatch(storageAction.load(storage));
       }
       const settings = loadFromLocalStorage(
         STORAGE_KEY_SETTINGS,
@@ -38,16 +40,24 @@ export function LocalStorage() {
       if (stats) {
         dispatch(statsAction.load(stats));
       }
+
+      // Check last updated, if so open changelog
+      if (storage?.lastUpdated !== LAST_UPDATED) {
+        dispatch(storageAction.setLastUpdated(LAST_UPDATED));
+        dispatch(uiAction.showModal("about"));
+        dispatch(uiAction.createSideEffect({ type: "show-changelog-tab" }));
+      }
+
       setLoaded(true);
     }
   }, [dispatch, loaded]);
 
-  const saves = useAppSelector((s) => s.saves);
+  const storage = useAppSelector((s) => s.storage);
   useEffect(() => {
     if (loaded) {
-      saveToLocalStorage(STORAGE_KEY_SAVES, saves);
+      saveToLocalStorage(STORAGE_KEY_STORAGE, storage);
     }
-  }, [saves, loaded]);
+  }, [storage, loaded]);
   const settings = useAppSelector((s) => s.settings);
   useEffect(() => {
     if (loaded) {

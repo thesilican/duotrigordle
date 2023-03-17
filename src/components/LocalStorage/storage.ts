@@ -1,8 +1,9 @@
 import {
   Challenge,
+  DailySaves,
   GameSave,
   HistoryEntry,
-  SavesState,
+  StorageState,
   SettingsState,
   StatsState,
 } from "../../store";
@@ -28,28 +29,36 @@ export function saveToLocalStorage<T>(key: string, obj: T) {
 }
 
 // Serialization for saves
-export const STORAGE_KEY_SAVES = "duotrigordle-state";
-export function parseSaves(obj: unknown): SavesState | null {
+export const STORAGE_KEY_STORAGE = "duotrigordle-state";
+export function parseStorage(obj: unknown): StorageState | null {
+  if (typeof obj === "object" && obj !== null) {
+    // This isn't the most eloquent but it works I think
+    const daily = parseDailySaves((obj as any).daily);
+    const lastUpdated = parseLastUpdated((obj as any).lastUpdated);
+    return {
+      daily: daily ?? {
+        normal: null,
+        jumble: null,
+        sequence: null,
+      },
+      lastUpdated: lastUpdated ?? "1970-01-01",
+    };
+  } else {
+    return null;
+  }
+}
+export function parseDailySaves(obj: unknown): DailySaves | null {
   if (
     typeof obj === "object" &&
     obj !== null &&
-    "daily" in obj &&
-    typeof obj.daily === "object" &&
-    obj.daily !== null &&
-    "normal" in obj.daily &&
-    "sequence" in obj.daily &&
-    "jumble" in obj.daily
+    "normal" in obj &&
+    "sequence" in obj &&
+    "jumble" in obj
   ) {
-    const normal = parseGameSave(obj.daily.normal);
-    const sequence = parseGameSave(obj.daily.sequence);
-    const jumble = parseGameSave(obj.daily.jumble);
-    return {
-      daily: {
-        normal,
-        sequence,
-        jumble,
-      },
-    };
+    const normal = parseGameSave(obj.normal);
+    const sequence = parseGameSave(obj.sequence);
+    const jumble = parseGameSave(obj.jumble);
+    return { normal, sequence, jumble };
   } else {
     return null;
   }
@@ -75,6 +84,13 @@ export function parseGameSave(obj: unknown): GameSave | null {
       startTime: obj.startTime,
       endTime: obj.endTime,
     };
+  } else {
+    return null;
+  }
+}
+export function parseLastUpdated(obj: unknown): string | null {
+  if (typeof obj === "string") {
+    return obj;
   } else {
     return null;
   }

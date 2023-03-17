@@ -47,7 +47,7 @@ function InfoContent() {
   }, []);
 
   return (
-    <>
+    <div className={styles.overflow}>
       <p>Guess all 32 Duotrigordle words in 37 tries!</p>
       <p>
         A new Daily Duotrigordle will be available in
@@ -129,7 +129,7 @@ function InfoContent() {
           Privacy Policy
         </a>
       </div>
-    </>
+    </div>
   );
 }
 
@@ -143,7 +143,7 @@ function getHoursRemaining() {
 
 export function Changelog() {
   return (
-    <>
+    <div className={styles.overflow}>
       <p>March 17, 2023</p>
       <ul>
         <li>Added a changelog! So now you know when changes are made</li>
@@ -177,6 +177,6 @@ export function Changelog() {
         <li>UI overhaul with refreshed colors and layout</li>
         <li>Performance improvements</li>
       </ul>
-    </>
+    </div>
   );
 }

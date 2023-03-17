@@ -10,3 +10,10 @@
   text-align: center;
   margin-bottom: 4px;
 }
+
+.overflow {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  overflow-y: auto;
+}

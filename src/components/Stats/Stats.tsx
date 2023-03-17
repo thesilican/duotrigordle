@@ -44,14 +44,14 @@ export default function Stats() {
 
   return (
     <Modal shown={shown}>
+      <p className={styles.title}>Statistics</p>
+      <TabButtons
+        tabs={["Normal", "Sequence", "Jumble"]}
+        idx={tabIdx}
+        onTabChange={setTabIdx}
+        size="small"
+      />
       <div className={styles.statsContainer}>
-        <p className={styles.title}>Statistics</p>
-        <TabButtons
-          tabs={["Normal", "Sequence", "Jumble"]}
-          idx={tabIdx}
-          onTabChange={setTabIdx}
-          size="small"
-        />
         <div className={styles.grid}>
           <p className={styles.value}>{played}</p>
           <p className={styles.value}>{win}</p>
@@ -93,9 +93,9 @@ export default function Stats() {
           <p>Average Time (all):</p>
           <p>{avgTimeAll}</p>
         </div>
-        <hr />
-        <StatsEditor />
       </div>
+      <hr />
+      <StatsEditor />
     </Modal>
   );
 }
@@ -136,8 +136,7 @@ function calculateStatsInfo(stats: StatsState, challenge: Challenge) {
   const guessMax = Math.max(...guessCount);
   const guessStyle = guessCount.map((count) => {
     const percent = guessMax === 0 ? 0 : count / guessMax;
-    // Add 3% to account for text
-    const width = Math.max(5, percent * 100) + 3;
+    const width = Math.max(5, percent * 100);
     return `${width.toFixed(0)}%`;
   });
 

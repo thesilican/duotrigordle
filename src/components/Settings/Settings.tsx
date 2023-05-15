@@ -159,6 +159,7 @@ export function Settings() {
           />
           <label className={styles.label} htmlFor="hide-ads">
             <p className={styles.name}>Hide Ads</p>
+            <p className={styles.description}>Thank you for your support!</p>
           </label>
         </div>
       </div>
@@ -213,11 +214,10 @@ function KofiEmailInput() {
   return (
     <div className={styles.kofiEmailInput}>
       <p className={styles.hint}>
-        The following options are for{" "}
+        These options are available for{" "}
         <a target="_blank" href="https://ko-fi.com/thesilican" rel="noreferrer">
           ko-fi supporters
-        </a>{" "}
-        only
+        </a>
         <br />
         Enter the email you used to donate:
       </p>

@@ -17,3 +17,13 @@
   gap: 4px;
   overflow-y: auto;
 }
+.overflow.changelog {
+  max-height: 415px;
+}
+
+.new {
+  font-size: 12px;
+  padding: 4px;
+  border-radius: 12px;
+  background: var(--gray-4);
+}

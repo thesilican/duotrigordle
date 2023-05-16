@@ -8,6 +8,7 @@ import {
 import { Modal } from "../common/Modal/Modal";
 import { TabButtons } from "../common/TabButtons/TabButtons";
 import styles from "./About.module.css";
+import cn from "classnames";
 
 export function About() {
   const dispatch = useAppDispatch();
@@ -143,12 +144,18 @@ function getHoursRemaining() {
 
 export function Changelog() {
   return (
-    <div className={styles.overflow}>
-      <p>May 15, 2023</p>
+    <div className={cn(styles.overflow, styles.changelog)}>
+      <p>
+        May 15, 2023 <span className={styles.new}>New!</span>
+      </p>
       <ul>
-        <li>Statistics are now tracked for practice modes!</li>
+        <li>
+          Statistics are now tracked for practice modes (practice duotrigordle,
+          sequence, jumble, and perfect challenge)
+        </li>
         <li>Removed ability to edit statistics in browser</li>
       </ul>
+      <hr />
       <p>March 17, 2023</p>
       <ul>
         <li>Added a changelog! So now you know when changes are made</li>

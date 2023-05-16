@@ -49,21 +49,13 @@
   gap: 8px;
 }
 
-.editorContainer {
+.exportContainer {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-}
-.buttons {
-  display: flex;
+  align-items: flex-start;
   gap: 8px;
+  padding: 8px 0px;
 }
-.spacer {
-  flex: 1;
-}
-.editorContainer:not(.expanded) .editor {
-  display: none;
-}
-.editorContainer:not(.expanded) .hint {
-  display: none;
+.export {
+  width: 100%;
 }

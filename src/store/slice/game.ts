@@ -186,7 +186,18 @@ export const gameReducer = createReducer(
           // Add stat to game history
           if (game.gameMode === "daily") {
             const entry = {
+              gameMode: "daily" as const,
               id: game.id,
+              guesses: getAllWordsGuessed(game.targets, game.guesses)
+                ? game.guesses.length
+                : null,
+              time: game.endTime - game.startTime,
+              challenge: game.challenge,
+            };
+            state.stats.history = addHistoryEntry(state.stats.history, entry);
+          } else if (game.gameMode === "practice") {
+            const entry = {
+              gameMode: "practice" as const,
               guesses: getAllWordsGuessed(game.targets, game.guesses)
                 ? game.guesses.length
                 : null,

@@ -242,6 +242,7 @@ function StatsExport() {
             rows={10}
             value={value}
             readOnly
+            onClick={(e) => e.currentTarget.select()}
           />
         </>
       ) : (

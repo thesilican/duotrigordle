@@ -144,6 +144,11 @@ function getHoursRemaining() {
 export function Changelog() {
   return (
     <div className={styles.overflow}>
+      <p>May 15, 2023</p>
+      <ul>
+        <li>Statistics are now tracked for practice modes!</li>
+        <li>Removed ability to edit statistics in browser</li>
+      </ul>
       <p>March 17, 2023</p>
       <ul>
         <li>Added a changelog! So now you know when changes are made</li>

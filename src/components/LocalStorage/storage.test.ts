@@ -1,3 +1,4 @@
+import { HistoryEntry, StatsState } from "../../store";
 import { parseGameSave, parseStorage, parseStats } from "./storage";
 
 describe("serialization", () => {
@@ -22,22 +23,60 @@ describe("serialization", () => {
   test("stats serialization", () => {
     const test1 = {
       history: [
-        { id: 1, guesses: 32, time: 1234, challenge: "normal" },
-        { id: 4, guesses: 33, time: 2345, challenge: "sequence" },
-        { id: 4, time: 2345, challenge: "normal" },
-        { id: 3, guesses: null, challenge: "sequence" },
-        { id: 2, guesses: 34, time: 2345, challenge: "jumble" },
-        { id: 2, guesses: 37, time: 2345 },
+        // Valid
+        {
+          gameMode: "daily",
+          challenge: "normal",
+          id: 1,
+          guesses: 37,
+          time: 1234,
+        },
+        { gameMode: "practice", challenge: "perfect", guesses: 37, time: 1234 },
+        // Implicit
+        { id: 2, guesses: 37 },
+        { id: 3, guesses: 37, time: null },
+        { id: 4, guesses: 37, time: 1234 },
+        { challenge: "sequence", id: 5, guesses: 37, time: 1234 },
       ],
     };
-    const expect1 = {
+    const expect1: StatsState = {
       history: [
-        { id: 1, guesses: 32, time: 1234, challenge: "normal" },
-        { id: 4, guesses: 33, time: 2345, challenge: "sequence" },
-        { id: 4, guesses: null, time: 2345, challenge: "normal" },
-        { id: 3, guesses: null, time: null, challenge: "sequence" },
-        { id: 2, guesses: 34, time: 2345, challenge: "jumble" },
-        { id: 2, guesses: 37, time: 2345, challenge: "normal" },
+        {
+          gameMode: "daily",
+          challenge: "normal",
+          id: 1,
+          guesses: 37,
+          time: 1234,
+        },
+        { gameMode: "practice", challenge: "perfect", guesses: 37, time: 1234 },
+        {
+          gameMode: "daily",
+          challenge: "normal",
+          id: 2,
+          guesses: 37,
+          time: null,
+        },
+        {
+          gameMode: "daily",
+          challenge: "normal",
+          id: 3,
+          guesses: 37,
+          time: null,
+        },
+        {
+          gameMode: "daily",
+          challenge: "normal",
+          id: 4,
+          guesses: 37,
+          time: 1234,
+        },
+        {
+          gameMode: "daily",
+          challenge: "sequence",
+          id: 5,
+          guesses: 37,
+          time: 1234,
+        },
       ],
     };
     expect(parseStats(test1)).toEqual(expect1);

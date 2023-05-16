@@ -1,16 +1,13 @@
-import cn from "classnames";
-import { Fragment, useMemo, useState } from "react";
+import { Fragment, useState } from "react";
 import {
   Challenge,
+  GameMode,
   HistoryEntry,
   normalizeHistory,
-  PRACTICE_MODE_MIN_ID,
-  statsAction,
   StatsState,
-  useAppDispatch,
   useAppSelector,
 } from "../../store";
-import { formatTimeElapsed, parseTimeElapsed, range } from "../../util";
+import { formatTimeElapsed, range } from "../../util";
 import { LinkButton } from "../common/LinkButton/LinkButton";
 import { Modal } from "../common/Modal/Modal";
 import { TabButtons } from "../common/TabButtons/TabButtons";
@@ -18,8 +15,62 @@ import styles from "./Stats.module.css";
 
 export default function Stats() {
   const shown = useAppSelector((s) => s.ui.modal === "stats");
+  const [gameModeTab, setGameModeTab] = useState(0);
+  const [challengeTab, setChallengeTab] = useState(0);
+
+  function handleGameModeTabChange(idx: number) {
+    setGameModeTab(idx);
+    if (idx === 0 && challengeTab > 2) {
+      setChallengeTab(0);
+    }
+  }
+
+  const gameMode =
+    gameModeTab === 0 ? "daily" : gameModeTab === 1 ? "practice" : "daily";
+
+  const challenge =
+    challengeTab === 0
+      ? "normal"
+      : challengeTab === 1
+      ? "sequence"
+      : challengeTab === 2
+      ? "jumble"
+      : challengeTab === 3
+      ? "perfect"
+      : "normal";
+
+  return (
+    <Modal shown={shown}>
+      <p className={styles.title}>Statistics</p>
+      <TabButtons
+        tabs={["Daily", "Practice"]}
+        idx={gameModeTab}
+        onTabChange={handleGameModeTabChange}
+        size="small"
+      />
+      <TabButtons
+        tabs={
+          gameModeTab === 0
+            ? ["Normal", "Sequence", "Jumble"]
+            : ["Normal", "Sequence", "Jumble", "Perfect"]
+        }
+        idx={challengeTab}
+        onTabChange={setChallengeTab}
+        size="small"
+      />
+      <StatsInfo gameMode={gameMode} challenge={challenge} />
+      <hr />
+      <StatsExport />
+    </Modal>
+  );
+}
+
+type StatsInfoProps = {
+  gameMode: GameMode;
+  challenge: Challenge;
+};
+function StatsInfo({ challenge, gameMode }: StatsInfoProps) {
   const stats = useAppSelector((s) => s.stats);
-  const [tabIdx, setTabIdx] = useState(0);
   const {
     played,
     win,
@@ -30,28 +81,18 @@ export default function Stats() {
     bestTime,
     avgTime7,
     avgTimeAll,
-  } = useMemo(() => {
-    const challenge =
-      tabIdx === 0
-        ? "normal"
-        : tabIdx === 1
-        ? "sequence"
-        : tabIdx === 2
-        ? "jumble"
-        : "normal";
-    return calculateStatsInfo(stats, challenge);
-  }, [stats, tabIdx]);
+  } = calculateStatsInfo(stats, gameMode, challenge);
+
+  const [rangeMin, rangeMax] =
+    challenge === "perfect"
+      ? [32, 32]
+      : challenge === "jumble"
+      ? [35, 37]
+      : [32, 37];
 
   return (
-    <Modal shown={shown}>
-      <p className={styles.title}>Statistics</p>
-      <TabButtons
-        tabs={["Normal", "Sequence", "Jumble"]}
-        idx={tabIdx}
-        onTabChange={setTabIdx}
-        size="small"
-      />
-      <div className={styles.statsContainer}>
+    <div className={styles.statsContainer}>
+      {gameMode === "daily" ? (
         <div className={styles.grid}>
           <p className={styles.value}>{played}</p>
           <p className={styles.value}>{win}</p>
@@ -70,38 +111,53 @@ export default function Stats() {
             Streak
           </p>
         </div>
-        <p className={styles.title}>Guess Distribution</p>
-        <div className={styles.chart}>
-          {range(6).map((i) => (
-            <Fragment key={i}>
-              <p>{i + 32}</p>
-              <div className={styles.barWrapper}>
-                <div className={styles.bar} style={{ width: guessStyle[i] }}>
-                  <div className={styles.barColor} />
-                  <p>{guessCount[i]}</p>
-                </div>
+      ) : (
+        <div className={styles.grid}>
+          <div />
+          <p className={styles.value}>{played}</p>
+          <p className={styles.value}>{win}</p>
+          <div />
+          <div />
+          <p className={styles.label}>Played</p>
+          <p className={styles.label}>Win %</p>
+          <div />
+        </div>
+      )}
+      <p className={styles.title}>Guess Distribution</p>
+      <div className={styles.chart}>
+        {range(rangeMin, rangeMax + 1).map((i) => (
+          <Fragment key={i}>
+            <p>{i}</p>
+            <div className={styles.barWrapper}>
+              <div className={styles.bar} style={{ width: guessStyle[i - 32] }}>
+                <div className={styles.barColor} />
+                <p>{guessCount[i - 32]}</p>
               </div>
-            </Fragment>
-          ))}
-        </div>
-        <p className={styles.title}>Times</p>
-        <div className={styles.times}>
-          <p>Best Time:</p>
-          <p>{bestTime}</p>
-          <p>Average Time (last 7):</p>
-          <p>{avgTime7}</p>
-          <p>Average Time (all):</p>
-          <p>{avgTimeAll}</p>
-        </div>
+            </div>
+          </Fragment>
+        ))}
       </div>
-      <hr />
-      <StatsEditor />
-    </Modal>
+      <p className={styles.title}>Times</p>
+      <div className={styles.times}>
+        <p>Best Time:</p>
+        <p>{bestTime}</p>
+        <p>Average Time (last 7):</p>
+        <p>{avgTime7}</p>
+        <p>Average Time (all):</p>
+        <p>{avgTimeAll}</p>
+      </div>
+    </div>
   );
 }
 
-function calculateStatsInfo(stats: StatsState, challenge: Challenge) {
-  const history = stats.history.filter((x) => x.challenge === challenge);
+function calculateStatsInfo(
+  stats: StatsState,
+  gameMode: GameMode,
+  challenge: Challenge
+) {
+  const history = stats.history.filter(
+    (x) => x.challenge === challenge && x.gameMode === gameMode
+  );
   const played = history.length;
   const wonGames = history.filter((x) => x.guesses !== null).length;
   const win = played === 0 ? 0 : ((wonGames / played) * 100).toFixed(0);
@@ -110,19 +166,20 @@ function calculateStatsInfo(stats: StatsState, challenge: Challenge) {
   const streaks = [];
   let prev: number | null = null;
   for (let i = 0; i < history.length; i++) {
-    if (history[i].guesses === null) {
+    const entry = history[i];
+    if (entry.guesses === null || entry.gameMode !== "daily") {
       continue;
     }
-    if (prev !== null && history[i].id === prev + 1) {
+    if (prev !== null && entry.id === prev + 1) {
       streaks[streaks.length - 1]++;
     } else {
       streaks.push(1);
     }
-    prev = history[i].id;
+    prev = entry.id;
   }
 
   const currStreak =
-    history.length === 0 || history[history.length - 1].guesses === null
+    streaks.length === 0 || history[history.length - 1].guesses === null
       ? 0
       : streaks[streaks.length - 1];
   const maxStreak = Math.max(0, ...streaks);
@@ -169,115 +226,30 @@ function calculateStatsInfo(stats: StatsState, challenge: Challenge) {
   };
 }
 
-function StatsEditor() {
+function StatsExport() {
   const [isExpanded, setExpanded] = useState(false);
-  const [value, setValue] = useState("");
-  const [modified, setModified] = useState(false);
-  const dispatch = useAppDispatch();
   const history = useAppSelector((s) => s.stats.history);
 
-  function handleExpand() {
-    const res = window.confirm(
-      "Are you sure you want to edit your duotrigordle statistics?\n" +
-        "(This is intended for people who have been tracking statistics themselves " +
-        "before they were added, or for people that have run into bugs)"
-    );
-    if (!res) return;
-
-    setExpanded(true);
-    setValue(stringifyHistory(history));
-    setModified(false);
-  }
-
-  function handleClose() {
-    if (modified) {
-      const res = window.confirm(
-        "Are you sure you want to leave? (you have unsubmitted changes)"
-      );
-      if (!res) return;
-    }
-    setExpanded(false);
-  }
-
-  function handleSubmit() {
-    if (!modified) {
-      alert("No changes to submit");
-      return;
-    }
-    const parsedHistory = parseHistory(value);
-    if (typeof parsedHistory === "string") {
-      alert(parsedHistory);
-    } else {
-      const res = window.confirm(
-        "Are you sure you want to submit these changes? (they cannot be undone)"
-      );
-      if (!res) return;
-      dispatch(statsAction.setHistory(parsedHistory));
-      setValue(stringifyHistory(parsedHistory));
-      setModified(false);
-    }
-  }
-
-  function handleReset() {
-    if (!modified) {
-      alert("No changes to reset");
-      return;
-    }
-    const res = window.confirm("Are you sure you want to undo any changes?");
-    if (!res) return;
-    setValue(stringifyHistory(history));
-    setModified(false);
-  }
+  const value = stringifyHistory(history);
 
   return (
-    <div className={cn(styles.editorContainer, isExpanded && styles.expanded)}>
+    <div className={styles.exportContainer}>
       {isExpanded ? (
-        <div className={styles.buttons}>
-          <LinkButton onClick={handleSubmit}>Submit</LinkButton>
-          <LinkButton onClick={handleReset}>Reset</LinkButton>
-          <a
-            href="https://github.com/thesilican/duotrigordle/tree/main/docs/Inputting_Stats.md"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Help
-          </a>
-          <div className={styles.spacer} />
-          <LinkButton onClick={handleClose}>Close</LinkButton>
-        </div>
+        <>
+          <LinkButton onClick={() => setExpanded(false)}>Close</LinkButton>
+          <textarea
+            className={styles.export}
+            rows={10}
+            value={value}
+            readOnly
+            onClick={(e) => e.currentTarget.select()}
+          />
+        </>
       ) : (
-        <div className={styles.buttons}>
-          <LinkButton onClick={handleExpand}>Edit</LinkButton>
-          <a
-            href="https://github.com/thesilican/duotrigordle/tree/main/docs/Inputting_Stats.md"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Help
-          </a>
-        </div>
+        <>
+          <LinkButton onClick={() => setExpanded(true)}>Export</LinkButton>
+        </>
       )}
-      <textarea
-        className={styles.editor}
-        rows={10}
-        value={value}
-        onChange={(e) => {
-          setValue(e.target.value);
-          setModified(true);
-        }}
-      />
-      <p className={styles.hint}>
-        Format: <code>id challenge guesses time</code>
-        <br />
-        <code>id</code> - Game ID
-        <br />
-        <code>challenge</code> - &quot;N&quot; for normal, &quot;S&quot; for
-        sequence, &quot;J&quot; for jumble
-        <br />
-        <code>guesses</code> - Number of guesses or &quot;X&quot;
-        <br />
-        <code>time</code> - Time elapsed or &quot;-&quot;
-      </p>
     </div>
   );
 }
@@ -285,91 +257,22 @@ function StatsEditor() {
 export function stringifyHistory(history: HistoryEntry[]): string {
   history = normalizeHistory(history);
   const lines = [];
-  for (const stat of history) {
-    const id = stat.id;
+  for (const entry of history) {
+    const id = entry.gameMode === "daily" ? entry.id : "P";
     const challenge =
-      stat.challenge === "normal"
+      entry.challenge === "normal"
         ? "N"
-        : stat.challenge === "sequence"
+        : entry.challenge === "sequence"
         ? "S"
-        : stat.challenge === "jumble"
+        : entry.challenge === "jumble"
         ? "J"
-        : stat.challenge === "perfect"
+        : entry.challenge === "perfect"
         ? "P"
         : undefined;
-    const guesses = stat.guesses ?? "X";
-    const time = stat.time === null ? "-" : formatTimeElapsed(stat.time);
+    const guesses = entry.guesses ?? "X";
+    const time = entry.time === null ? "-" : formatTimeElapsed(entry.time);
     const line = `${id} ${challenge} ${guesses} ${time}`;
     lines.push(line);
   }
   return lines.join("\n");
-}
-
-export function parseHistory(text: string): HistoryEntry[] | string {
-  const history: HistoryEntry[] = [];
-  if (text.trim() === "") {
-    return [];
-  }
-  const lines = text
-    .trim()
-    .split("\n")
-    .map((x) => x.trim());
-  for (let i = 0; i < lines.length; i++) {
-    // Format: <id> <challenge> <guesses> <time>
-    // id is a positive integer
-    // challenge is "N", "S", "J", or "P"
-    // guesses is an integer or "X"
-    // time is a time format or "-" for untimed
-    const match = lines[i].match(/^(\d+)\s+([a-zA-Z])\s+(\d+|X)\s+([\d.:-]+)$/);
-    if (!match) {
-      return `Line ${i + 1} invalid syntax: "${lines[i]}"`;
-    }
-
-    const id = parseInt(match[1], 10);
-    const challenge =
-      match[2].toUpperCase() === "N"
-        ? "normal"
-        : match[2].toUpperCase() === "S"
-        ? "sequence"
-        : match[2].toUpperCase() === "J"
-        ? "jumble"
-        : match[2].toUpperCase() === "P"
-        ? "perfect"
-        : null;
-    const guesses = match[3] === "X" ? null : parseInt(match[3], 10);
-    const time = parseTimeElapsed(match[4]);
-
-    if (id <= 0 || id >= PRACTICE_MODE_MIN_ID) {
-      return `Line ${i + 1} has invalid id ("${lines[i]}")`;
-    }
-    if (challenge === null) {
-      return `Line ${i + 1} has invalid challenge, must be "N", "S", or "J")`;
-    }
-    if (history.find((x) => x.challenge === challenge && x.id === id)) {
-      return `Line ${i + 1} has duplicate challenge and id ("${lines[i]}")`;
-    }
-    if (guesses !== null && (guesses < 32 || guesses > 37)) {
-      return (
-        `Line ${i + 1} has invalid guess count, ` +
-        `must be "X" or 32-37 ("${lines[i]}")`
-      );
-    }
-    if (time !== null && time <= 0) {
-      return (
-        `Line ${i + 1} has invalid time format, ` +
-        `must be a non-zero amount of time ` +
-        `("${lines[i]}")`
-      );
-    }
-    if (time === null && match[4] !== "-") {
-      return (
-        `Line ${i + 1} has invalid time format, ` +
-        `must be "-" or formatted like 00:00.00 ` +
-        `("${lines[i]}")`
-      );
-    }
-
-    history.push({ id, guesses, time, challenge });
-  }
-  return history;
 }

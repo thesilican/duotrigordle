@@ -30,55 +30,172 @@ describe("funcs", () => {
 
 describe("stats", () => {
   test("normalizeHistory", () => {
+    // Test sorting
     const test1: HistoryEntry[] = [
-      { id: 1, challenge: "normal", guesses: null, time: 1234 },
-      { id: 10, challenge: "normal", guesses: 32, time: 1234 },
-      { id: 12, challenge: "normal", guesses: 33, time: 1234.567 },
-      { id: 1, challenge: "normal", guesses: 34, time: 1234 },
-      { id: 1, challenge: "sequence", guesses: null, time: 1234 },
-      { id: 2, challenge: "sequence", guesses: null, time: 1234 },
-      { id: 2, challenge: "normal", guesses: null, time: 1234 },
-      { id: 2, challenge: "perfect", guesses: null, time: 1234 },
-      { id: 2, challenge: "jumble", guesses: null, time: 1234 },
+      {
+        gameMode: "daily",
+        challenge: "normal",
+        id: 1,
+        guesses: null,
+        time: null,
+      },
+      {
+        gameMode: "daily",
+        challenge: "jumble",
+        id: 1,
+        guesses: null,
+        time: null,
+      },
+      {
+        gameMode: "daily",
+        challenge: "normal",
+        id: 2,
+        guesses: null,
+        time: null,
+      },
+      {
+        gameMode: "practice",
+        challenge: "jumble",
+        guesses: null,
+        time: null,
+      },
+      {
+        gameMode: "practice",
+        challenge: "sequence",
+        guesses: null,
+        time: null,
+      },
+      {
+        gameMode: "practice",
+        challenge: "normal",
+        guesses: null,
+        time: null,
+      },
     ];
     const expect1: HistoryEntry[] = [
-      { id: 1, challenge: "normal", guesses: null, time: 1234 },
-      { id: 1, challenge: "sequence", guesses: null, time: 1234 },
-      { id: 2, challenge: "normal", guesses: null, time: 1234 },
-      { id: 2, challenge: "sequence", guesses: null, time: 1234 },
-      { id: 2, challenge: "jumble", guesses: null, time: 1234 },
-      { id: 2, challenge: "perfect", guesses: null, time: 1234 },
-      { id: 10, challenge: "normal", guesses: 32, time: 1234 },
-      { id: 12, challenge: "normal", guesses: 33, time: 1234.57 },
+      {
+        gameMode: "daily",
+        challenge: "normal",
+        id: 1,
+        guesses: null,
+        time: null,
+      },
+      {
+        gameMode: "daily",
+        challenge: "jumble",
+        id: 1,
+        guesses: null,
+        time: null,
+      },
+      {
+        gameMode: "daily",
+        challenge: "normal",
+        id: 2,
+        guesses: null,
+        time: null,
+      },
+      {
+        gameMode: "practice",
+        challenge: "normal",
+        guesses: null,
+        time: null,
+      },
+      {
+        gameMode: "practice",
+        challenge: "sequence",
+        guesses: null,
+        time: null,
+      },
+      {
+        gameMode: "practice",
+        challenge: "jumble",
+        guesses: null,
+        time: null,
+      },
     ];
     expect(normalizeHistory(test1)).toEqual(expect1);
+
+    // Test deduplication
+    const test2: HistoryEntry[] = [
+      {
+        gameMode: "daily",
+        challenge: "normal",
+        id: 123,
+        guesses: 32,
+        time: null,
+      },
+      {
+        gameMode: "daily",
+        challenge: "normal",
+        id: 123,
+        guesses: 33,
+        time: null,
+      },
+    ];
+    const expect2: HistoryEntry[] = [
+      {
+        gameMode: "daily",
+        challenge: "normal",
+        id: 123,
+        guesses: 32,
+        time: null,
+      },
+    ];
+    expect(normalizeHistory(test2)).toEqual(expect2);
+
+    // Test time rounding
+    const test3: HistoryEntry[] = [
+      {
+        gameMode: "daily",
+        id: 1,
+        challenge: "normal",
+        guesses: null,
+        time: 123.456,
+      },
+    ];
+    const expect3: HistoryEntry[] = [
+      {
+        gameMode: "daily",
+        id: 1,
+        challenge: "normal",
+        guesses: null,
+        time: 123.46,
+      },
+    ];
+    expect(normalizeHistory(test3)).toEqual(expect3);
   });
   test("addHistoryEntry", () => {
     const history1: HistoryEntry[] = [
-      { id: 1, challenge: "normal", guesses: null, time: 1234 },
-      { id: 1, challenge: "sequence", guesses: null, time: 1234 },
-      { id: 2, challenge: "normal", guesses: null, time: 1234 },
-      { id: 2, challenge: "sequence", guesses: null, time: 1234 },
-      { id: 2, challenge: "jumble", guesses: null, time: 1234 },
-      { id: 2, challenge: "perfect", guesses: null, time: 1234 },
-      { id: 10, challenge: "normal", guesses: 32, time: 1234 },
-      { id: 12, challenge: "normal", guesses: 33, time: 1234.57 },
+      {
+        gameMode: "daily",
+        id: 1,
+        challenge: "normal",
+        guesses: null,
+        time: null,
+      },
     ];
     const entry1: HistoryEntry = {
+      gameMode: "daily",
       id: 2,
       challenge: "normal",
-      guesses: 37,
-      time: 1000.001,
+      guesses: null,
+      time: null,
     };
-    const expect1 = [
-      { id: 1, challenge: "normal", guesses: null, time: 1234 },
-      { id: 1, challenge: "sequence", guesses: null, time: 1234 },
-      { id: 2, challenge: "normal", guesses: 37, time: 1000 },
-      { id: 2, challenge: "sequence", guesses: null, time: 1234 },
-      { id: 2, challenge: "jumble", guesses: null, time: 1234 },
-      { id: 2, challenge: "perfect", guesses: null, time: 1234 },
-      { id: 10, challenge: "normal", guesses: 32, time: 1234 },
-      { id: 12, challenge: "normal", guesses: 33, time: 1234.57 },
+    const expect1: HistoryEntry[] = [
+      {
+        gameMode: "daily",
+        id: 1,
+        challenge: "normal",
+        guesses: null,
+        time: null,
+      },
+      {
+        gameMode: "daily",
+        id: 2,
+        challenge: "normal",
+        guesses: null,
+        time: null,
+      },
     ];
     expect(addHistoryEntry(history1, entry1)).toEqual(expect1);
   });

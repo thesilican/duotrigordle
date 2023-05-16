@@ -121,14 +121,16 @@ function parseEntry(obj: unknown): HistoryEntry | null {
   if (typeof obj !== "object" || obj === null) {
     return null;
   }
-  let id: number,
+  let id: number | null,
     guesses: number | null,
     time: number | null,
-    challenge: Challenge;
+    challenge: Challenge,
+    gameMode: "daily" | "practice";
+
   if ("id" in obj && typeof obj.id === "number" && Number.isInteger(obj.id)) {
     id = obj.id;
   } else {
-    return null;
+    id = null;
   }
   if (!("guesses" in obj) || obj.guesses === null) {
     guesses = null;
@@ -165,13 +167,28 @@ function parseEntry(obj: unknown): HistoryEntry | null {
   } else {
     return null;
   }
+  if (!("gameMode" in obj)) {
+    gameMode = "daily";
+  } else if ("gameMode" in obj && obj.gameMode === "daily") {
+    gameMode = "daily";
+  } else if ("gameMode" in obj && obj.gameMode === "practice") {
+    gameMode = "practice";
+  } else {
+    return null;
+  }
 
-  return {
-    id,
-    guesses,
-    time,
-    challenge,
-  };
+  if (gameMode === "practice") {
+    return {
+      gameMode,
+      challenge,
+      guesses,
+      time,
+    };
+  } else if (id === null) {
+    return null;
+  } else {
+    return { gameMode, challenge, id, guesses, time };
+  }
 }
 
 // Serialization for settings

@@ -44,8 +44,10 @@ export function LocalStorage() {
       // Check last updated, if so open changelog
       if (storage?.lastUpdated !== LAST_UPDATED) {
         dispatch(storageAction.setLastUpdated(LAST_UPDATED));
-        dispatch(uiAction.showModal("about"));
-        dispatch(uiAction.createSideEffect({ type: "show-changelog-tab" }));
+        if (storage?.lastUpdated !== undefined) {
+          dispatch(uiAction.showModal("about"));
+          dispatch(uiAction.createSideEffect({ type: "show-changelog-tab" }));
+        }
       }
 
       setLoaded(true);

@@ -144,7 +144,7 @@ function getHoursRemaining() {
 
 export function Changelog() {
   return (
-    <div className={cn(styles.overflow, styles.changelog)}>
+    <div className={styles.overflow}>
       <p>
         May 15, 2023 <span className={styles.new}>New!</span>
       </p>

@@ -16,9 +16,7 @@
   flex-direction: column;
   gap: 4px;
   overflow-y: auto;
-}
-.overflow.changelog {
-  max-height: 415px;
+  height: 415px;
 }
 
 .new {

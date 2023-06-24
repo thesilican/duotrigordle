@@ -8,7 +8,6 @@ import {
 import { Modal } from "../common/Modal/Modal";
 import { TabButtons } from "../common/TabButtons/TabButtons";
 import styles from "./About.module.css";
-import cn from "classnames";
 
 export function About() {
   const dispatch = useAppDispatch();

@@ -8,6 +8,9 @@
   padding: 0px 4px 4px 4px;
   border-bottom: 1px solid var(--gray-3);
 }
+.header.welcome {
+  padding: 0px 8px 4px 8px;
+}
 
 .row1 {
   width: 100%;
@@ -29,12 +32,18 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  font-size: 14px;
 }
 .header.welcome .title {
   margin-left: 40px;
   margin-right: -40px;
   transform: translateX(-36px);
   font-size: 24px;
+}
+@media screen and (min-width: 400px) {
+  .title {
+    font-size: 18px;
+  }
 }
 @media screen and (min-width: 600px) {
   .title {

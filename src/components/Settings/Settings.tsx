@@ -221,20 +221,26 @@ function KofiEmailInput() {
         <br />
         Enter the email you used to donate:
       </p>
-      <div className={styles.kofiInputGroup}>
+      <form
+        className={styles.kofiInputGroup}
+        onSubmit={(e) => {
+          e.preventDefault();
+        }}
+      >
         <input
           type="email"
           className={styles.email}
           value={text}
           onChange={(e) => setText(e.target.value)}
+          disabled={kofiEmail !== null}
         />
         <input
           className={styles.submit}
-          type="button"
+          type="submit"
           onClick={handleClick}
           value={kofiEmail ? "Reset" : "Submit"}
         />
-      </div>
+      </form>
       <p className={styles.hint}>
         {statusCode === 1 ? (
           <>

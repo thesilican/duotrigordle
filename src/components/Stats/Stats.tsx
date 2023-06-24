@@ -56,7 +56,7 @@ export default function Stats() {
         }
         idx={challengeTab}
         onTabChange={setChallengeTab}
-        size="small"
+        size="tiny"
       />
       <StatsInfo gameMode={gameMode} challenge={challenge} />
       <hr />

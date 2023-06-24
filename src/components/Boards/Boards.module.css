@@ -13,7 +13,7 @@
   padding: 4px 4px 4px 4px;
   align-content: start;
 
-  animation: fadeIn 0.5s ease;
+  animation: fadeIn 0.25s ease;
 }
 @media screen and (min-width: 600px) {
   .boards {

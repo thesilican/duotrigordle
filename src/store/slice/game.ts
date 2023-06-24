@@ -1,6 +1,7 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
 import {
   addHistoryEntry,
+  AppState,
   getAllGuessColors,
   getAllWordsGuessed,
   getCompletedBoards,
@@ -39,11 +40,12 @@ export type GameState = {
   endTime: number;
 };
 export type GameMode = "daily" | "practice" | "historic";
-export type Challenge = "normal" | "sequence" | "jumble" | "perfect";
+export type DailyChallenge = "normal" | "sequence" | "jumble";
+export type Challenge = DailyChallenge | "perfect";
 export type GameStartOptions =
   | {
       gameMode: "daily";
-      challenge: Challenge;
+      challenge: DailyChallenge;
       timestamp: number;
     }
   | {
@@ -54,7 +56,7 @@ export type GameStartOptions =
   | {
       gameMode: "historic";
       id: number;
-      challenge: Challenge;
+      challenge: DailyChallenge;
       timestamp: number;
     };
 
@@ -72,13 +74,7 @@ export const gameInitialState: GameState = {
 };
 
 export const gameAction = {
-  loadSave: createAction<{
-    timestamp: number;
-    challenge: "normal" | "sequence" | "jumble";
-  }>("game/loadSave"),
-  // Start a Daily game
   start: createAction<GameStartOptions>("game/startGame"),
-  // Restart the current game
   restart: createAction<{ timestamp: number }>("game/restart"),
   inputLetter: createAction<{ letter: string }>("game/inputLetter"),
   inputBackspace: createAction("game/inputBackspace"),
@@ -89,53 +85,27 @@ export const gameReducer = createReducer(
   () => initialState,
   (builder) =>
     builder
-      .addCase(gameAction.loadSave, (state, action) => {
-        const gameSave = state.storage.daily[action.payload.challenge];
-        if (!gameSave) {
-          return;
-        }
-        if (getDailyId(action.payload.timestamp) !== gameSave.id) {
-          return;
-        }
-        const id = gameSave.id;
-        const challenge = action.payload.challenge;
-        const targets = getTargetWords(id, challenge);
-        const guesses = gameSave.guesses;
-
-        state.game = {
-          id,
-          gameMode: "daily",
-          challenge,
-          targets,
-          guesses,
-          colors: getAllGuessColors(targets, guesses),
-          startTime: gameSave.startTime,
-          endTime: gameSave.endTime,
-          input: "",
-          gameOver: getIsGameOver(targets, guesses, challenge),
-        };
-        state.ui.highlightedBoard = null;
-      })
       .addCase(gameAction.start, (state, action) => {
-        state.game = startGame(action.payload);
-        state.ui.highlightedBoard = null;
+        startGame(state, action.payload);
       })
       .addCase(gameAction.restart, (state, action) => {
-        const options =
-          state.game.gameMode === "daily" || state.game.gameMode === "practice"
-            ? {
-                gameMode: state.game.gameMode,
-                challenge: state.game.challenge,
-                timestamp: action.payload.timestamp,
-              }
-            : {
-                gameMode: state.game.gameMode,
-                id: state.game.id,
-                challenge: state.game.challenge,
-                timestamp: action.payload.timestamp,
-              };
-        state.game = startGame(options);
-        state.ui.highlightedBoard = null;
+        if (state.game.gameMode === "daily") {
+          // Do nothing, you can't restart a daily game
+        } else if (state.game.gameMode === "practice") {
+          startGame(state, {
+            gameMode: "practice",
+            challenge: state.game.challenge,
+            timestamp: action.payload.timestamp,
+          });
+        } else if (state.game.gameMode === "historic") {
+          if (state.game.challenge === "perfect") return;
+          startGame(state, {
+            gameMode: "historic",
+            id: state.game.id,
+            challenge: state.game.challenge,
+            timestamp: action.payload.timestamp,
+          });
+        }
       })
       .addCase(gameAction.inputLetter, (state, action) => {
         const game = state.game;
@@ -227,9 +197,7 @@ export const gameReducer = createReducer(
       })
 );
 
-// Extract logic to its own function, since this is used in
-// start and restart
-function startGame(options: GameStartOptions): GameState {
+export function startGame(state: AppState, options: GameStartOptions) {
   const id =
     options.gameMode === "daily"
       ? getDailyId(options.timestamp)
@@ -244,7 +212,7 @@ function startGame(options: GameStartOptions): GameState {
   const colors = getAllGuessColors(targets, guesses);
   const startTime = guesses.length > 0 ? options.timestamp : 0;
 
-  return {
+  state.game = {
     id,
     gameMode: options.gameMode,
     challenge: options.challenge,
@@ -256,4 +224,36 @@ function startGame(options: GameStartOptions): GameState {
     startTime,
     endTime: 0,
   };
+  state.ui.highlightedBoard = null;
+}
+
+export function loadSave(
+  state: AppState,
+  challenge: DailyChallenge,
+  timestamp: number
+) {
+  const gameSave = state.storage.daily[challenge];
+  if (!gameSave) {
+    return;
+  }
+  if (getDailyId(timestamp) !== gameSave.id) {
+    return;
+  }
+  const id = gameSave.id;
+  const targets = getTargetWords(id, challenge);
+  const guesses = gameSave.guesses;
+
+  state.game = {
+    id,
+    gameMode: "daily",
+    challenge,
+    targets,
+    guesses,
+    colors: getAllGuessColors(targets, guesses),
+    startTime: gameSave.startTime,
+    endTime: gameSave.endTime,
+    input: "",
+    gameOver: getIsGameOver(targets, guesses, challenge),
+  };
+  state.ui.highlightedBoard = null;
 }

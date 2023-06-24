@@ -39,8 +39,7 @@ export function LocalStorage() {
       if (storage?.lastUpdated !== LAST_UPDATED) {
         dispatch(storageAction.setLastUpdated(LAST_UPDATED));
         if (storage?.lastUpdated !== undefined) {
-          dispatch(uiAction.showModal("about"));
-          dispatch(uiAction.createSideEffect({ type: "show-changelog-tab" }));
+          dispatch(uiAction.showModal("changelog"));
         }
       }
 

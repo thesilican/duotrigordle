@@ -1,10 +1,15 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
 import {
   AppState,
+  Challenge,
+  DailyChallenge,
   getCompletedBoards,
+  getDailyId,
   getSequenceVisibleBoard,
   initialState,
+  loadSave,
   NUM_BOARDS,
+  startGame,
 } from "..";
 
 export type UiState = {
@@ -13,9 +18,35 @@ export type UiState = {
   highlightedBoard: number | null;
   sideEffects: SideEffect[];
   sideEffectCount: number;
+  welcomeTab: number;
 };
-type UiView = "welcome" | "game";
-type ModalState = "about" | "settings" | "stats" | null;
+export type UiView =
+  | "welcome"
+  | "game"
+  | "stats"
+  | "privacy-policy"
+  | "how-to-play";
+export type Path =
+  | {
+      view: Exclude<UiView, "game">;
+    }
+  | {
+      view: "game";
+      gameMode: "daily";
+      challenge: DailyChallenge;
+    }
+  | {
+      view: "game";
+      gameMode: "practice";
+      challenge: Challenge;
+    }
+  | {
+      view: "game";
+      gameMode: "historic";
+      id: number;
+      challenge: DailyChallenge;
+    };
+type ModalState = "changelog" | "settings" | null;
 type SideEffect = {
   id: number;
 } & SideEffectAction;
@@ -25,8 +56,10 @@ type SideEffectAction =
       board: number;
     }
   | {
-      type: "show-changelog-tab";
-    };
+      type: "navigate-push";
+      path: Path;
+    }
+  | { type: "navigate-back" };
 
 export const uiInitialState: UiState = {
   view: "welcome",
@@ -34,6 +67,7 @@ export const uiInitialState: UiState = {
   highlightedBoard: null,
   sideEffects: [],
   sideEffectCount: 0,
+  welcomeTab: 0,
 };
 
 export const uiAction = {
@@ -41,11 +75,17 @@ export const uiAction = {
   showModal: createAction<ModalState>("ui/showModal"),
   highlightClick: createAction<number>("ui/clickBoard"),
   highlightEsc: createAction("ui/highlightEsc"),
-  highlightArrow: createAction<{ direction: "left" | "right" }>(
-    "ui/highlightArrow"
-  ),
+  highlightArrow: createAction<{
+    direction: "left" | "right";
+  }>("ui/highlightArrow"),
   createSideEffect: createAction<SideEffectAction>("ui/createSideEffect"),
   resolveSideEffect: createAction<number>("ui/resolveSideEffect"),
+  navigate: createAction<{
+    to: Path;
+    timestamp?: number;
+    noPush?: boolean;
+  }>("ui/navigate"),
+  setWelcomeTab: createAction<number>("ui/set-welcome-tab"),
 };
 
 export const uiReducer = createReducer(
@@ -91,6 +131,43 @@ export const uiReducer = createReducer(
           (x) => x.id !== action.payload
         );
       })
+      .addCase(uiAction.navigate, (state, action) => {
+        const path = action.payload.to;
+        if (path.view === "game") {
+          const timestamp = action.payload.timestamp;
+          if (timestamp === undefined) throw new Error("expected timestamp");
+          if (path.gameMode === "daily") {
+            if (
+              state.storage.daily[path.challenge]?.id === getDailyId(timestamp)
+            ) {
+              loadSave(state, path.challenge, timestamp);
+            } else {
+              startGame(state, {
+                gameMode: "daily",
+                challenge: path.challenge,
+                timestamp,
+              });
+            }
+          } else if (path.gameMode === "practice") {
+            startGame(state, {
+              gameMode: "practice",
+              challenge: path.challenge,
+              timestamp: Date.now(),
+            });
+          } else if (path.gameMode === "historic") {
+            startGame(state, {
+              gameMode: "historic",
+              timestamp: Date.now(),
+              challenge: path.challenge,
+              id: path.id,
+            });
+          }
+        }
+        state.ui.view = path.view;
+        if (!action.payload.noPush) {
+          addSideEffect(state, { type: "navigate-push", path });
+        }
+      })
       .addCase(uiAction.highlightArrow, (state, action) => {
         if (state.game.challenge === "sequence") {
           return;
@@ -107,6 +184,9 @@ export const uiReducer = createReducer(
           });
         }
       })
+      .addCase(uiAction.setWelcomeTab, (state, action) => {
+        state.ui.welcomeTab = action.payload;
+      })
 );
 
 function addSideEffect(state: AppState, effect: SideEffectAction) {
@@ -116,6 +196,9 @@ function addSideEffect(state: AppState, effect: SideEffectAction) {
   });
   state.ui.sideEffectCount++;
 }
+
+export const selectNextSideEffect = (s: AppState) =>
+  s.ui.sideEffects.length === 0 ? null : s.ui.sideEffects[0];
 
 export function highlightNextBoard(state: AppState) {
   if (state.game.gameOver) {

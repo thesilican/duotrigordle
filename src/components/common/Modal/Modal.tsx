@@ -11,11 +11,8 @@ type ModalProps = {
 };
 export function Modal(props: ModalProps) {
   const dispatch = useAppDispatch();
-  if (!props.shown) {
-    return null;
-  }
   return (
-    <div className={styles.modalWrapper}>
+    <div className={cn(styles.modalWrapper, !props.shown && styles.hidden)}>
       <div className={cn(styles.modal)}>
         {props.children}
         <Button onClick={() => dispatch(uiAction.showModal(null))}>

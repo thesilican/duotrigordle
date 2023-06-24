@@ -1,8 +1,18 @@
 .main {
-  height: 100%;
-
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: stretch;
+}
+.main.game {
+  height: 100%;
+}
+/*
+  Repeated to increase selector specificity
+  I love CSS 
+*/
+.main.disableAnimations.disableAnimations.disableAnimations.disableAnimations
+  * {
+  transition: none;
+  animation: none;
 }

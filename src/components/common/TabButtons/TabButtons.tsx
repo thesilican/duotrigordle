@@ -11,11 +11,7 @@ export type TabButtonsProps = {
 export function TabButtons(props: TabButtonsProps) {
   return (
     <div
-      className={cn(
-        styles.tabs,
-        props.size === "small" && styles.small,
-        props.size === "tiny" && styles.tiny
-      )}
+      className={cn(styles.tabs)}
       style={{ gridTemplateColumns: `repeat(${props.tabs.length}, 1fr)` }}
       role="tablist"
     >

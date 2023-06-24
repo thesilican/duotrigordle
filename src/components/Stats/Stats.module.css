@@ -1,62 +1,22 @@
-.statsContainer {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 4px;
-  overflow-y: auto;
-  height: 500px;
-}
-
-.title {
-  text-align: center;
-  font-size: 24px;
-}
-.grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  text-align: center;
-}
-.value {
-  font-size: 36px;
-}
-
-.label {
-  font-size: 16px;
-}
-.chart {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 4px;
-}
-.barWrapper {
-  position: relative;
-}
-.bar {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-
-  display: flex;
-  gap: 4px;
-}
-.barColor {
-  flex: 1;
-  background: var(--green);
-}
-.times {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 8px;
-}
-
-.exportContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 8px 0px;
-}
-.export {
+.stats {
+  max-width: 600px;
   width: 100%;
+  padding: 30px 12px 30px 12px;
+  animation: fadeIn 0.5s ease;
+
+  display: flex;
+  flex-direction: column;
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.graphContainer {
+  width: 100%;
+  height: 400px;
 }

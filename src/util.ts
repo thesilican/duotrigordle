@@ -92,3 +92,11 @@ export function parseTimeElapsed(text: string): number | null {
   }
   return time;
 }
+
+export function unreachable(): never {
+  throw new Error("Expected unreachable statement");
+}
+
+export function assertNever(x: never): never {
+  throw new Error("Expected unreachable statement, got " + x);
+}

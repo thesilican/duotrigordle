@@ -1,3 +1,4 @@
+import cn from "classnames";
 import { CSSProperties, useMemo } from "react";
 import {
   ALPHABET,
@@ -8,7 +9,6 @@ import {
   useAppDispatch,
   useAppSelector,
 } from "../../store";
-import cn from "classnames";
 import { range } from "../../util";
 import styles from "./Keyboard.module.css";
 
@@ -270,6 +270,11 @@ function generateBackgroundGrid(
     backgroundImage: backgroundImage.join(","),
     backgroundSize,
     backgroundPosition,
-    color: "var(--black)",
+    color: colorBlind ? "var(--white)" : "var(--black)",
+    textShadow: colorBlind
+      ? "-1px -1px 0 var(--black), 1px -1px 0 var(--black), -1px 1px 0 var(--black), 1px 1px 0 var(--black), " +
+        "-2px -2px 0 var(--black), 2px -2px 0 var(--black), -2px 2px 0 var(--black), 2px 2px 0 var(--black), " +
+        "0px -2px 0 var(--black), 0px 2px 0 var(--black), -2px 0px 0 var(--black), 2px 0px 0 var(--black)"
+      : undefined,
   };
 }

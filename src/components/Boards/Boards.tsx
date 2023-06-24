@@ -6,6 +6,7 @@ import {
   getWarnHint,
   NUM_BOARDS,
   NUM_GUESSES,
+  selectNextSideEffect,
   uiAction,
   useAppDispatch,
   useAppSelector,
@@ -17,13 +18,11 @@ import styles from "./Boards.module.css";
 export function Boards() {
   const wideMode = useAppSelector((s) => s.settings.wideMode);
   const colorBlind = useAppSelector((s) => s.settings.colorBlindMode);
-  const disableAnimations = useAppSelector((s) => s.settings.disableAnimations);
 
   return (
     <div
       className={cn(
         styles.boards,
-        disableAnimations && styles.disableAnimations,
         wideMode && styles.wide,
         colorBlind && styles.colorBlind
       )}
@@ -73,7 +72,7 @@ function Board(props: BoardProps) {
   const isHidden = !gameOver && complete && hideBoard;
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const sideEffect = useAppSelector((s) => s.ui.sideEffects[0]);
+  const sideEffect = useAppSelector(selectNextSideEffect);
   useEffect(() => {
     if (
       sideEffect &&

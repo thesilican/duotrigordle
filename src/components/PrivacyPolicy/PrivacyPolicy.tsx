@@ -1,34 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Duotrigordle Privacy Policy</title>
-    <link href="https://unpkg.com/sanitize.css" rel="stylesheet" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Rubik&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      body {
-        background-color: black;
-        color: white;
-        font-family: "Rubik", sans-serif;
-      }
-      a {
-        color: white;
-      }
-      main {
-        margin: auto;
-        max-width: 600px;
-      }
-    </style>
-  </head>
-  <body>
-    <main>
-      <h1>Privacy Policy for Duotrigordle</h1>
+import styles from "./PrivacyPolicy.module.css";
 
+export function PrivacyPolicy() {
+  return (
+    <div className={styles.main}>
       <p>
         At Duotrigordle, accessible from https://duotrigordle.com, one of our
         main priorities is the privacy of our visitors. This Privacy Policy
@@ -53,10 +27,11 @@
         linked to any information that is personally identifiable. The purpose
         of the information is for analyzing trends, administering the site,
         tracking users' movement on the website, and gathering demographic
-        information. Our Privacy Policy was created with the help of the
-        <a href="https://www.privacypolicygenerator.org"
-          >Privacy Policy Generator</a
-        >.
+        information. Our Privacy Policy was created with the help of the{" "}
+        <a href="https://www.privacypolicygenerator.org">
+          Privacy Policy Generator
+        </a>
+        .
       </p>
 
       <h2>Cookies and Web Beacons</h2>
@@ -76,10 +51,10 @@
         known as DART cookies, to serve ads to our site visitors based upon
         their visit to www.website.com and other sites on the internet. However,
         visitors may choose to decline the use of DART cookies by visiting the
-        Google ad and content network Privacy Policy at the following URL –
-        <a href="https://policies.google.com/technologies/ads"
-          >https://policies.google.com/technologies/ads</a
-        >
+        Google ad and content network Privacy Policy at the following URL –{" "}
+        <a href="https://policies.google.com/technologies/ads">
+          https://policies.google.com/technologies/ads
+        </a>
       </p>
 
       <h2>Privacy Policies</h2>
@@ -153,6 +128,6 @@
         By using our website, you hereby consent to our Privacy Policy and agree
         to its Terms and Conditions.
       </p>
-    </main>
-  </body>
-</html>
+    </div>
+  );
+}

@@ -1,12 +1,17 @@
+import cn from "classnames";
 import { useEffect } from "react";
 import { useAppSelector } from "../../store";
 import { addDebugHooks } from "../../store/debug";
-import { About } from "../About/About";
+import { assertNever } from "../../util";
 import { Boards } from "../Boards/Boards";
+import { Changelog } from "../Changelog/Changelog";
 import { Header } from "../Header/Header";
+import { HowToPlay } from "../HowToPlay/HowToPlay";
 import { Keyboard } from "../Keyboard/Keyboard";
 import { KeyboardListener } from "../KeyboardListener/KeyboardListener";
 import { LocalStorage } from "../LocalStorage/LocalStorage";
+import { NavigationListener } from "../NagivationListener/NagivationListener";
+import { PrivacyPolicy } from "../PrivacyPolicy/PrivacyPolicy";
 import { Results } from "../Results/Results";
 import { Settings } from "../Settings/Settings";
 import Stats from "../Stats/Stats";
@@ -16,8 +21,7 @@ import styles from "./App.module.css";
 export function App() {
   const view = useAppSelector((s) => s.ui.view);
   const gameOver = useAppSelector((s) => s.game.gameOver);
-  const showKeyboard = view === "game" && !gameOver;
-  const showResults = view === "game" && gameOver;
+  const disableAnimations = useAppSelector((s) => s.settings.disableAnimations);
 
   useEffect(() => {
     addDebugHooks();
@@ -36,18 +40,35 @@ export function App() {
   }
 
   return (
-    <>
-      <div className={styles.main}>
-        <Header />
-        {view === "welcome" ? <Welcome /> : <Boards />}
-        {showKeyboard ? <Keyboard /> : null}
-        {showResults ? <Results /> : null}
-      </div>
-      <About />
-      <Stats />
+    <div
+      className={cn(
+        styles.main,
+        view === "game" && styles.game,
+        disableAnimations && styles.disableAnimations
+      )}
+    >
+      <Header />
+      {view === "welcome" ? (
+        <Welcome />
+      ) : view === "game" ? (
+        <>
+          <Boards />
+          {!gameOver ? <Keyboard /> : <Results />}
+        </>
+      ) : view === "privacy-policy" ? (
+        <PrivacyPolicy />
+      ) : view === "how-to-play" ? (
+        <HowToPlay />
+      ) : view === "stats" ? (
+        <Stats />
+      ) : (
+        assertNever(view)
+      )}
+      <Changelog />
       <Settings />
       <LocalStorage />
       <KeyboardListener />
-    </>
+      <NavigationListener />
+    </div>
   );
 }

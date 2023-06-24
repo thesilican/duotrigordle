@@ -4,21 +4,11 @@
   bottom: 0;
   left: 0;
   right: 0;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10;
-  background-color: #00000055;
   padding: 12px;
-  animation: fadeIn 0.25s ease;
-}
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 1;
-  }
 }
 
 .modal {
@@ -29,6 +19,7 @@
   background-color: var(--gray-1);
   border: 1px solid var(--white);
   border-radius: 4px;
+  z-index: 12;
 
   overflow-y: auto;
 
@@ -39,9 +30,30 @@
 }
 @keyframes slideUp {
   0% {
+    opacity: 0;
     transform: translateY(36px);
   }
   100% {
+    opacity: 1;
     transform: none;
+  }
+}
+
+.modalBackground {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 11;
+  background-color: #0000007f;
+  animation: fadeIn 0.25s ease;
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
   }
 }

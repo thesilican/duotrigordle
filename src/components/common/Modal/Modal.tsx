@@ -22,6 +22,10 @@ export function Modal(props: ModalProps) {
           close
         </Button>
       </div>
+      <div
+        onClick={() => dispatch(uiAction.showModal(null))}
+        className={styles.modalBackground}
+      />
     </div>
   );
 }

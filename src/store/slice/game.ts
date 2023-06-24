@@ -153,12 +153,22 @@ export const gameReducer = createReducer(
         const game = state.game;
         if (game.gameOver) return;
 
+        // Input guess and update colors
         const guess = game.input;
         game.input = "";
         if (!WORDS_VALID.has(guess)) {
           return;
         }
         game.guesses.push(guess);
+        for (let i = 0; i < game.targets.length; i++) {
+          const colors = getGuessColors(game.targets[i], guess);
+          game.colors[i].push(colors);
+        }
+
+        // Start timer on first guess
+        if (game.guesses.length === 1) {
+          game.startTime = action.payload.timestamp;
+        }
 
         // Fudge the guess if in perfect mode
         if (game.guesses.length === 1 && game.challenge === "perfect") {
@@ -169,35 +179,17 @@ export const gameReducer = createReducer(
           game.targets[0] = guess;
         }
 
-        for (let i = 0; i < game.targets.length; i++) {
-          const colors = getGuessColors(game.targets[i], guess);
-          game.colors[i].push(colors);
-        }
-        // Start timer on first guess
-        if (game.guesses.length === 1) {
-          game.startTime = action.payload.timestamp;
-        }
-
         // Check if game over
         if (getIsGameOver(game.targets, game.guesses, game.challenge)) {
           game.gameOver = true;
           game.endTime = action.payload.timestamp;
 
           // Add stat to game history
-          if (game.gameMode === "daily") {
+          const gameMode = game.gameMode;
+          if (gameMode === "daily" || gameMode === "practice") {
             const entry = {
-              gameMode: "daily" as const,
+              gameMode,
               id: game.id,
-              guesses: getAllWordsGuessed(game.targets, game.guesses)
-                ? game.guesses.length
-                : null,
-              time: game.endTime - game.startTime,
-              challenge: game.challenge,
-            };
-            state.stats.history = addHistoryEntry(state.stats.history, entry);
-          } else if (game.gameMode === "practice") {
-            const entry = {
-              gameMode: "practice" as const,
               guesses: getAllWordsGuessed(game.targets, game.guesses)
                 ? game.guesses.length
                 : null,

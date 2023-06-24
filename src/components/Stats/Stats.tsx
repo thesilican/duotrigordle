@@ -140,17 +140,17 @@ function StatsInfo({ challenge, gameMode }: StatsInfoProps) {
       <p className={styles.title}>Times</p>
       <div className={styles.times}>
         <p>Best Time:</p>
-        <p>{bestTime}</p>
+        <p>{formatTimeElapsed(bestTime)}</p>
         <p>Average Time (last 7):</p>
-        <p>{avgTime7}</p>
+        <p>{formatTimeElapsed(avgTime7)}</p>
         <p>Average Time (all):</p>
-        <p>{avgTimeAll}</p>
+        <p>{formatTimeElapsed(avgTimeAll)}</p>
       </div>
     </div>
   );
 }
 
-function calculateStatsInfo(
+export function calculateStatsInfo(
   stats: StatsState,
   gameMode: GameMode,
   challenge: Challenge
@@ -160,29 +160,36 @@ function calculateStatsInfo(
   );
   const played = history.length;
   const wonGames = history.filter((x) => x.guesses !== null).length;
-  const win = played === 0 ? 0 : ((wonGames / played) * 100).toFixed(0);
+  const win = played === 0 ? 0 : Math.round((wonGames / played) * 100);
 
   // Get a list of all streak lengths
-  const streaks = [];
-  let prev: number | null = null;
-  for (let i = 0; i < history.length; i++) {
-    const entry = history[i];
-    if (entry.guesses === null || entry.gameMode !== "daily") {
-      continue;
+  let currStreak = null,
+    maxStreak = null;
+  if (gameMode === "daily") {
+    const streaks = [];
+    let prev: number | null = null;
+    for (let i = 0; i < history.length; i++) {
+      const entry = history[i];
+      if (entry.guesses === null || entry.gameMode !== "daily") {
+        continue;
+      }
+      if (prev !== null && entry.id === prev + 1) {
+        streaks[streaks.length - 1]++;
+      } else {
+        streaks.push(1);
+      }
+      prev = entry.id;
     }
-    if (prev !== null && entry.id === prev + 1) {
-      streaks[streaks.length - 1]++;
-    } else {
-      streaks.push(1);
-    }
-    prev = entry.id;
-  }
 
-  const currStreak =
-    streaks.length === 0 || history[history.length - 1].guesses === null
-      ? 0
-      : streaks[streaks.length - 1];
-  const maxStreak = Math.max(0, ...streaks);
+    if (streaks.length === 0) {
+      currStreak = 0;
+    } else if (history[history.length - 1].guesses === null) {
+      currStreak = 0;
+    } else {
+      currStreak = streaks[streaks.length - 1];
+    }
+    maxStreak = Math.max(0, ...streaks);
+  }
 
   // Calculate guess distribution
   const guessCount = [];
@@ -203,14 +210,14 @@ function calculateStatsInfo(
     .map((x) => x.time!);
   let bestTime, avgTime7, avgTimeAll;
   if (times.length === 0) {
-    bestTime = avgTime7 = avgTimeAll = formatTimeElapsed(0);
+    bestTime = avgTime7 = avgTimeAll = 0;
   } else {
-    bestTime = formatTimeElapsed(Math.min(...times));
+    bestTime = Math.min(...times);
     const sumTimesAll = times.reduce((a, v) => a + v);
-    avgTimeAll = formatTimeElapsed(sumTimesAll / times.length);
+    avgTimeAll = sumTimesAll / times.length;
     const times7 = times.slice(-7);
     const sumTimes7 = times7.reduce((a, v) => a + v);
-    avgTime7 = formatTimeElapsed(sumTimes7 / times7.length);
+    avgTime7 = sumTimes7 / times7.length;
   }
 
   return {
@@ -242,7 +249,7 @@ function StatsExport() {
             rows={10}
             value={value}
             readOnly
-            onClick={(e) => e.currentTarget.select()}
+            onFocus={(e) => e.currentTarget.select()}
           />
         </>
       ) : (
@@ -257,22 +264,15 @@ function StatsExport() {
 export function stringifyHistory(history: HistoryEntry[]): string {
   history = normalizeHistory(history);
   const lines = [];
+  lines.push("Game Mode,Challenge,Id,Guesses,Time (ms)");
   for (const entry of history) {
-    const id = entry.gameMode === "daily" ? entry.id : "P";
-    const challenge =
-      entry.challenge === "normal"
-        ? "N"
-        : entry.challenge === "sequence"
-        ? "S"
-        : entry.challenge === "jumble"
-        ? "J"
-        : entry.challenge === "perfect"
-        ? "P"
-        : undefined;
-    const guesses = entry.guesses ?? "X";
-    const time = entry.time === null ? "-" : formatTimeElapsed(entry.time);
-    const line = `${id} ${challenge} ${guesses} ${time}`;
-    lines.push(line);
+    const line = [];
+    line.push(entry.gameMode);
+    line.push(entry.challenge);
+    line.push(entry.id);
+    line.push(entry.guesses);
+    line.push(entry.time);
+    lines.push(line.join(","));
   }
   return lines.join("\n");
 }

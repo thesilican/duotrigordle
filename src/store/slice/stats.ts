@@ -1,20 +1,13 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
 import { Challenge, initialState } from "..";
 
-export type HistoryEntry =
-  | {
-      gameMode: "daily";
-      challenge: Challenge;
-      id: number;
-      guesses: number | null;
-      time: number | null;
-    }
-  | {
-      gameMode: "practice";
-      challenge: Challenge;
-      guesses: number | null;
-      time: number | null;
-    };
+export type HistoryEntry = {
+  gameMode: "daily" | "practice";
+  challenge: Challenge;
+  id: number;
+  guesses: number | null;
+  time: number | null;
+};
 export type StatsState = {
   history: HistoryEntry[];
 };
@@ -34,7 +27,7 @@ export const statsReducer = createReducer(
     builder
       .addCase(statsAction.load, (state, action) => {
         state.stats = action.payload;
-        normalizeHistory(state.stats.history);
+        state.stats.history = normalizeHistory(state.stats.history);
       })
       .addCase(statsAction.addEntry, (state, action) => {
         state.stats.history = addHistoryEntry(
@@ -47,18 +40,17 @@ export const statsReducer = createReducer(
       })
 );
 
+function entryKeysEqual(a: HistoryEntry, b: HistoryEntry) {
+  return (
+    a.gameMode === b.gameMode && a.challenge === b.challenge && a.id === b.id
+  );
+}
+
 export function addHistoryEntry(
   history: HistoryEntry[],
   entry: HistoryEntry
 ): HistoryEntry[] {
-  const newHistory = history.filter((x) => {
-    return !(
-      x.gameMode === "daily" &&
-      entry.gameMode === "daily" &&
-      x.challenge === entry.challenge &&
-      x.id === entry.id
-    );
-  });
+  const newHistory = history.filter((x) => !entryKeysEqual(x, entry));
   newHistory.push(entry);
   return normalizeHistory(newHistory);
 }
@@ -70,12 +62,7 @@ export function normalizeHistory(history: HistoryEntry[]) {
   for (const entry of history) {
     let dup = false;
     for (const newEntry of newHistory) {
-      if (
-        newEntry.gameMode === "daily" &&
-        entry.gameMode === "daily" &&
-        newEntry.challenge === entry.challenge &&
-        newEntry.id === entry.id
-      ) {
+      if (entryKeysEqual(entry, newEntry)) {
         dup = true;
         break;
       }
@@ -86,6 +73,10 @@ export function normalizeHistory(history: HistoryEntry[]) {
   }
 
   // Sort by id then challenge
+  const gameModeOrder = {
+    daily: 0,
+    practice: 1,
+  };
   const challengeOrder = {
     normal: 0,
     sequence: 1,
@@ -93,30 +84,22 @@ export function normalizeHistory(history: HistoryEntry[]) {
     perfect: 3,
   };
   newHistory.sort((a, b) => {
-    if (a.gameMode !== "daily" && b.gameMode !== "daily") {
-      return challengeOrder[a.challenge] - challengeOrder[b.challenge];
-    } else if (a.gameMode !== "daily") {
-      return 1;
-    } else if (b.gameMode !== "daily") {
-      return -1;
-    } else if (a.id !== b.id) {
-      return a.id - b.id;
+    if (a.gameMode !== b.gameMode) {
+      return gameModeOrder[a.gameMode] - gameModeOrder[b.gameMode];
+    } else if (a.gameMode === "daily") {
+      if (a.id !== b.id) {
+        return a.id - b.id;
+      } else {
+        return challengeOrder[a.challenge] - challengeOrder[b.challenge];
+      }
     } else {
-      return challengeOrder[a.challenge] - challengeOrder[b.challenge];
+      if (a.challenge !== b.challenge) {
+        return challengeOrder[a.challenge] - challengeOrder[b.challenge];
+      } else {
+        return a.id - b.id;
+      }
     }
   });
 
-  // Round times to nearest 0.01
-  for (let i = 0; i < newHistory.length; i++) {
-    const time = newHistory[i].time;
-    if (time !== null) {
-      const rounded = Math.round(time * 100) / 100;
-      // Have to do this because otherwise might be editing "read only" property
-      newHistory[i] = {
-        ...newHistory[i],
-        time: rounded,
-      };
-    }
-  }
   return newHistory;
 }

@@ -1,7 +1,20 @@
-import { HistoryEntry } from "../../store";
+import { HistoryEntry, StatsState } from "../../store";
 import { stringifyHistory } from "./Stats";
 
-describe("stats editor", () => {
+describe("stats", () => {
+  test("calculate stat info", () => {
+    const history: StatsState = {
+      history: [
+        {
+          gameMode: "daily",
+          id: 1,
+          challenge: "normal",
+          guesses: 32,
+          time: 1000,
+        },
+      ],
+    };
+  });
   test("stringify history", () => {
     const test1: HistoryEntry[] = [
       {
@@ -26,24 +39,28 @@ describe("stats editor", () => {
         time: null,
       },
       {
+        id: 12345,
         gameMode: "practice",
         challenge: "normal",
         guesses: 32,
         time: null,
       },
       {
+        id: 23456,
         gameMode: "practice",
         challenge: "sequence",
         guesses: 32,
         time: null,
       },
       {
+        id: 34567,
         gameMode: "practice",
         challenge: "jumble",
         guesses: 32,
         time: null,
       },
       {
+        id: 45678,
         gameMode: "practice",
         challenge: "perfect",
         guesses: 32,

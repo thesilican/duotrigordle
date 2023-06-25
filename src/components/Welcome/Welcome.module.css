@@ -65,24 +65,33 @@
   font-size: 24px;
 }
 
-.archiveDescription {
+.historicDescription {
   display: flex;
   gap: 4px;
   align-items: center;
   line-height: 1;
 }
 
-.archiveSelect {
+.historicSelect {
   font-size: 16px;
-  padding: 0px;
+  padding: 2px;
   background-color: transparent;
   border: none;
   border: 1px solid var(--white);
   border-radius: 4px;
   color: var(--white);
+  appearance: none;
 }
 
-.archiveSelect option {
+.historicSelect option {
   background-color: var(--black);
   color: var(--white);
+}
+
+.historicInput {
+  font-size: 16px;
+  border: 1px solid var(--white);
+  border-radius: 4px;
+  background-color: transparent;
+  width: min-content;
 }

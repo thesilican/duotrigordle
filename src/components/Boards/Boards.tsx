@@ -27,7 +27,7 @@ export function Boards() {
         colorBlind && styles.colorBlind
       )}
     >
-      {range(32).map((i) => (
+      {range(NUM_BOARDS).map((i) => (
         <Board key={i} idx={i} />
       ))}
     </div>
@@ -63,7 +63,7 @@ function Board(props: BoardProps) {
   const complete = guessedAt !== -1;
   const coloredCount = complete ? guessedAt + 1 : guesses.length;
   const showInput = !complete && !gameOver && !isConcealed;
-  const maxGuesses = challenge === "perfect" ? NUM_BOARDS : NUM_GUESSES;
+  const maxGuesses = NUM_GUESSES[challenge];
   const emptyCount = hideEmptyRows
     ? 0
     : maxGuesses - coloredCount - (showInput ? 1 : 0);

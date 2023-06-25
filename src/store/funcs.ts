@@ -216,6 +216,6 @@ export function getIsGameOver(
   guesses: string[],
   challenge: Challenge
 ) {
-  const maxGuesses = challenge === "perfect" ? NUM_BOARDS : NUM_GUESSES;
+  const maxGuesses = NUM_GUESSES[challenge];
   return getAllWordsGuessed(targets, guesses) || guesses.length >= maxGuesses;
 }

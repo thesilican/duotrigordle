@@ -44,11 +44,14 @@
   transform: translateX(-36px);
 }
 .header.game .title {
-  font-size: 14px;
+  font-size: 16px;
 }
 @media screen and (min-width: 400px) {
+  .title {
+    font-size: 30px;
+  }
   .header.game .title {
-    font-size: 18px;
+    font-size: 20px;
   }
 }
 @media screen and (min-width: 600px) {

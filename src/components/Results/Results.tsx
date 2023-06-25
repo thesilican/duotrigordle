@@ -115,7 +115,7 @@ function getShareableText(
 
   // Title
   if (challenge === "perfect") {
-    text += "Perfect Duotrigordle Challenge";
+    text += "Perfect Duotrigordle";
   } else {
     if (gameMode === "daily") {
       text += "Daily";
@@ -142,7 +142,7 @@ function getShareableText(
   const guessCount = getAllWordsGuessed(targets, guesses)
     ? guesses.length
     : "X";
-  const maxGuesses = challenge === "perfect" ? NUM_BOARDS : NUM_GUESSES;
+  const maxGuesses = NUM_GUESSES[challenge];
   text += `Guesses: ${guessCount}/${maxGuesses}\n`;
 
   // Timer

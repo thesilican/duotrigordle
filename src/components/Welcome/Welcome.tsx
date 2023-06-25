@@ -209,12 +209,12 @@ function PracticeTab() {
       </div>
       <div className={styles.item}>
         <LinkButton className={styles.link} onClick={handleNewArchiveClick}>
-          Archive
+          Historic
         </LinkButton>
-        <p className={styles.archiveDescription}>
-          <span>Play historic </span>
+        <p className={styles.historicDescription}>
+          <span>Play historic</span>
           <select
-            className={styles.archiveSelect}
+            className={styles.historicSelect}
             value={archiveChallenge}
             onChange={(e) => setArchiveChallenge(e.target.value as "normal")}
           >
@@ -222,17 +222,15 @@ function PracticeTab() {
             <option value="sequence">sequence</option>
             <option value="jumble">jumble</option>
           </select>
-          <select
-            className={styles.archiveSelect}
+          <input
+            size={3}
+            className={styles.historicInput}
+            type="number"
+            min={0}
+            max={todaysId - 1}
             value={archiveId}
             onChange={(e) => setArchiveId(parseInt(e.target.value, 10))}
-          >
-            {range(1, todaysId).map((i) => (
-              <option key={i} value={i}>
-                {i}
-              </option>
-            ))}
-          </select>
+          />
         </p>
       </div>
     </>
@@ -241,6 +239,7 @@ function PracticeTab() {
 
 function MoreTab() {
   const dispatch = useAppDispatch();
+  const kofiEmail = useAppSelector((s) => s.settings.kofiEmail);
 
   return (
     <>
@@ -262,7 +261,11 @@ function MoreTab() {
         >
           Buy me a ☕️
         </a>
-        <p>Love duotrigordle? Show your support!</p>
+        {kofiEmail ? (
+          <p>Thank you for supporting ♥️</p>
+        ) : (
+          <p>Love duotrigordle? Show your support!</p>
+        )}
       </div>
       <div className={styles.item}>
         <LinkButton
@@ -271,7 +274,7 @@ function MoreTab() {
             dispatch(uiAction.navigate({ to: { view: "how-to-play" } }))
           }
         >
-          How to Play
+          How to play
         </LinkButton>
       </div>
       <div className={styles.item}>

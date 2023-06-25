@@ -178,7 +178,7 @@ function Row2() {
   );
   const challenge = useAppSelector((s) => s.game.challenge);
   const numGuesses = guesses.length;
-  const maxGuesses = challenge === "perfect" ? NUM_BOARDS : NUM_GUESSES;
+  const maxGuesses = NUM_GUESSES[challenge];
   const extraGuessesNum =
     maxGuesses - NUM_BOARDS - (numGuesses - boardsCompleted);
   const cannotWin = extraGuessesNum < 0;

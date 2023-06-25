@@ -55,7 +55,14 @@ describe("stats editor", () => {
       },
     ];
     const expect1 =
-      "1 N 32 00:01.00\n2 S 37 01:00.00\n3 J X -\nP N 32 -\nP S 32 -\nP J 32 -\nP P 32 -";
+      "Game Mode,Challenge,Id,Guesses,Time (ms)\n" +
+      "daily,normal,1,32,1000\n" +
+      "daily,sequence,2,37,60000\n" +
+      "daily,jumble,3,,\n" +
+      "practice,normal,12345,32,\n" +
+      "practice,sequence,34567,32,\n" +
+      "practice,jumble,12345,32,\n" +
+      "practice,perfect,23456,32,";
     expect(stringifyHistory(test1)).toEqual(expect1);
   });
 });

@@ -255,22 +255,15 @@ function StatsExport() {
 export function stringifyHistory(history: HistoryEntry[]): string {
   history = normalizeHistory(history);
   const lines = [];
+  lines.push("Game Mode,Challenge,Id,Guesses,Time (ms)");
   for (const entry of history) {
-    const id = entry.gameMode === "daily" ? entry.id : "P";
-    const challenge =
-      entry.challenge === "normal"
-        ? "N"
-        : entry.challenge === "sequence"
-        ? "S"
-        : entry.challenge === "jumble"
-        ? "J"
-        : entry.challenge === "perfect"
-        ? "P"
-        : undefined;
-    const guesses = entry.guesses ?? "X";
-    const time = entry.time === null ? "-" : formatTimeElapsed(entry.time);
-    const line = `${id} ${challenge} ${guesses} ${time}`;
-    lines.push(line);
+    const line = [];
+    line.push(entry.gameMode);
+    line.push(entry.challenge);
+    line.push(entry.id);
+    line.push(entry.guesses);
+    line.push(entry.time);
+    lines.push(line.join(","));
   }
   return lines.join("\n");
 }

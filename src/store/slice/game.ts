@@ -7,7 +7,6 @@ import {
   getCompletedBoards,
   getDailyId,
   getGuessColors,
-  getIsGameOver,
   getJumbleWords,
   getPracticeId,
   getTargetWords,
@@ -15,7 +14,12 @@ import {
   initialState,
 } from "..";
 import { range } from "../../util";
-import { NUM_BOARDS, PRACTICE_MODE_MIN_ID, WORDS_VALID } from "../consts";
+import {
+  NUM_BOARDS,
+  NUM_GUESSES,
+  PRACTICE_MODE_MIN_ID,
+  WORDS_VALID,
+} from "../consts";
 
 export type GameState = {
   // Daily Duotrigordle number (seed for target words)
@@ -32,12 +36,12 @@ export type GameState = {
   targets: string[];
   // Word colors e.g. "BBYGG" (indexed by board, row)
   colors: string[][];
-  // Whether or not the game is finished
-  gameOver: boolean;
-  // Start timestamp (milliseconds from unix epoch)
-  startTime: number;
-  // End timestamp (milliseconds from unix epoch)
-  endTime: number;
+  // Start timestamp (unix timestamp), null if game not started
+  startTime: number | null;
+  // End timestamp (unix timestamp), null if game not ended
+  endTime: number | null;
+  // Pause timestamp (unix timestamp)
+  pauseTime: number | null;
 };
 export type GameMode = "daily" | "practice" | "historic";
 export type DailyChallenge = "normal" | "sequence" | "jumble";
@@ -68,14 +72,16 @@ export const gameInitialState: GameState = {
   guesses: [],
   targets: range(NUM_BOARDS).map((_) => "AAAAA"),
   colors: range(NUM_BOARDS).map(() => []),
-  gameOver: false,
-  startTime: 0,
-  endTime: 0,
+  startTime: null,
+  endTime: null,
+  pauseTime: null,
 };
 
 export const gameAction = {
   start: createAction<GameStartOptions>("game/startGame"),
   restart: createAction<{ timestamp: number }>("game/restart"),
+  pause: createAction<{ timestamp: number }>("game/pause"),
+  unpause: createAction<{ timestamp: number }>("game/unpause"),
   inputLetter: createAction<{ letter: string }>("game/inputLetter"),
   inputBackspace: createAction("game/inputBackspace"),
   inputEnter: createAction<{ timestamp: number }>("game/inputEnter"),
@@ -109,19 +115,19 @@ export const gameReducer = createReducer(
       })
       .addCase(gameAction.inputLetter, (state, action) => {
         const game = state.game;
-        if (game.gameOver) return;
+        if (game.endTime !== null) return;
         if (game.input.length < 5) {
           game.input += action.payload.letter;
         }
       })
       .addCase(gameAction.inputBackspace, (state, _) => {
         const game = state.game;
-        if (game.gameOver) return;
+        if (game.endTime !== null) return;
         game.input = game.input.substring(0, game.input.length - 1);
       })
       .addCase(gameAction.inputEnter, (state, action) => {
         const game = state.game;
-        if (game.gameOver) return;
+        if (game.endTime !== null) return;
 
         // Input guess and update colors
         const guess = game.input;
@@ -136,7 +142,7 @@ export const gameReducer = createReducer(
         }
 
         // Start timer on first guess
-        if (game.guesses.length === 1) {
+        if (game.startTime === null) {
           game.startTime = action.payload.timestamp;
         }
 
@@ -150,8 +156,9 @@ export const gameReducer = createReducer(
         }
 
         // Check if game over
-        if (getIsGameOver(game.targets, game.guesses, game.challenge)) {
-          game.gameOver = true;
+        const allWordsGuessed = getAllWordsGuessed(game.targets, game.guesses);
+        const maxGuesses = game.guesses.length >= NUM_GUESSES[game.challenge];
+        if (allWordsGuessed || maxGuesses) {
           game.endTime = action.payload.timestamp;
 
           // Add stat to game history
@@ -186,14 +193,13 @@ export const gameReducer = createReducer(
         }
 
         // Save game state
-        if (game.gameMode === "daily" && game.challenge !== "perfect") {
-          state.storage.daily[game.challenge] = {
-            id: game.id,
-            guesses: game.guesses,
-            startTime: game.startTime,
-            endTime: game.endTime,
-          };
-        }
+        saveGame(state);
+      })
+      .addCase(gameAction.pause, (state, action) => {
+        pauseGame(state, action.payload.timestamp);
+      })
+      .addCase(gameAction.unpause, (state, action) => {
+        unpauseGame(state, action.payload.timestamp);
       })
 );
 
@@ -210,7 +216,7 @@ export function startGame(state: AppState, options: GameStartOptions) {
       ? getJumbleWords(targets, id + PRACTICE_MODE_MIN_ID)
       : [];
   const colors = getAllGuessColors(targets, guesses);
-  const startTime = guesses.length > 0 ? options.timestamp : 0;
+  const startTime = guesses.length > 0 ? options.timestamp : null;
 
   state.game = {
     id,
@@ -220,11 +226,12 @@ export function startGame(state: AppState, options: GameStartOptions) {
     guesses,
     colors,
     input: "",
-    gameOver: false,
     startTime,
-    endTime: 0,
+    endTime: null,
+    pauseTime: null,
   };
   state.ui.highlightedBoard = null;
+  saveGame(state);
 }
 
 export function loadSave(
@@ -252,8 +259,44 @@ export function loadSave(
     colors: getAllGuessColors(targets, guesses),
     startTime: gameSave.startTime,
     endTime: gameSave.endTime,
+    pauseTime: gameSave.pauseTime,
     input: "",
-    gameOver: getIsGameOver(targets, guesses, challenge),
   };
   state.ui.highlightedBoard = null;
+}
+
+export function saveGame(state: AppState) {
+  const game = state.game;
+  if (game.gameMode === "daily" && game.challenge !== "perfect") {
+    state.storage.daily[game.challenge] = {
+      id: game.id,
+      guesses: game.guesses,
+      startTime: game.startTime,
+      endTime: game.endTime,
+      pauseTime: game.pauseTime,
+    };
+  }
+}
+
+export function pauseGame(state: AppState, timestamp: number) {
+  const game = state.game;
+  if (game.startTime !== null && game.endTime === null) {
+    game.pauseTime = timestamp;
+  }
+  saveGame(state);
+}
+
+export function unpauseGame(state: AppState, timestamp: number) {
+  const game = state.game;
+  if (
+    game.pauseTime !== null &&
+    game.startTime !== null &&
+    game.endTime === null
+  ) {
+    if (game.pauseTime < timestamp) {
+      game.startTime += timestamp - game.pauseTime;
+    }
+    game.pauseTime = null;
+  }
+  saveGame(state);
 }

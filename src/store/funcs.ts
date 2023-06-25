@@ -1,7 +1,6 @@
 import { MersenneTwister, range } from "../util";
 import {
   NUM_BOARDS,
-  NUM_GUESSES,
   PRACTICE_MODE_MAX_ID,
   PRACTICE_MODE_MIN_ID,
   START_DATE,
@@ -208,14 +207,4 @@ export function getWarnHint(
     }
   }
   return false;
-}
-
-// Returns whether or not the current game is over
-export function getIsGameOver(
-  targets: string[],
-  guesses: string[],
-  challenge: Challenge
-) {
-  const maxGuesses = NUM_GUESSES[challenge];
-  return getAllWordsGuessed(targets, guesses) || guesses.length >= maxGuesses;
 }

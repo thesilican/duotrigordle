@@ -171,7 +171,7 @@ function Row1() {
 function Row2() {
   const targets = useAppSelector((s) => s.game.targets);
   const guesses = useAppSelector((s) => s.game.guesses);
-  const gameOver = useAppSelector((s) => s.game.gameOver);
+  const gameOver = useAppSelector((s) => s.game.endTime !== null);
   const boardsCompleted = useMemo(
     () => getCompletedBoardsCount(targets, guesses),
     [guesses, targets]
@@ -202,21 +202,22 @@ function Timer() {
   const showTimer = useAppSelector((s) => s.settings.showTimer);
   const startTime = useAppSelector((s) => s.game.startTime);
   const endTime = useAppSelector((s) => s.game.endTime);
-  const gameStarted = useAppSelector((s) => s.game.guesses.length > 0);
-  const gameOver = useAppSelector((s) => s.game.gameOver);
+  const pauseTime = useAppSelector((s) => s.game.pauseTime);
   const [now, setNow] = useState(() => Date.now());
 
   const timerText = useMemo(() => {
     if (!showTimer) {
       return "";
-    } else if (!gameStarted) {
+    } else if (startTime === null) {
       return formatTimeElapsed(0);
-    } else if (gameOver) {
+    } else if (endTime !== null) {
       return formatTimeElapsed(endTime - startTime);
+    } else if (pauseTime !== null) {
+      return "PAUSED";
     } else {
       return formatTimeElapsed(now - startTime);
     }
-  }, [now, showTimer, startTime, endTime, gameStarted, gameOver]);
+  }, [showTimer, startTime, endTime, pauseTime, now]);
 
   useEffect(() => {
     if (!showTimer) return;

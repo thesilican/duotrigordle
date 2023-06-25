@@ -16,7 +16,7 @@ export const statsInitialState: StatsState = {
 };
 
 export const statsAction = {
-  load: createAction<StatsState>("stats/loadStats"),
+  load: createAction<StatsState>("stats/load"),
   addEntry: createAction<HistoryEntry>("stats/addEntry"),
   setHistory: createAction<HistoryEntry[]>("stats/setHistory"),
 };

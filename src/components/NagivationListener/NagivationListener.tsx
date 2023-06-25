@@ -1,5 +1,6 @@
-import { Fragment, useEffect, useLayoutEffect } from "react";
+import { Fragment, useEffect } from "react";
 import {
+  gameAction,
   Path,
   selectNextSideEffect,
   uiAction,
@@ -14,7 +15,7 @@ export function NavigationListener() {
   const dispatch = useAppDispatch();
   const sideEffect = useAppSelector(selectNextSideEffect);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     // When the user lands on the site initially, we check if
     // they landed on a page other than the homepage,
     // if they do, we have to mark the page as "dangling"
@@ -45,12 +46,16 @@ export function NavigationListener() {
 
   useEffect(() => {
     if (sideEffect?.type === "navigate-push") {
+      // Navigation events have the side effect of
+      // pushing a new url to the history stack
       const { url, title } = serializePath(sideEffect.path);
       const path = sideEffect.path;
       window.history.pushState(path, "", url);
       document.title = title;
       dispatch(uiAction.resolveSideEffect(sideEffect.id));
     } else if (sideEffect?.type === "navigate-back") {
+      // When navigating back from a dangling page,
+      // we must do a page reload
       if (window.history.state.dangling) {
         window.location.href = "/";
       } else {
@@ -60,7 +65,8 @@ export function NavigationListener() {
     }
   }, [sideEffect, dispatch]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
+    // Listen to browser navigation events
     const handler = (e: PopStateEvent) => {
       dispatch(
         uiAction.navigate({
@@ -74,6 +80,28 @@ export function NavigationListener() {
     window.addEventListener("popstate", handler);
     return () => window.removeEventListener("popstate", handler);
   }, [dispatch]);
+
+  useEffect(() => {
+    // Pause the game when closing window
+    const handleUnload = () => {
+      dispatch(gameAction.pause({ timestamp: Date.now() }));
+    };
+    // Pause/unpause game when visibility changes
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        dispatch(gameAction.pause({ timestamp: Date.now() }));
+      } else {
+        dispatch(gameAction.unpause({ timestamp: Date.now() }));
+      }
+    };
+    window.addEventListener("beforeunload", handleUnload);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      window.removeEventListener("beforeunload", handleUnload);
+      document.addEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [dispatch]);
+
   return <Fragment />;
 }
 

@@ -41,7 +41,7 @@ function Board(props: BoardProps) {
   const dispatch = useAppDispatch();
   const targets = useAppSelector((s) => s.game.targets);
   const guesses = useAppSelector((s) => s.game.guesses);
-  const gameOver = useAppSelector((s) => s.game.gameOver);
+  const gameOver = useAppSelector((s) => s.game.endTime !== null);
   const isHighlighted = useAppSelector(
     (s) => s.ui.highlightedBoard === props.idx
   );

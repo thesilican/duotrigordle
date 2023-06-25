@@ -13,8 +13,9 @@ export type DailySaves = {
 export type GameSave = {
   id: number;
   guesses: string[];
-  startTime: number;
-  endTime: number;
+  startTime: number | null;
+  endTime: number | null;
+  pauseTime: number | null;
 };
 
 export const storageInitialState: StorageState = {

@@ -9,7 +9,9 @@ import {
   initialState,
   loadSave,
   NUM_BOARDS,
+  pauseGame,
   startGame,
+  unpauseGame,
 } from "..";
 
 export type UiState = {
@@ -82,7 +84,7 @@ export const uiAction = {
   resolveSideEffect: createAction<number>("ui/resolveSideEffect"),
   navigate: createAction<{
     to: Path;
-    timestamp?: number;
+    timestamp: number;
     noPush?: boolean;
   }>("ui/navigate"),
   setWelcomeTab: createAction<number>("ui/set-welcome-tab"),
@@ -108,16 +110,16 @@ export const uiReducer = createReducer(
           state.game.guesses
         );
         if (
-          state.ui.view !== "game" ||
-          state.game.gameOver ||
-          completedBoards[action.payload] ||
-          (state.game.challenge === "sequence" &&
-            action.payload !== sequenceVisibleBoard) ||
-          state.ui.highlightedBoard === action.payload
+          state.ui.view === "game" &&
+          state.game.endTime !== null &&
+          !completedBoards[action.payload] &&
+          (state.game.challenge !== "sequence" ||
+            action.payload === sequenceVisibleBoard) &&
+          state.ui.highlightedBoard !== action.payload
         ) {
-          state.ui.highlightedBoard = null;
-        } else {
           state.ui.highlightedBoard = action.payload;
+        } else {
+          state.ui.highlightedBoard = null;
         }
       })
       .addCase(uiAction.highlightEsc, (state, _) => {
@@ -133,14 +135,14 @@ export const uiReducer = createReducer(
       })
       .addCase(uiAction.navigate, (state, action) => {
         const path = action.payload.to;
+        const timestamp = action.payload.timestamp;
         if (path.view === "game") {
-          const timestamp = action.payload.timestamp;
-          if (timestamp === undefined) throw new Error("expected timestamp");
           if (path.gameMode === "daily") {
             if (
               state.storage.daily[path.challenge]?.id === getDailyId(timestamp)
             ) {
               loadSave(state, path.challenge, timestamp);
+              unpauseGame(state, timestamp);
             } else {
               startGame(state, {
                 gameMode: "daily",
@@ -162,6 +164,8 @@ export const uiReducer = createReducer(
               id: path.id,
             });
           }
+        } else {
+          pauseGame(state, timestamp);
         }
         state.ui.view = path.view;
         if (!action.payload.noPush) {
@@ -201,7 +205,7 @@ export const selectNextSideEffect = (s: AppState) =>
   s.ui.sideEffects.length === 0 ? null : s.ui.sideEffects[0];
 
 export function highlightNextBoard(state: AppState) {
-  if (state.game.gameOver) {
+  if (state.game.endTime !== null) {
     state.ui.highlightedBoard = null;
     return;
   }
@@ -227,7 +231,7 @@ export function highlightNextBoard(state: AppState) {
 }
 
 export function highlightPreviousBoard(state: AppState) {
-  if (state.game.gameOver) {
+  if (state.game.endTime !== null) {
     state.ui.highlightedBoard = null;
     return;
   }

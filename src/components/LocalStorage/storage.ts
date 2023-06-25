@@ -59,15 +59,18 @@ export class StorageParser implements Parser<StorageState> {
       "guesses" in obj &&
       Array.isArray(obj.guesses) &&
       "startTime" in obj &&
-      typeof obj.startTime == "number" &&
+      (typeof obj.startTime == "number" || obj.startTime === null) &&
       "endTime" in obj &&
-      typeof obj.endTime == "number"
+      (typeof obj.endTime == "number" || obj.endTime === null) &&
+      "pauseTime" in obj &&
+      (typeof obj.pauseTime == "number" || obj.pauseTime === null)
     ) {
       return {
         id: obj.id,
         guesses: obj.guesses,
         startTime: obj.startTime,
         endTime: obj.endTime,
+        pauseTime: obj.pauseTime,
       };
     } else {
       return null;

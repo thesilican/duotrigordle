@@ -5,7 +5,6 @@ import {
   DailyChallenge,
   getCompletedBoardsCount,
   getDailyId,
-  getIsGameOver,
   getTargetWords,
   NUM_BOARDS,
   storageAction,
@@ -13,7 +12,7 @@ import {
   useAppDispatch,
   useAppSelector,
 } from "../../store";
-import { range, unreachable } from "../../util";
+import { unreachable } from "../../util";
 import { LinkButton } from "../common/LinkButton/LinkButton";
 import { TabButtons } from "../common/TabButtons/TabButtons";
 import styles from "./Welcome.module.css";
@@ -115,7 +114,7 @@ function DailyLink(props: DailyLinkProps) {
   const targets = getTargetWords(gameSave.id, props.challenge);
   const guesses = gameSave.guesses;
   const boardsComplete = getCompletedBoardsCount(targets, guesses);
-  const gameOver = getIsGameOver(targets, guesses, props.challenge);
+  const gameOver = gameSave.endTime !== null;
 
   return (
     <div className={styles.item}>
@@ -246,7 +245,14 @@ function MoreTab() {
       <div className={styles.item}>
         <LinkButton
           className={styles.link}
-          onClick={() => dispatch(uiAction.navigate({ to: { view: "stats" } }))}
+          onClick={() =>
+            dispatch(
+              uiAction.navigate({
+                to: { view: "stats" },
+                timestamp: Date.now(),
+              })
+            )
+          }
         >
           Stats
         </LinkButton>
@@ -271,7 +277,12 @@ function MoreTab() {
         <LinkButton
           className={styles.link}
           onClick={() =>
-            dispatch(uiAction.navigate({ to: { view: "how-to-play" } }))
+            dispatch(
+              uiAction.navigate({
+                to: { view: "how-to-play" },
+                timestamp: Date.now(),
+              })
+            )
           }
         >
           How to play
@@ -289,7 +300,12 @@ function MoreTab() {
         <LinkButton
           className={styles.link}
           onClick={() =>
-            dispatch(uiAction.navigate({ to: { view: "privacy-policy" } }))
+            dispatch(
+              uiAction.navigate({
+                to: { view: "privacy-policy" },
+                timestamp: Date.now(),
+              })
+            )
           }
         >
           Privacy Policy

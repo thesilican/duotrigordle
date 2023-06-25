@@ -22,7 +22,9 @@ export function Results() {
   const targets = useAppSelector((s) => s.game.targets);
   const guesses = useAppSelector((s) => s.game.guesses);
   const showTimer = useAppSelector((s) => s.settings.showTimer);
-  const timeElapsed = useAppSelector((s) => s.game.endTime - s.game.startTime);
+  const timeElapsed = useAppSelector(
+    (s) => (s.game.endTime ?? 0) - (s.game.startTime ?? 0)
+  );
   const wideMode = useAppSelector((s) => s.settings.wideMode);
   const colorBlind = useAppSelector((s) => s.settings.colorBlindMode);
 

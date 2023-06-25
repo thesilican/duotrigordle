@@ -3,16 +3,14 @@ import { useEffect } from "react";
 import { useAppSelector } from "../../store";
 import { addDebugHooks } from "../../store/debug";
 import { assertNever } from "../../util";
-import { Boards } from "../Boards/Boards";
 import { Changelog } from "../Changelog/Changelog";
+import { Game } from "../Game/Game";
 import { Header } from "../Header/Header";
 import { HowToPlay } from "../HowToPlay/HowToPlay";
-import { Keyboard } from "../Keyboard/Keyboard";
 import { KeyboardListener } from "../KeyboardListener/KeyboardListener";
 import { LocalStorage } from "../LocalStorage/LocalStorage";
 import { NavigationListener } from "../NagivationListener/NagivationListener";
 import { PrivacyPolicy } from "../PrivacyPolicy/PrivacyPolicy";
-import { Results } from "../Results/Results";
 import { Settings } from "../Settings/Settings";
 import Stats from "../Stats/Stats";
 import { Welcome } from "../Welcome/Welcome";
@@ -20,7 +18,6 @@ import styles from "./App.module.css";
 
 export function App() {
   const view = useAppSelector((s) => s.ui.view);
-  const gameOver = useAppSelector((s) => s.game.gameOver);
   const disableAnimations = useAppSelector((s) => s.settings.disableAnimations);
 
   useEffect(() => {
@@ -51,10 +48,7 @@ export function App() {
       {view === "welcome" ? (
         <Welcome />
       ) : view === "game" ? (
-        <>
-          <Boards />
-          {!gameOver ? <Keyboard /> : <Results />}
-        </>
+        <Game />
       ) : view === "privacy-policy" ? (
         <PrivacyPolicy />
       ) : view === "how-to-play" ? (

@@ -216,7 +216,6 @@ export function startGame(state: AppState, options: GameStartOptions) {
       ? getJumbleWords(targets, id + PRACTICE_MODE_MIN_ID)
       : [];
   const colors = getAllGuessColors(targets, guesses);
-  const startTime = guesses.length > 0 ? options.timestamp : null;
 
   state.game = {
     id,
@@ -226,12 +225,11 @@ export function startGame(state: AppState, options: GameStartOptions) {
     guesses,
     colors,
     input: "",
-    startTime,
+    startTime: null,
     endTime: null,
     pauseTime: null,
   };
   state.ui.highlightedBoard = null;
-  saveGame(state);
 }
 
 export function loadSave(
@@ -280,23 +278,27 @@ export function saveGame(state: AppState) {
 
 export function pauseGame(state: AppState, timestamp: number) {
   const game = state.game;
-  if (game.startTime !== null && game.endTime === null) {
+  if (
+    game.pauseTime === null &&
+    game.startTime !== null &&
+    game.endTime === null
+  ) {
     game.pauseTime = timestamp;
+    saveGame(state);
   }
-  saveGame(state);
 }
 
 export function unpauseGame(state: AppState, timestamp: number) {
   const game = state.game;
   if (
-    game.pauseTime !== null &&
     game.startTime !== null &&
+    game.pauseTime !== null &&
     game.endTime === null
   ) {
     if (game.pauseTime < timestamp) {
       game.startTime += timestamp - game.pauseTime;
     }
     game.pauseTime = null;
+    saveGame(state);
   }
-  saveGame(state);
 }

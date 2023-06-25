@@ -5,13 +5,13 @@ export type TabButtonsProps = {
   tabs: React.ReactNode[];
   idx?: number;
   onTabChange?: (idx: number) => void;
-  size?: "normal" | "small" | "tiny";
+  size?: "normal" | "small";
 };
 
 export function TabButtons(props: TabButtonsProps) {
   return (
     <div
-      className={cn(styles.tabs)}
+      className={cn(styles.tabs, props.size === "small" && styles.small)}
       style={{ gridTemplateColumns: `repeat(${props.tabs.length}, 1fr)` }}
       role="tablist"
     >

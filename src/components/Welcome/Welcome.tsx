@@ -297,6 +297,16 @@ function MoreTab() {
         </LinkButton>
       </div>
       <div className={styles.item}>
+        <a
+          className={styles.link}
+          target="_blank"
+          href="https://ko-fi.com/thesilican"
+          rel="noreferrer"
+        >
+          GitHub
+        </a>
+      </div>
+      <div className={styles.item}>
         <LinkButton
           className={styles.link}
           onClick={() =>

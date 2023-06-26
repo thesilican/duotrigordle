@@ -300,7 +300,7 @@ function MoreTab() {
         <a
           className={styles.link}
           target="_blank"
-          href="https://github.com/thesilican"
+          href="https://github.com/thesilican/duotrigordle"
           rel="noreferrer"
         >
           GitHub

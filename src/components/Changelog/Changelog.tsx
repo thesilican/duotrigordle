@@ -10,8 +10,22 @@ export function Changelog() {
       <h1 className={styles.title}>Changelog</h1>
       <div className={styles.overflow}>
         <p>
-          May 15, 2023 <span className={styles.new}>New!</span>
+          July 1, 2023 <span className={styles.new}>New!</span>
         </p>
+        <ul>
+          <li>Timer now pauses when game is out of focus</li>
+          <li>
+            Increased max guess counts:
+            <br />
+            sequence mode 37 =&gt; 39
+            <br />
+            jumble mode 37 =&gt; 38
+          </li>
+          <li>Various UI tweaks &amp; improvements</li>
+          <li>Added how to play guide</li>
+        </ul>
+        <hr />
+        <p>May 15, 2023</p>
         <ul>
           <li>
             Statistics are now tracked for practice modes (practice
@@ -19,7 +33,6 @@ export function Changelog() {
           </li>
           <li>Removed ability to edit statistics in browser</li>
         </ul>
-        <hr />
         <p>March 17, 2023</p>
         <ul>
           <li>Added a changelog! So now you know when changes are made</li>

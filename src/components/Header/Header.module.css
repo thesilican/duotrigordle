@@ -9,7 +9,7 @@
   flex-direction: column;
   align-items: center;
   background-color: var(--gray-1);
-  padding: 0px 8px 4px 8px;
+  padding: 4px 8px 4px 8px;
   border-bottom: 1px solid var(--gray-3);
 }
 .header.game {

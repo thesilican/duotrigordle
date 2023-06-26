@@ -75,7 +75,7 @@ export const uiInitialState: UiState = {
 export const uiAction = {
   setView: createAction<UiView>("ui/setView"),
   showModal: createAction<ModalState>("ui/showModal"),
-  highlightClick: createAction<number>("ui/clickBoard"),
+  highlightClick: createAction<number>("ui/highlightClick"),
   highlightEsc: createAction("ui/highlightEsc"),
   highlightArrow: createAction<{
     direction: "left" | "right";
@@ -111,7 +111,7 @@ export const uiReducer = createReducer(
         );
         if (
           state.ui.view === "game" &&
-          state.game.endTime !== null &&
+          state.game.endTime === null &&
           !completedBoards[action.payload] &&
           (state.game.challenge !== "sequence" ||
             action.payload === sequenceVisibleBoard) &&

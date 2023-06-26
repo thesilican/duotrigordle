@@ -1,29 +1,28 @@
-import {
-  HistoryEntry,
-  PRACTICE_MODE_MAX_ID,
-  PRACTICE_MODE_MIN_ID,
-  StatsState,
-} from "../../store";
+import { PRACTICE_MODE_MAX_ID, PRACTICE_MODE_MIN_ID } from "../../store";
 import { STATS_PARSER, STORAGE_PARSER } from "./storage";
 
 describe("serialization", () => {
   test("game serialization", () => {
-    expect(STORAGE_PARSER.parseGameSave(null)).toBeNull();
-    expect(STORAGE_PARSER.parseGameSave({ id: 1 })).toBeNull();
+    // Normal
     expect(
       STORAGE_PARSER.parseGameSave({
         id: 123,
         guesses: ["HAPPY", "FLAME"],
         startTime: 123,
-        endTime: 456,
+        endTime: null,
+        pauseTime: 789,
         extraField: 123,
       })
     ).toEqual({
       id: 123,
       guesses: ["HAPPY", "FLAME"],
       startTime: 123,
-      endTime: 456,
+      endTime: null,
+      pauseTime: 789,
     });
+    // Empty
+    expect(STORAGE_PARSER.parseGameSave(null)).toBeNull();
+    expect(STORAGE_PARSER.parseGameSave({ id: 1 })).toBeNull();
   });
   test("stats serialization", () => {
     // Empty
@@ -114,6 +113,7 @@ describe("serialization", () => {
           guesses: ["HELLO", "WORLD", "THERE"],
           startTime: 12345,
           endTime: 67890,
+          pauseTime: null,
         },
       },
       lastUpdated: "2023-03-03",
@@ -127,6 +127,7 @@ describe("serialization", () => {
           guesses: ["HELLO", "WORLD", "THERE"],
           startTime: 12345,
           endTime: 67890,
+          pauseTime: null,
         },
       },
       lastUpdated: "2023-03-03",

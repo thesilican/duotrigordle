@@ -6,6 +6,7 @@ import {
   HistoryEntry,
   normalizeHistory,
   reducer,
+  uiAction,
 } from "../index";
 
 describe("funcs", () => {
@@ -229,12 +230,80 @@ describe("game", () => {
           id: 363,
           guesses: ["HELLO"],
           startTime: 1677609625570,
-          endTime: 0,
+          endTime: null,
+          pauseTime: null,
         },
         sequence: null,
         jumble: null,
       },
       lastUpdated: "1970-01-01",
     });
+  });
+  it("should time", () => {
+    let timestamp = 1000;
+    const store = configureStore({ reducer });
+    store.dispatch(
+      uiAction.navigate({
+        to: { view: "game", gameMode: "daily", challenge: "normal" },
+        timestamp,
+      })
+    );
+    timestamp += 1000;
+    store.dispatch(gameAction.inputLetter({ letter: "H" }));
+    store.dispatch(gameAction.inputLetter({ letter: "E" }));
+    store.dispatch(gameAction.inputLetter({ letter: "L" }));
+    store.dispatch(gameAction.inputLetter({ letter: "L" }));
+    store.dispatch(gameAction.inputLetter({ letter: "O" }));
+    store.dispatch(gameAction.inputEnter({ timestamp }));
+    timestamp += 1000;
+    expect(store.getState().game.startTime).toEqual(2000);
+    expect(store.getState().game.endTime).toEqual(null);
+    // Do this 36 more times to finish the game
+    for (let i = 0; i < 36; i++) {
+      store.dispatch(gameAction.inputLetter({ letter: "H" }));
+      store.dispatch(gameAction.inputLetter({ letter: "E" }));
+      store.dispatch(gameAction.inputLetter({ letter: "L" }));
+      store.dispatch(gameAction.inputLetter({ letter: "L" }));
+      store.dispatch(gameAction.inputLetter({ letter: "O" }));
+      store.dispatch(gameAction.inputEnter({ timestamp }));
+      timestamp += 1000;
+    }
+    expect(store.getState().game.startTime).toEqual(2000);
+    expect(store.getState().game.endTime).toEqual(38000);
+  });
+  it("should pause", () => {
+    let timestamp = 1000;
+    const store = configureStore({ reducer });
+    store.dispatch(
+      uiAction.navigate({
+        to: { view: "game", gameMode: "daily", challenge: "normal" },
+        timestamp,
+      })
+    );
+    timestamp += 1000;
+    store.dispatch(gameAction.inputLetter({ letter: "H" }));
+    store.dispatch(gameAction.inputLetter({ letter: "E" }));
+    store.dispatch(gameAction.inputLetter({ letter: "L" }));
+    store.dispatch(gameAction.inputLetter({ letter: "L" }));
+    store.dispatch(gameAction.inputLetter({ letter: "O" }));
+    store.dispatch(gameAction.inputEnter({ timestamp }));
+    expect(store.getState().game.startTime).toEqual(2000);
+    expect(store.getState().game.endTime).toEqual(null);
+    expect(store.getState().game.pauseTime).toEqual(null);
+    timestamp += 1000;
+    store.dispatch(uiAction.navigate({ to: { view: "welcome" }, timestamp }));
+    expect(store.getState().game.startTime).toEqual(2000);
+    expect(store.getState().game.endTime).toEqual(null);
+    expect(store.getState().game.pauseTime).toEqual(3000);
+    timestamp += 1000;
+    store.dispatch(
+      uiAction.navigate({
+        to: { view: "game", gameMode: "daily", challenge: "normal" },
+        timestamp,
+      })
+    );
+    expect(store.getState().game.startTime).toEqual(3000);
+    expect(store.getState().game.endTime).toEqual(null);
+    expect(store.getState().game.pauseTime).toEqual(null);
   });
 });

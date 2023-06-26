@@ -63,3 +63,6 @@
   background-color: var(--gray-2);
   color: var(--yellow);
 }
+.main.colorBlind .cell.hint {
+  color: var(--blue);
+}

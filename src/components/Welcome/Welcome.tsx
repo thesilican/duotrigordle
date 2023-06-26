@@ -131,8 +131,8 @@ function DailyLink(props: DailyLinkProps) {
 function PracticeTab() {
   const dispatch = useAppDispatch();
   const todaysId = getDailyId(Date.now());
-  const [archiveId, setArchiveId] = useState(() => todaysId - 1);
-  const [archiveChallenge, setArchiveChallenge] =
+  const [historicId, setHistoricId] = useState(() => todaysId - 1);
+  const [historicChallenge, setHistoricChallenge] =
     useState<DailyChallenge>("normal");
 
   const handleNewPracticeGameClick = (challenge: Challenge) => {
@@ -149,13 +149,21 @@ function PracticeTab() {
   };
 
   const handleNewArchiveClick = () => {
+    if (
+      !Number.isInteger(historicId) ||
+      historicId < 1 ||
+      historicId >= todaysId
+    ) {
+      alert("Please enter an number from 1 to " + (todaysId - 1));
+      return;
+    }
     dispatch(
       uiAction.navigate({
         to: {
           view: "game",
           gameMode: "historic",
-          challenge: archiveChallenge,
-          id: archiveId,
+          challenge: historicChallenge,
+          id: historicId,
         },
         timestamp: Date.now(),
       })
@@ -214,8 +222,8 @@ function PracticeTab() {
           <span>Play historic</span>
           <select
             className={styles.historicSelect}
-            value={archiveChallenge}
-            onChange={(e) => setArchiveChallenge(e.target.value as "normal")}
+            value={historicChallenge}
+            onChange={(e) => setHistoricChallenge(e.target.value as "normal")}
           >
             <option value="normal">duotrigordle</option>
             <option value="sequence">sequence</option>
@@ -227,8 +235,8 @@ function PracticeTab() {
             type="number"
             min={0}
             max={todaysId - 1}
-            value={archiveId}
-            onChange={(e) => setArchiveId(parseInt(e.target.value, 10))}
+            value={historicId}
+            onChange={(e) => setHistoricId(parseInt(e.target.value, 10))}
           />
         </p>
       </div>

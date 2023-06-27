@@ -184,7 +184,7 @@ function KofiEmailInput() {
     }
   }, [kofiEmail]);
 
-  function handleClick() {
+  function handleSubmit() {
     if (kofiEmail) {
       setText("");
       dispatch(settingsAction.update({ hideAds: false, kofiEmail: null }));
@@ -224,6 +224,7 @@ function KofiEmailInput() {
       <form
         className={styles.kofiInputGroup}
         onSubmit={(e) => {
+          handleSubmit();
           e.preventDefault();
         }}
       >
@@ -237,7 +238,6 @@ function KofiEmailInput() {
         <input
           className={styles.submit}
           type="submit"
-          onClick={handleClick}
           value={kofiEmail ? "Reset" : "Submit"}
         />
       </form>

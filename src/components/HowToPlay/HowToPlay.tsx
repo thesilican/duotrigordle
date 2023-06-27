@@ -85,12 +85,12 @@ export function HowToPlay() {
       <p>
         In sequence mode, only one board is visible at a time. Once you solve a
         word, the next board becomes unlocked. To aid in the extra challenge,
-        you get 2 extra guesses (39 total).
+        you get 3 extra guesses (40 total).
       </p>
       <h1 className={styles.big}>Jumble Mode</h1>
       <p>
         In jumble mode, the first three words are randomly chosen for you. To
-        aid in the extra challenge, you get 1 extra guess (38 total).
+        aid in the extra challenge, you get 2 extra guesses (39 total).
       </p>
       <h1 className={styles.big}>Perfect Challenge</h1>
       <p>

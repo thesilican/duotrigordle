@@ -81,10 +81,14 @@ function StatsInfo({ challenge, gameMode }: StatsInfoProps) {
     bestTime,
     avgTime7,
     avgTimeAll,
+    timeCount,
+    timeMax,
   } = calculateStatsInfo(stats, gameMode, challenge);
 
   const rangeMin = challenge === "jumble" ? 35 : 32;
   const rangeMax = NUM_GUESSES[challenge];
+  const bars: (number | null)[] = range(rangeMin, rangeMax + 1);
+  bars.push(null);
 
   return (
     <div className={styles.statsContainer}>
@@ -120,14 +124,16 @@ function StatsInfo({ challenge, gameMode }: StatsInfoProps) {
         </div>
       )}
       <p className={styles.title}>Guess Distribution</p>
+      <p>Guess Count</p>
       <div className={styles.chart}>
-        {range(rangeMin, rangeMax + 1).map((i) => {
+        {bars.map((i) => {
+          const label = i === null ? "X" : i;
           const count = guessCount.get(i) ?? 0;
           const percent = guessMax === 0 ? 0 : count / guessMax;
           const width = percent === 0 ? "20px" : `${percent * 100}%`;
           return (
             <Fragment key={i}>
-              <p>{i}</p>
+              <p>{label}</p>
               <div className={styles.barWrapper}>
                 <div className={styles.bar} style={{ width }}>
                   <div className={styles.barColor} />
@@ -138,18 +144,63 @@ function StatsInfo({ challenge, gameMode }: StatsInfoProps) {
           );
         })}
       </div>
-      <p className={styles.title}>Times</p>
+      <p className={styles.title}>Time Distribution</p>
       <div className={styles.times}>
-        <p>Best Time:</p>
+        <p>Best:</p>
         <p>{bestTime}</p>
-        <p>Average Time (last 7):</p>
+        <p>Average (last 7):</p>
         <p>{avgTime7}</p>
-        <p>Average Time (all):</p>
+        <p>Average (all):</p>
         <p>{avgTimeAll}</p>
+      </div>
+      <p>Time (minutes)</p>
+      <div className={styles.chart}>
+        {TIME_BUCKETS.map((i) => {
+          const last = i === Infinity;
+          const time = !last
+            ? i / 60000
+            : TIME_BUCKETS[TIME_BUCKETS.length - 2] / 60000;
+          const label = (!last ? "<" : ">") + time;
+          const count = timeCount.get(i) ?? 0;
+          const percent = timeMax === 0 ? 0 : count / timeMax;
+          const width = percent === 0 ? "20px" : `${percent * 100}%`;
+          return (
+            <Fragment key={i}>
+              <p>{label}</p>
+              <div className={styles.barWrapper}>
+                <div className={styles.bar} style={{ width }}>
+                  <div className={styles.barColor} />
+                  <p>{count}</p>
+                </div>
+              </div>
+            </Fragment>
+          );
+        })}
       </div>
     </div>
   );
 }
+
+const TIME_BUCKETS = [
+  1.0 * 60000,
+  2.0 * 60000,
+  3.0 * 60000,
+  4.0 * 60000,
+  5.0 * 60000,
+  6.0 * 60000,
+  7.0 * 60000,
+  8.0 * 60000,
+  9.0 * 60000,
+  10.0 * 60000,
+  15.0 * 60000,
+  20.0 * 60000,
+  25.0 * 60000,
+  30.0 * 60000,
+  40.0 * 60000,
+  50.0 * 60000,
+  60.0 * 60000,
+  Infinity,
+];
 
 function calculateStatsInfo(
   stats: StatsState,
@@ -179,6 +230,7 @@ function calculateStatsInfo(
     prev = entry.id;
   }
 
+  // Calculate streak stats
   const currStreak =
     streaks.length === 0 || history[history.length - 1].guesses === null
       ? 0
@@ -186,12 +238,11 @@ function calculateStatsInfo(
   const maxStreak = Math.max(0, ...streaks);
 
   // Calculate guess distribution
-  const guessCount = new Map();
+  const guessCount = new Map<number | null, number>();
   for (const entry of history) {
-    if (entry.guesses !== null) {
-      const count = guessCount.get(entry.guesses) ?? 0;
-      guessCount.set(entry.guesses, count + 1);
-    }
+    const key = entry.guesses;
+    const count = guessCount.get(key) ?? 0;
+    guessCount.set(key, count + 1);
   }
   const guessMax = Math.max(...guessCount.values());
 
@@ -211,6 +262,23 @@ function calculateStatsInfo(
     avgTime7 = formatTimeElapsed(sumTimes7 / times7.length);
   }
 
+  // Create times chart, bucket by minutes
+  const timeCount = new Map<number, number>();
+  for (const entry of history) {
+    if (!entry.guesses || !entry.time) {
+      continue;
+    }
+    for (let i = 0; i < TIME_BUCKETS.length; i++) {
+      if (entry.time < TIME_BUCKETS[i]) {
+        const key = TIME_BUCKETS[i];
+        const count = timeCount.get(key) ?? 0;
+        timeCount.set(key, count + 1);
+        break;
+      }
+    }
+  }
+  const timeMax = Math.max(...timeCount.values());
+
   return {
     played,
     win,
@@ -221,6 +289,8 @@ function calculateStatsInfo(
     bestTime,
     avgTime7,
     avgTimeAll,
+    timeCount,
+    timeMax,
   };
 }
 

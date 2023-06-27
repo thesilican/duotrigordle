@@ -2,8 +2,8 @@ export const NUM_BOARDS = 32;
 
 export const NUM_GUESSES = {
   normal: 37,
-  sequence: 39,
-  jumble: 38,
+  sequence: 40,
+  jumble: 39,
   perfect: 32,
 };
 

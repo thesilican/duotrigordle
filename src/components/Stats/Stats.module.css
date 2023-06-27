@@ -36,6 +36,7 @@
 }
 
 .title {
+  margin-top: 16px;
   text-align: center;
   font-size: 24px;
 }
@@ -67,6 +68,7 @@
 
   display: flex;
   gap: 4px;
+  transition: width 0.33s ease;
 }
 .barColor {
   flex: 1;
@@ -74,8 +76,10 @@
 }
 .times {
   display: grid;
-  grid-template-columns: auto 1fr;
+  grid-template-columns: auto auto;
   gap: 8px;
+  font-size: 18px;
+  margin-bottom: 8px;
 }
 
 .exportContainer {

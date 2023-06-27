@@ -13,16 +13,18 @@ export function Changelog() {
           July 1, 2023 <span className={styles.new}>New!</span>
         </p>
         <ul>
-          <li>Timer now pauses when game is out of focus</li>
-          <li>
-            Increased max guess counts:
-            <br />
-            sequence mode 37 =&gt; 39
-            <br />
-            jumble mode 37 =&gt; 38
-          </li>
-          <li>Various UI tweaks &amp; improvements</li>
           <li>Added how to play guide</li>
+          <li>Added time distribution to statistics</li>
+          <li>
+            Increased guess limit for
+            <br />
+            sequence mode: 37 =&gt; 40
+            <br />
+            jumble mode: 37 =&gt; 39
+          </li>
+          <li>Timer now pauses when game is out of focus</li>
+          <li>Updated main menu layout</li>
+          <li>Various UI tweaks &amp; improvements</li>
         </ul>
         <hr />
         <p>May 15, 2023</p>

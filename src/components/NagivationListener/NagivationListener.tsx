@@ -14,6 +14,7 @@ import { assertNever } from "../../util";
 export function NavigationListener() {
   const dispatch = useAppDispatch();
   const sideEffect = useAppSelector(selectNextSideEffect);
+  const view = useAppSelector((s) => s.ui.view);
 
   useEffect(() => {
     // When the user lands on the site initially, we check if
@@ -82,6 +83,10 @@ export function NavigationListener() {
   }, [dispatch]);
 
   useEffect(() => {
+    // Only install hooks when in game view
+    if (view !== "game") {
+      return;
+    }
     // Pause the game when closing window
     const handleUnload = () => {
       dispatch(gameAction.pause({ timestamp: Date.now() }));
@@ -98,9 +103,9 @@ export function NavigationListener() {
     document.addEventListener("visibilitychange", handleVisibilityChange);
     return () => {
       window.removeEventListener("beforeunload", handleUnload);
-      document.addEventListener("visibilitychange", handleVisibilityChange);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [dispatch]);
+  }, [dispatch, view]);
 
   return <Fragment />;
 }

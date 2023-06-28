@@ -3,13 +3,14 @@ import { useEffect } from "react";
 import { useAppSelector } from "../../store";
 import { addDebugHooks } from "../../store/debug";
 import { assertNever } from "../../util";
+import { Account } from "../Account/Account";
 import { Changelog } from "../Changelog/Changelog";
 import { Game } from "../Game/Game";
 import { Header } from "../Header/Header";
 import { HowToPlay } from "../HowToPlay/HowToPlay";
 import { KeyboardListener } from "../KeyboardListener/KeyboardListener";
 import { LocalStorage } from "../LocalStorage/LocalStorage";
-import { NavigationListener } from "../NagivationListener/NagivationListener";
+import { NavigationListener } from "../NavigationListener/NavigationListener";
 import { PrivacyPolicy } from "../PrivacyPolicy/PrivacyPolicy";
 import { Settings } from "../Settings/Settings";
 import Stats from "../Stats/Stats";
@@ -55,6 +56,8 @@ export function App() {
         <HowToPlay />
       ) : view === "stats" ? (
         <Stats />
+      ) : view === "account" ? (
+        <Account />
       ) : (
         assertNever(view)
       )}

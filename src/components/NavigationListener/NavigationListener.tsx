@@ -1,4 +1,4 @@
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useLayoutEffect } from "react";
 import {
   gameAction,
   Path,
@@ -16,7 +16,7 @@ export function NavigationListener() {
   const sideEffect = useAppSelector(selectNextSideEffect);
   const view = useAppSelector((s) => s.ui.view);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     // When the user lands on the site initially, we check if
     // they landed on a page other than the homepage,
     // if they do, we have to mark the page as "dangling"
@@ -28,6 +28,7 @@ export function NavigationListener() {
       "privacy-policy",
       "how-to-play",
       "stats",
+      "account",
     ];
     for (const danglingView of DANGLING_VIEWS) {
       const { url } = serializePath({ view: danglingView });
@@ -45,35 +46,45 @@ export function NavigationListener() {
     }
   }, [dispatch]);
 
-  useEffect(() => {
-    if (sideEffect?.type === "navigate-push") {
-      // Navigation events have the side effect of
-      // pushing a new url to the history stack
-      const { url, title } = serializePath(sideEffect.path);
-      const path = sideEffect.path;
-      window.history.pushState(path, "", url);
-      document.title = title;
-      dispatch(uiAction.resolveSideEffect(sideEffect.id));
-    } else if (sideEffect?.type === "navigate-back") {
-      // When navigating back from a dangling page,
-      // we must do a page reload
-      if (window.history.state.dangling) {
-        window.location.href = "/";
-      } else {
-        window.history.back();
+  useLayoutEffect(() => {
+    // After performing a navigation event, the ui reducer
+    // will trigger an "update-history" side effect to
+    // update the window history to match the ui state
+    if (sideEffect?.type === "update-history") {
+      if (
+        sideEffect.action.type === "push" ||
+        sideEffect.action.type === "replace"
+      ) {
+        const path = sideEffect.action.path;
+        const { url, title } = serializePath(path);
+        if (sideEffect.action.type === "replace") {
+          // Preserve dangling when replacing state
+          const state = { ...window.history.state, path };
+          window.history.replaceState(state, "", url);
+        } else {
+          window.history.pushState(path, "", url);
+        }
+        document.title = title;
+      } else if (sideEffect.action.type === "pop") {
+        if (window.history.state.dangling) {
+          window.location.href = "/";
+        } else {
+          window.history.back();
+        }
       }
       dispatch(uiAction.resolveSideEffect(sideEffect.id));
     }
   }, [sideEffect, dispatch]);
 
   useEffect(() => {
-    // Listen to browser navigation events
+    // Listen to browser navigation events, and
+    // cause a navigation event in response
     const handler = (e: PopStateEvent) => {
       dispatch(
         uiAction.navigate({
           to: e.state,
           timestamp: Date.now(),
-          noPush: true,
+          browser: true,
         })
       );
       document.title = serializePath(e.state).title;
@@ -83,6 +94,8 @@ export function NavigationListener() {
   }, [dispatch]);
 
   useEffect(() => {
+    // Install hooks on window visibility change or unload
+    // to pause or unpause the game
     // Only install hooks when in game view
     if (view !== "game") {
       return;
@@ -158,6 +171,8 @@ function serializePath(path: Path): { url: string; title: string } {
     return { url: "/privacy", title: "Privacy Policy" };
   } else if (path.view === "stats") {
     return { url: "/stats", title: "Stats" };
+  } else if (path.view === "account") {
+    return { url: "/account", title: "Account" };
   } else {
     assertNever(path.view);
   }

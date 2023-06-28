@@ -8,7 +8,16 @@
   height: 40px;
   padding: 8px 16px;
 }
+.button.small {
+  padding: 4px 8px;
+  font-size: 12px;
+  height: initial;
+}
+.button:disabled {
+  color: var(--gray-8);
+  cursor: not-allowed;
+}
 
-.button:active {
+.button:active:not(:disabled) {
   transform: translateY(1px);
 }

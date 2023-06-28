@@ -27,7 +27,8 @@ export type UiView =
   | "game"
   | "stats"
   | "privacy-policy"
-  | "how-to-play";
+  | "how-to-play"
+  | "account";
 export type Path =
   | {
       view: Exclude<UiView, "game">;
@@ -58,10 +59,16 @@ type SideEffectAction =
       board: number;
     }
   | {
-      type: "navigate-push";
-      path: Path;
-    }
-  | { type: "navigate-back" };
+      type: "update-history";
+      action:
+        | {
+            type: "push" | "replace";
+            path: Path;
+          }
+        | {
+            type: "pop";
+          };
+    };
 
 export const uiInitialState: UiState = {
   view: "welcome",
@@ -85,7 +92,7 @@ export const uiAction = {
   navigate: createAction<{
     to: Path;
     timestamp: number;
-    noPush?: boolean;
+    browser?: boolean;
   }>("ui/navigate"),
   setWelcomeTab: createAction<number>("ui/set-welcome-tab"),
 };
@@ -167,9 +174,29 @@ export const uiReducer = createReducer(
         } else {
           pauseGame(state, timestamp);
         }
+        const prevView = state.ui.view;
         state.ui.view = path.view;
-        if (!action.payload.noPush) {
-          addSideEffect(state, { type: "navigate-push", path });
+        if (!action.payload.browser) {
+          if (prevView === "welcome") {
+            if (path.view !== "welcome") {
+              addSideEffect(state, {
+                type: "update-history",
+                action: { type: "push", path },
+              });
+            }
+          } else {
+            if (path.view === "welcome") {
+              addSideEffect(state, {
+                type: "update-history",
+                action: { type: "pop" },
+              });
+            } else {
+              addSideEffect(state, {
+                type: "update-history",
+                action: { type: "replace", path },
+              });
+            }
+          }
         }
       })
       .addCase(uiAction.highlightArrow, (state, action) => {

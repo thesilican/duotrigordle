@@ -35,9 +35,8 @@
   gap: 4px;
   transition: transform 0.25s ease;
 }
-.modalWrapper.hidden .modal {
+.modalWrapper.hidden.animate .modal {
   transform: translateY(36px);
-  transition: transform 0.25s ease;
 }
 
 .modalBackground {

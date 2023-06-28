@@ -62,7 +62,12 @@ function Row1() {
       );
       if (!res) return;
     }
-    dispatch(uiAction.createSideEffect({ type: "navigate-back" }));
+    dispatch(
+      uiAction.navigate({
+        to: { view: "welcome" },
+        timestamp: Date.now(),
+      })
+    );
   };
 
   const handleRestartClick = () => {
@@ -108,6 +113,8 @@ function Row1() {
       return "How to play";
     } else if (view === "stats") {
       return "Stats";
+    } else if (view === "account") {
+      return "Account";
     } else {
       assertNever(view);
     }

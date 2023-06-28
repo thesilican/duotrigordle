@@ -256,6 +256,22 @@ function MoreTab() {
           onClick={() =>
             dispatch(
               uiAction.navigate({
+                to: { view: "account" },
+                timestamp: Date.now(),
+              })
+            )
+          }
+        >
+          Account
+        </LinkButton>
+        <p>Manage your duotrigordle account</p>
+      </div>
+      <div className={styles.item}>
+        <LinkButton
+          className={styles.link}
+          onClick={() =>
+            dispatch(
+              uiAction.navigate({
                 to: { view: "stats" },
                 timestamp: Date.now(),
               })
@@ -264,7 +280,23 @@ function MoreTab() {
         >
           Stats
         </LinkButton>
-        <p>View your daily and practice duotrigordle stats</p>
+        <p>View your duotrigordle stats</p>
+      </div>
+      <div className={styles.item}>
+        <LinkButton
+          className={styles.link}
+          onClick={() =>
+            dispatch(
+              uiAction.navigate({
+                to: { view: "how-to-play" },
+                timestamp: Date.now(),
+              })
+            )
+          }
+        >
+          How to play
+        </LinkButton>
+        <p>Learn how to play duotrigordle</p>
       </div>
       <div className={styles.item}>
         <a
@@ -284,21 +316,6 @@ function MoreTab() {
       <div className={styles.item}>
         <LinkButton
           className={styles.link}
-          onClick={() =>
-            dispatch(
-              uiAction.navigate({
-                to: { view: "how-to-play" },
-                timestamp: Date.now(),
-              })
-            )
-          }
-        >
-          How to play
-        </LinkButton>
-      </div>
-      <div className={styles.item}>
-        <LinkButton
-          className={styles.link}
           onClick={() => dispatch(uiAction.showModal("changelog"))}
         >
           Changelog
@@ -312,6 +329,16 @@ function MoreTab() {
           rel="noreferrer"
         >
           GitHub
+        </a>
+      </div>
+      <div className={styles.item}>
+        <a
+          className={styles.link}
+          target="_blank"
+          href="mailto:bryan.chen@duotrigordle.com"
+          rel="noreferrer"
+        >
+          Contact us
         </a>
       </div>
       <div className={styles.item}>

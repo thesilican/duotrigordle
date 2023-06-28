@@ -1,6 +1,11 @@
 import cn from "classnames";
 import { useEffect, useState } from "react";
-import { settingsAction, useAppDispatch, useAppSelector } from "../../store";
+import {
+  settingsAction,
+  uiAction,
+  useAppDispatch,
+  useAppSelector,
+} from "../../store";
 import { Checkbox } from "../common/Checkbox/Checkbox";
 import { Modal } from "../common/Modal/Modal";
 import styles from "./Settings.module.css";
@@ -23,7 +28,7 @@ export function Settings() {
   } = useAppSelector((s) => s.settings);
 
   return (
-    <Modal shown={shown}>
+    <Modal shown={shown} onClose={() => dispatch(uiAction.showModal(null))}>
       <p className={styles.title}>Settings</p>
       <div className={styles.settingsList}>
         <div className={styles.setting}>
@@ -247,8 +252,10 @@ function KofiEmailInput() {
             Not a valid supporter email
             <br />
             (Contact{" "}
-            <a href="mailto:bryanchen74@gmail.com">bryanchen74@gmail.com</a> for
-            any issues)
+            <a href="mailto:bryan.chen@duotrigordle.com">
+              bryan.chen@duotrigordle.com
+            </a>{" "}
+            for any issues)
           </>
         ) : statusCode === 2 ? (
           <>There was a problem communicating with the server</>

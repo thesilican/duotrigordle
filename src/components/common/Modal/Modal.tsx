@@ -1,6 +1,5 @@
 import cn from "classnames";
 import { ReactNode } from "react";
-import { uiAction, useAppDispatch } from "../../../store";
 import { Button } from "../Button/Button";
 import styles from "./Modal.module.css";
 
@@ -8,19 +7,27 @@ type ModalProps = {
   shown?: boolean;
   children?: ReactNode;
   className?: string;
+  noAnimate?: boolean;
+  hideCloseButton?: boolean;
+  onClose?: () => void;
 };
 export function Modal(props: ModalProps) {
-  const dispatch = useAppDispatch();
   return (
-    <div className={cn(styles.modalWrapper, !props.shown && styles.hidden)}>
-      <div className={cn(styles.modal)}>
+    <div
+      className={cn(
+        styles.modalWrapper,
+        !props.noAnimate && styles.animate,
+        !props.shown && styles.hidden
+      )}
+    >
+      <div className={styles.modal}>
         {props.children}
-        <Button onClick={() => dispatch(uiAction.showModal(null))}>
-          close
-        </Button>
+        {!props.hideCloseButton && (
+          <Button onClick={() => props.onClose?.()}>close</Button>
+        )}
       </div>
       <div
-        onClick={() => dispatch(uiAction.showModal(null))}
+        onClick={() => props.onClose?.()}
         className={styles.modalBackground}
       />
     </div>

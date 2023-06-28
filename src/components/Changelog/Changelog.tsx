@@ -1,12 +1,13 @@
-import { useAppSelector } from "../../store";
+import { uiAction, useAppDispatch, useAppSelector } from "../../store";
 import { Modal } from "../common/Modal/Modal";
 import styles from "./Changelog.module.css";
 
 export function Changelog() {
+  const dispatch = useAppDispatch();
   const shown = useAppSelector((s) => s.ui.modal === "changelog");
 
   return (
-    <Modal shown={shown}>
+    <Modal shown={shown} onClose={() => dispatch(uiAction.showModal(null))}>
       <h1 className={styles.title}>Changelog</h1>
       <div className={styles.overflow}>
         <p>

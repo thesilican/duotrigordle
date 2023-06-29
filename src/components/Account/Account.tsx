@@ -1,6 +1,18 @@
 import cn from "classnames";
-import { FormEvent, useState } from "react";
-import { uiAction, useAppDispatch } from "../../store";
+import { FormEvent, useEffect, useState } from "react";
+import {
+  apiFetch,
+  DELETE_USER,
+  GET_USER,
+  PATCH_USER,
+  POST_USER,
+} from "../../api";
+import {
+  storageAction,
+  uiAction,
+  useAppDispatch,
+  useAppSelector,
+} from "../../store";
 import { Button } from "../common/Button/Button";
 import { LinkButton } from "../common/LinkButton/LinkButton";
 import { Modal } from "../common/Modal/Modal";
@@ -8,24 +20,98 @@ import { TabButtons } from "../common/TabButtons/TabButtons";
 import styles from "./Account.module.css";
 
 export function Account() {
-  const loggedIn = true;
+  const account = useAppSelector((s) => s.storage.account);
   return (
-    <div className={styles.main}>
-      {loggedIn ? <LoggedIn /> : <SignUpForm />}
-    </div>
+    <div className={styles.main}>{account ? <LoggedIn /> : <SignUpForm />}</div>
   );
 }
 
 function SignUpForm() {
+  const dispatch = useAppDispatch();
   const [forgotKeyModal, setForgotKeyModal] = useState(false);
-  const [accountKey, setAccountKey] = useState("");
+  const [userId, setUserId] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [tab, setTab] = useState(0);
-  const prevAccount = true;
+  const prevUserId = useAppSelector((s) => s.storage.prevUserId);
+  const [prevAccountUsername, setPrevAccountUsername] = useState<string | null>(
+    null
+  );
+
+  useEffect(() => {
+    apiFetch(GET_USER, { user_id: prevUserId }).then((x) => {
+      if (x.success) {
+        setPrevAccountUsername(x.data.user.username);
+      }
+    });
+  }, [prevUserId]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
+    if (tab === 0) {
+      apiFetch(GET_USER, { user_id: userId }).then((x) => {
+        if (x.success) {
+          dispatch(
+            storageAction.login({
+              userId: x.data.user.user_id,
+              username: x.data.user.username,
+              email: x.data.user.email,
+            })
+          );
+          dispatch(
+            uiAction.setSnackbar({
+              status: "success",
+              text: "Successfully logged in",
+            })
+          );
+        } else {
+          dispatch(uiAction.setSnackbar({ status: "error", text: x.message }));
+        }
+      });
+    } else {
+      apiFetch(POST_USER, { email: email || null, username }).then((x) => {
+        if (x.success) {
+          dispatch(
+            storageAction.login({
+              userId: x.data.user.user_id,
+              username: x.data.user.username,
+              email: x.data.user.email,
+            })
+          );
+          dispatch(
+            uiAction.setSnackbar({
+              status: "success",
+              text: "Successfully created account",
+            })
+          );
+        } else {
+          dispatch(uiAction.setSnackbar({ status: "error", text: x.message }));
+        }
+      });
+    }
+  };
+
+  const handleAltSubmit = () => {
+    if (!prevUserId) return;
+    apiFetch(GET_USER, { user_id: prevUserId }).then((x) => {
+      if (x.success) {
+        dispatch(
+          storageAction.login({
+            userId: x.data.user.user_id,
+            username: x.data.user.username,
+            email: x.data.user.email,
+          })
+        );
+        dispatch(
+          uiAction.setSnackbar({
+            status: "success",
+            text: "Successfully logged in",
+          })
+        );
+      } else {
+        dispatch(uiAction.setSnackbar({ status: "error", text: x.message }));
+      }
+    });
   };
 
   return (
@@ -42,13 +128,15 @@ function SignUpForm() {
         />
         {tab === 0 ? (
           <>
-            {prevAccount && (
+            {prevAccountUsername && (
               <>
                 <p>
-                  Another account (Bob) was previously used to log in to this
-                  device.
+                  Another account ({prevAccountUsername}) was previously used to
+                  log in to this device.
                 </p>
-                <Button className={styles.submit}>Log in as Bob</Button>
+                <Button className={styles.submit} onClick={handleAltSubmit}>
+                  Log in as {prevAccountUsername}
+                </Button>
                 <hr />
               </>
             )}
@@ -65,8 +153,11 @@ function SignUpForm() {
                 className={styles.input}
                 type="text"
                 placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                value={accountKey}
-                onChange={(e) => setAccountKey(e.target.value)}
+                value={userId}
+                onChange={(e) => setUserId(e.target.value.trim())}
+                required
+                pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                onFocus={(e) => e.target.select()}
               />
               <LinkButton onClick={() => setForgotKeyModal(true)}>
                 Forgot your key?
@@ -88,6 +179,7 @@ function SignUpForm() {
                 className={styles.input}
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                required
                 maxLength={20}
               />
             </div>
@@ -135,11 +227,13 @@ function LoggedIn() {
   const [showAccountKey, setShowAccountKey] = useState(false);
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [copyConfirm, setCopyConfirm] = useState(false);
-  const username = "Bob";
-  const accountKey = "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee";
+  const account = useAppSelector((s) => s.storage.account);
+  if (!account) {
+    return null;
+  }
 
   const handleCopyAccountKeyClick = () => {
-    navigator.clipboard.writeText(accountKey).then(() => {
+    navigator.clipboard.writeText(account.userId).then(() => {
       setCopyConfirm(true);
       setTimeout(() => {
         setCopyConfirm(false);
@@ -147,9 +241,19 @@ function LoggedIn() {
     });
   };
 
+  const handleLogout = () => {
+    dispatch(
+      uiAction.setSnackbar({
+        status: "success",
+        text: "Successfully logged out",
+      })
+    );
+    dispatch(storageAction.logout());
+  };
+
   return (
     <div className={styles.loggedIn}>
-      <p className={styles.big}>Welcome back, {username}!</p>
+      <p className={styles.big}>Welcome back, {account.username}!</p>
       <p>
         Your{" "}
         <LinkButton
@@ -185,12 +289,16 @@ function LoggedIn() {
           disabled={!showAccountKey}
           readOnly
           value={
-            showAccountKey ? accountKey : "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+            showAccountKey
+              ? account.userId
+              : "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
           }
           onFocus={(e) => e.currentTarget.select()}
         />
       </div>
-      <Button className={styles.logOut}>Log out</Button>
+      <Button className={styles.logOut} onClick={handleLogout}>
+        Log out
+      </Button>
       <LinkButton
         className={styles.link}
         onClick={() => setShowAdvanced((x) => !x)}
@@ -203,26 +311,71 @@ function LoggedIn() {
 }
 
 function AdvancedInfo() {
-  const username = "Bob";
-  const email = "bob@gmail.com";
+  const dispatch = useAppDispatch();
+  const account = useAppSelector((s) => s.storage.account);
   const [editEnabled, setEditEnabled] = useState(false);
-  const [editUsername, setEditUsername] = useState(username);
-  const [editEmail, setEditEmail] = useState(email);
+  const [editUsername, setEditUsername] = useState(account?.username ?? "");
+  const [editEmail, setEditEmail] = useState(account?.email ?? "");
   const [deleteAccountModalShown, setDeleteAccountModalShown] = useState(false);
+  if (!account) {
+    return null;
+  }
 
   const handleEditEnabledClick = () => {
     if (editEnabled) {
       setEditEnabled(false);
-      setEditUsername(username);
-      setEditEmail(email);
+      setEditUsername(account.username);
+      setEditEmail(account.email ?? "");
     } else {
       setEditEnabled(true);
     }
   };
   const handleEditSubmit = (e: FormEvent) => {
     e.preventDefault();
+    apiFetch(PATCH_USER, {
+      user_id: account.userId,
+      username: editUsername,
+      email: editEmail || null,
+    }).then((x) => {
+      if (x.success) {
+        setEditUsername(x.data.user.username);
+        setEditEmail(x.data.user.email ?? "");
+        dispatch(
+          storageAction.updateAccount({
+            userId: account.userId,
+            email: x.data.user.email,
+            username: x.data.user.username,
+          })
+        );
+        setEditEnabled(false);
+        dispatch(
+          uiAction.setSnackbar({
+            status: "success",
+            text: "Successfully updated account details",
+          })
+        );
+      } else {
+        dispatch(uiAction.setSnackbar({ status: "error", text: x.message }));
+      }
+    });
   };
-  const handleDeleteAccountClick = () => {};
+  const handleDeleteAccountClick = () => {
+    apiFetch(DELETE_USER, {
+      user_id: account.userId,
+    }).then((x) => {
+      if (x.success) {
+        dispatch(storageAction.logout());
+        dispatch(
+          uiAction.setSnackbar({
+            status: "success",
+            text: "Successfully deleted account",
+          })
+        );
+      } else {
+        dispatch(uiAction.setSnackbar({ status: "error", text: x.message }));
+      }
+    });
+  };
 
   return (
     <>
@@ -245,6 +398,7 @@ function AdvancedInfo() {
             onChange={(e) => setEditUsername(e.target.value)}
             maxLength={20}
             disabled={!editEnabled}
+            required
           />
         </div>
         <div className={styles.group}>
@@ -266,7 +420,6 @@ function AdvancedInfo() {
           value={"Update account details"}
           disabled={!editEnabled}
         />
-        <p>Successfully updated account details</p>
       </form>
       <form
         className={styles.box}
@@ -294,7 +447,7 @@ function AdvancedInfo() {
           </p>
           <div className={styles.row}>
             <Button
-              onClick={() => handleDeleteAccountClick}
+              onClick={handleDeleteAccountClick}
               className={styles.danger}
             >
               Delete account

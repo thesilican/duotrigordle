@@ -9,6 +9,7 @@ import {
   settingsInitialState,
   PRACTICE_MODE_MAX_ID,
   PRACTICE_MODE_MIN_ID,
+  UserAccount,
 } from "../../store";
 
 interface Parser<T> {
@@ -22,12 +23,16 @@ export class StorageParser implements Parser<StorageState> {
     if (typeof obj === "object" && obj !== null) {
       const daily = this.parseDailySaves((obj as any).daily);
       const lastUpdated = this.parseLastUpdated((obj as any).lastUpdated);
+      const account = this.parseUserAccount((obj as any).account);
+      const prevUserId = this.parsePrevUserId((obj as any).prevUserId);
       return {
         daily: daily ?? {
           normal: null,
           jumble: null,
           sequence: null,
         },
+        account,
+        prevUserId,
         lastUpdated: lastUpdated ?? "1970-01-01",
       };
     } else {
@@ -77,6 +82,33 @@ export class StorageParser implements Parser<StorageState> {
     }
   }
   parseLastUpdated(obj: unknown): string | null {
+    if (typeof obj === "string") {
+      return obj;
+    } else {
+      return null;
+    }
+  }
+  parseUserAccount(obj: unknown): UserAccount | null {
+    if (
+      typeof obj === "object" &&
+      obj !== null &&
+      "userId" in obj &&
+      typeof obj.userId === "string" &&
+      "username" in obj &&
+      typeof obj.username === "string" &&
+      "email" in obj &&
+      (typeof obj.email === "string" || obj.email === null)
+    ) {
+      return {
+        userId: obj.userId,
+        username: obj.username,
+        email: obj.email,
+      };
+    } else {
+      return null;
+    }
+  }
+  parsePrevUserId(obj: unknown): string | null {
     if (typeof obj === "string") {
       return obj;
     } else {

@@ -1,6 +1,7 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
 import {
   addHistoryEntry,
+  addSideEffect,
   AppState,
   getAllGuessColors,
   getAllWordsGuessed,
@@ -9,8 +10,8 @@ import {
   getGuessColors,
   getJumbleWords,
   getPracticeId,
+  getSequenceVisibleBoard,
   getTargetWords,
-  highlightNextBoard,
   initialState,
 } from "..";
 import { range } from "../../util";
@@ -42,6 +43,8 @@ export type GameState = {
   endTime: number | null;
   // Pause timestamp (unix timestamp)
   pauseTime: number | null;
+  // Which board is currently highlighted
+  highlightedBoard: number | null;
 };
 export type GameMode = "daily" | "practice" | "historic";
 export type DailyChallenge = "normal" | "sequence" | "jumble";
@@ -75,6 +78,7 @@ export const gameInitialState: GameState = {
   startTime: null,
   endTime: null,
   pauseTime: null,
+  highlightedBoard: null,
 };
 
 export const gameAction = {
@@ -85,6 +89,11 @@ export const gameAction = {
   inputLetter: createAction<{ letter: string }>("game/inputLetter"),
   inputBackspace: createAction("game/inputBackspace"),
   inputEnter: createAction<{ timestamp: number }>("game/inputEnter"),
+  highlightClick: createAction<number>("game/highlightClick"),
+  highlightEsc: createAction("game/highlightEsc"),
+  highlightArrow: createAction<{
+    direction: "left" | "right";
+  }>("game/highlightArrow"),
 };
 
 export const gameReducer = createReducer(
@@ -177,7 +186,7 @@ export const gameReducer = createReducer(
           }
 
           // Clear board highlights
-          state.ui.highlightedBoard = null;
+          state.game.highlightedBoard = null;
         } else {
           // Check if highlighted board is invalid, then shift right until it isn't
           const completedBoards = getCompletedBoards(
@@ -185,8 +194,8 @@ export const gameReducer = createReducer(
             game.guesses
           );
           if (
-            state.ui.highlightedBoard !== null &&
-            completedBoards[state.ui.highlightedBoard]
+            state.game.highlightedBoard !== null &&
+            completedBoards[state.game.highlightedBoard]
           ) {
             highlightNextBoard(state);
           }
@@ -200,6 +209,47 @@ export const gameReducer = createReducer(
       })
       .addCase(gameAction.unpause, (state, action) => {
         unpauseGame(state, action.payload.timestamp);
+      })
+      .addCase(gameAction.highlightClick, (state, action) => {
+        const completedBoards = getCompletedBoards(
+          state.game.targets,
+          state.game.guesses
+        );
+        const sequenceVisibleBoard = getSequenceVisibleBoard(
+          state.game.targets,
+          state.game.guesses
+        );
+        if (
+          state.ui.view === "game" &&
+          state.game.endTime === null &&
+          !completedBoards[action.payload] &&
+          (state.game.challenge !== "sequence" ||
+            action.payload === sequenceVisibleBoard) &&
+          state.game.highlightedBoard !== action.payload
+        ) {
+          state.game.highlightedBoard = action.payload;
+        } else {
+          state.game.highlightedBoard = null;
+        }
+      })
+      .addCase(gameAction.highlightEsc, (state, _) => {
+        state.game.highlightedBoard = null;
+      })
+      .addCase(gameAction.highlightArrow, (state, action) => {
+        if (state.game.challenge === "sequence") {
+          return;
+        }
+        if (action.payload.direction === "left") {
+          highlightPreviousBoard(state);
+        } else {
+          highlightNextBoard(state);
+        }
+        if (state.game.highlightedBoard !== null) {
+          addSideEffect(state, {
+            type: "scroll-board-into-view",
+            board: state.game.highlightedBoard,
+          });
+        }
       })
 );
 
@@ -228,8 +278,8 @@ export function startGame(state: AppState, options: GameStartOptions) {
     startTime: null,
     endTime: null,
     pauseTime: null,
+    highlightedBoard: null,
   };
-  state.ui.highlightedBoard = null;
 }
 
 export function loadSave(
@@ -259,8 +309,9 @@ export function loadSave(
     endTime: gameSave.endTime,
     pauseTime: gameSave.pauseTime,
     input: "",
+    highlightedBoard: null,
   };
-  state.ui.highlightedBoard = null;
+  state.game.highlightedBoard = null;
 }
 
 export function saveGame(state: AppState) {
@@ -301,4 +352,56 @@ export function unpauseGame(state: AppState, timestamp: number) {
     game.pauseTime = null;
     saveGame(state);
   }
+}
+
+export function highlightNextBoard(state: AppState) {
+  if (state.game.endTime !== null) {
+    state.game.highlightedBoard = null;
+    return;
+  }
+
+  let idx = state.game.highlightedBoard;
+  if (idx === null) {
+    idx = 0;
+  } else {
+    idx = (idx + 1) % NUM_BOARDS;
+  }
+  const completedBoards = getCompletedBoards(
+    state.game.targets,
+    state.game.guesses
+  );
+  for (let i = 0; i < NUM_BOARDS; i++) {
+    if (!completedBoards[idx]) {
+      state.game.highlightedBoard = idx;
+      return;
+    }
+    idx = (idx + 1) % NUM_BOARDS;
+  }
+  state.game.highlightedBoard = null;
+}
+
+export function highlightPreviousBoard(state: AppState) {
+  if (state.game.endTime !== null) {
+    state.game.highlightedBoard = null;
+    return;
+  }
+
+  let idx = state.game.highlightedBoard;
+  if (idx === null) {
+    idx = NUM_BOARDS - 1;
+  } else {
+    idx = (idx + NUM_BOARDS - 1) % NUM_BOARDS;
+  }
+  const completedBoards = getCompletedBoards(
+    state.game.targets,
+    state.game.guesses
+  );
+  for (let i = 0; i < NUM_BOARDS; i++) {
+    if (!completedBoards[idx]) {
+      state.game.highlightedBoard = idx;
+      return;
+    }
+    idx = (idx + NUM_BOARDS - 1) % NUM_BOARDS;
+  }
+  state.game.highlightedBoard = null;
 }

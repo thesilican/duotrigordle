@@ -1,11 +1,13 @@
 import cn from "classnames";
 import { useEffect, useState } from "react";
+import { apiFetch, GET_EMAILS_VALIDATE } from "../../api";
 import {
   settingsAction,
   uiAction,
   useAppDispatch,
   useAppSelector,
 } from "../../store";
+import { assertNever } from "../../util";
 import { Checkbox } from "../common/Checkbox/Checkbox";
 import { Modal } from "../common/Modal/Modal";
 import styles from "./Settings.module.css";
@@ -176,12 +178,7 @@ function KofiEmailInput() {
   const dispatch = useAppDispatch();
   const kofiEmail = useAppSelector((s) => s.settings.kofiEmail);
   const [text, setText] = useState("");
-  // 0 - no status
-  // 1 - not a valid kofi email
-  // 2 - error communicating with server
-  // 3 - input field was empty
-  // 4 - success
-  const [statusCode, setStatusCode] = useState(0);
+  const [status, setStatus] = useState<null | "error" | "success">(null);
 
   useEffect(() => {
     if (kofiEmail) {
@@ -191,29 +188,25 @@ function KofiEmailInput() {
 
   function handleSubmit() {
     if (kofiEmail) {
-      setText("");
       dispatch(settingsAction.update({ hideAds: false, kofiEmail: null }));
-      setStatusCode(0);
+      setStatus(null);
     } else {
-      if (!text) {
-        setStatusCode(3);
-        return;
-      }
       const url = new URL("/api/emails/validate", window.location.href);
       url.searchParams.append("email", text);
-      fetch(url)
-        .then((x) => x.json())
-        .then((valid) => {
-          if (valid) {
+      apiFetch(GET_EMAILS_VALIDATE, { email: text }).then((res) => {
+        if (res.success) {
+          if (res.data) {
             dispatch(settingsAction.update({ kofiEmail: text }));
-            setStatusCode(4);
+            setStatus("success");
           } else {
-            setStatusCode(1);
+            setStatus("error");
           }
-        })
-        .catch(() => {
-          setStatusCode(2);
-        });
+        } else {
+          dispatch(
+            uiAction.setSnackbar({ status: "error", text: res.message })
+          );
+        }
+      });
     }
   }
   return (
@@ -239,6 +232,7 @@ function KofiEmailInput() {
           value={text}
           onChange={(e) => setText(e.target.value)}
           disabled={kofiEmail !== null}
+          required
         />
         <input
           className={styles.submit}
@@ -247,23 +241,19 @@ function KofiEmailInput() {
         />
       </form>
       <p className={styles.hint}>
-        {statusCode === 1 ? (
+        {status === "error" ? (
           <>
-            Not a valid supporter email
-            <br />
-            (Contact{" "}
+            Not a valid supporter email (Contact{" "}
             <a href="mailto:bryan.chen@duotrigordle.com">
               bryan.chen@duotrigordle.com
             </a>{" "}
             for any issues)
           </>
-        ) : statusCode === 2 ? (
-          <>There was a problem communicating with the server</>
-        ) : statusCode === 3 ? (
-          <>Please enter an email</>
-        ) : statusCode === 4 ? (
+        ) : status === "success" ? (
           <>Success!</>
-        ) : null}
+        ) : status === null ? null : (
+          assertNever(status)
+        )}
       </p>
     </div>
   );

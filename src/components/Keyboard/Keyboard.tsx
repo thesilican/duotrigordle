@@ -91,7 +91,7 @@ function Key(props: KeyProps) {
   const hideCompletedBoards = useAppSelector(
     (s) => s.settings.hideCompletedBoards
   );
-  const highlightedBoard = useAppSelector((s) => s.ui.highlightedBoard);
+  const highlightedBoard = useAppSelector((s) => s.game.highlightedBoard);
   const challenge = useAppSelector((s) => s.game.challenge);
   const colorBlind = useAppSelector((s) => s.settings.colorBlindMode);
   const style = useMemo(

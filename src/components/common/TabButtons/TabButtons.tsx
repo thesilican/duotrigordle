@@ -20,6 +20,7 @@ export function TabButtons(props: TabButtonsProps) {
           <button
             className={styles.tab}
             role="tab"
+            type="button"
             onClick={() => props.onTabChange?.(idx)}
           >
             {label}

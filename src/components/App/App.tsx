@@ -5,6 +5,7 @@ import { addDebugHooks } from "../../store/debug";
 import { assertNever } from "../../util";
 import { Account } from "../Account/Account";
 import { Changelog } from "../Changelog/Changelog";
+import { Snackbar } from "../Snackbar/Snackbar";
 import { Game } from "../Game/Game";
 import { Header } from "../Header/Header";
 import { HowToPlay } from "../HowToPlay/HowToPlay";
@@ -16,6 +17,7 @@ import { Settings } from "../Settings/Settings";
 import Stats from "../Stats/Stats";
 import { Welcome } from "../Welcome/Welcome";
 import styles from "./App.module.css";
+import { ServerListener } from "../ServerListener/ServerListener";
 
 export function App() {
   const view = useAppSelector((s) => s.ui.view);
@@ -63,9 +65,11 @@ export function App() {
       )}
       <Changelog />
       <Settings />
+      <Snackbar />
       <LocalStorage />
       <KeyboardListener />
       <NavigationListener />
+      <ServerListener />
     </div>
   );
 }

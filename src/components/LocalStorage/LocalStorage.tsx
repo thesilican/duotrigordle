@@ -43,6 +43,11 @@ export function LocalStorage() {
         }
       }
 
+      // Check login
+      if (storage?.account) {
+        dispatch(uiAction.createSideEffect({ type: "fetch-user" }));
+      }
+
       setLoaded(true);
     }
   }, [dispatch, loaded]);

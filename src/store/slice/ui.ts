@@ -3,12 +3,9 @@ import {
   AppState,
   Challenge,
   DailyChallenge,
-  getCompletedBoards,
   getDailyId,
-  getSequenceVisibleBoard,
   initialState,
   loadSave,
-  NUM_BOARDS,
   pauseGame,
   startGame,
   unpauseGame,
@@ -17,10 +14,10 @@ import {
 export type UiState = {
   view: UiView;
   modal: ModalState;
-  highlightedBoard: number | null;
   sideEffects: SideEffect[];
   sideEffectCount: number;
   welcomeTab: number;
+  snackbar: Snackbar;
 };
 export type UiView =
   | "welcome"
@@ -50,6 +47,10 @@ export type Path =
       challenge: DailyChallenge;
     };
 type ModalState = "changelog" | "settings" | null;
+type Snackbar = {
+  status: "success" | "error" | null;
+  text: string;
+};
 type SideEffect = {
   id: number;
 } & SideEffectAction;
@@ -68,25 +69,24 @@ type SideEffectAction =
         | {
             type: "pop";
           };
-    };
+    }
+  | { type: "fetch-user" };
 
 export const uiInitialState: UiState = {
   view: "welcome",
   modal: null,
-  highlightedBoard: null,
   sideEffects: [],
   sideEffectCount: 0,
   welcomeTab: 0,
+  snackbar: {
+    status: null,
+    text: "",
+  },
 };
 
 export const uiAction = {
   setView: createAction<UiView>("ui/setView"),
   showModal: createAction<ModalState>("ui/showModal"),
-  highlightClick: createAction<number>("ui/highlightClick"),
-  highlightEsc: createAction("ui/highlightEsc"),
-  highlightArrow: createAction<{
-    direction: "left" | "right";
-  }>("ui/highlightArrow"),
   createSideEffect: createAction<SideEffectAction>("ui/createSideEffect"),
   resolveSideEffect: createAction<number>("ui/resolveSideEffect"),
   navigate: createAction<{
@@ -94,7 +94,8 @@ export const uiAction = {
     timestamp: number;
     browser?: boolean;
   }>("ui/navigate"),
-  setWelcomeTab: createAction<number>("ui/set-welcome-tab"),
+  setWelcomeTab: createAction<number>("ui/setWelcomeTab"),
+  setSnackbar: createAction<Partial<Snackbar>>("ui/setSnackbar"),
 };
 
 export const uiReducer = createReducer(
@@ -106,31 +107,6 @@ export const uiReducer = createReducer(
       })
       .addCase(uiAction.showModal, (state, action) => {
         state.ui.modal = action.payload;
-      })
-      .addCase(uiAction.highlightClick, (state, action) => {
-        const completedBoards = getCompletedBoards(
-          state.game.targets,
-          state.game.guesses
-        );
-        const sequenceVisibleBoard = getSequenceVisibleBoard(
-          state.game.targets,
-          state.game.guesses
-        );
-        if (
-          state.ui.view === "game" &&
-          state.game.endTime === null &&
-          !completedBoards[action.payload] &&
-          (state.game.challenge !== "sequence" ||
-            action.payload === sequenceVisibleBoard) &&
-          state.ui.highlightedBoard !== action.payload
-        ) {
-          state.ui.highlightedBoard = action.payload;
-        } else {
-          state.ui.highlightedBoard = null;
-        }
-      })
-      .addCase(uiAction.highlightEsc, (state, _) => {
-        state.ui.highlightedBoard = null;
       })
       .addCase(uiAction.createSideEffect, (state, action) => {
         addSideEffect(state, action.payload);
@@ -199,28 +175,15 @@ export const uiReducer = createReducer(
           }
         }
       })
-      .addCase(uiAction.highlightArrow, (state, action) => {
-        if (state.game.challenge === "sequence") {
-          return;
-        }
-        if (action.payload.direction === "left") {
-          highlightPreviousBoard(state);
-        } else {
-          highlightNextBoard(state);
-        }
-        if (state.ui.highlightedBoard !== null) {
-          addSideEffect(state, {
-            type: "scroll-board-into-view",
-            board: state.ui.highlightedBoard,
-          });
-        }
-      })
       .addCase(uiAction.setWelcomeTab, (state, action) => {
         state.ui.welcomeTab = action.payload;
       })
+      .addCase(uiAction.setSnackbar, (state, action) => {
+        state.ui.snackbar = { ...state.ui.snackbar, ...action.payload };
+      })
 );
 
-function addSideEffect(state: AppState, effect: SideEffectAction) {
+export function addSideEffect(state: AppState, effect: SideEffectAction) {
   state.ui.sideEffects.push({
     id: state.ui.sideEffectCount,
     ...effect,
@@ -230,55 +193,3 @@ function addSideEffect(state: AppState, effect: SideEffectAction) {
 
 export const selectNextSideEffect = (s: AppState) =>
   s.ui.sideEffects.length === 0 ? null : s.ui.sideEffects[0];
-
-export function highlightNextBoard(state: AppState) {
-  if (state.game.endTime !== null) {
-    state.ui.highlightedBoard = null;
-    return;
-  }
-
-  let idx = state.ui.highlightedBoard;
-  if (idx === null) {
-    idx = 0;
-  } else {
-    idx = (idx + 1) % NUM_BOARDS;
-  }
-  const completedBoards = getCompletedBoards(
-    state.game.targets,
-    state.game.guesses
-  );
-  for (let i = 0; i < NUM_BOARDS; i++) {
-    if (!completedBoards[idx]) {
-      state.ui.highlightedBoard = idx;
-      return;
-    }
-    idx = (idx + 1) % NUM_BOARDS;
-  }
-  state.ui.highlightedBoard = null;
-}
-
-export function highlightPreviousBoard(state: AppState) {
-  if (state.game.endTime !== null) {
-    state.ui.highlightedBoard = null;
-    return;
-  }
-
-  let idx = state.ui.highlightedBoard;
-  if (idx === null) {
-    idx = NUM_BOARDS - 1;
-  } else {
-    idx = (idx + NUM_BOARDS - 1) % NUM_BOARDS;
-  }
-  const completedBoards = getCompletedBoards(
-    state.game.targets,
-    state.game.guesses
-  );
-  for (let i = 0; i < NUM_BOARDS; i++) {
-    if (!completedBoards[idx]) {
-      state.ui.highlightedBoard = idx;
-      return;
-    }
-    idx = (idx + NUM_BOARDS - 1) % NUM_BOARDS;
-  }
-  state.ui.highlightedBoard = null;
-}

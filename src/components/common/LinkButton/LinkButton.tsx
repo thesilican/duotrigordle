@@ -10,7 +10,11 @@ type LinkButtonProps = {
 
 export function LinkButton({ className, onClick, children }: LinkButtonProps) {
   return (
-    <button className={cn(className, styles.linkButton)} onClick={onClick}>
+    <button
+      className={cn(className, styles.linkButton)}
+      onClick={onClick}
+      type={"button"}
+    >
       {children}
     </button>
   );

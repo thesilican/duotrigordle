@@ -1,6 +1,7 @@
 import cn from "classnames";
 import React, { useEffect, useMemo, useRef } from "react";
 import {
+  gameAction,
   getGhostLetters,
   getSequenceVisibleBoard,
   getWarnHint,
@@ -43,7 +44,7 @@ function Board(props: BoardProps) {
   const guesses = useAppSelector((s) => s.game.guesses);
   const gameOver = useAppSelector((s) => s.game.endTime !== null);
   const isHighlighted = useAppSelector(
-    (s) => s.ui.highlightedBoard === props.idx
+    (s) => s.game.highlightedBoard === props.idx
   );
   const guessColors = useAppSelector((s) => s.game.colors[props.idx]);
   const hideBoard = useAppSelector((s) => s.settings.hideCompletedBoards);
@@ -95,7 +96,7 @@ function Board(props: BoardProps) {
         isDimmed && styles.dimmed,
         isHidden && styles.hidden
       )}
-      onClick={() => dispatch(uiAction.highlightClick(props.idx))}
+      onClick={() => dispatch(gameAction.highlightClick(props.idx))}
     >
       <div ref={scrollRef} className={styles.scrollIntoView} />
       <ColoredRows

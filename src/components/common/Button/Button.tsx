@@ -13,17 +13,18 @@ type ButtonProps = {
   disabled?: boolean;
 };
 export function Button(props: ButtonProps) {
-  const type = props.type;
+  const type = props.type ?? "button";
   const className = cn(
     styles.button,
     props.size === "small" && styles.small,
     props.className
   );
-  if (type === "button" || type === undefined) {
+  if (type === "button") {
     return (
       <button
         onClick={props.onClick}
         className={className}
+        type={type}
         disabled={props.disabled}
       >
         {props.children}

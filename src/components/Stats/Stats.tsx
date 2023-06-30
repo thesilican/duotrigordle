@@ -4,6 +4,7 @@ import {
   Challenge,
   entryKeysEqual,
   GameMode,
+  normalizeHistory,
   NUM_GUESSES,
   StatsEntry,
   useAppDispatch,
@@ -86,12 +87,13 @@ export default function Stats() {
 }
 
 function mergeStats(local: StatsEntry[], server: StatsEntry[]) {
-  const entries = [...local];
-  for (const entry of server) {
+  const entries = [...server];
+  for (const entry of local) {
     if (!entries.find((x) => entryKeysEqual(entry, x))) {
       entries.push(entry);
     }
   }
+  normalizeHistory(entries);
   return entries;
 }
 

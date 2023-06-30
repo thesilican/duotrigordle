@@ -54,6 +54,10 @@
   border: 1px solid var(--gray-8);
   border-radius: 4px;
 }
+.input.monospace {
+  font-size: 16px;
+  font-family: monospace;
+}
 .input:disabled {
   border: 1px solid var(--gray-4);
 }

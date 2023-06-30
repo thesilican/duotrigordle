@@ -111,7 +111,7 @@ function SignUpForm() {
               </label>
               <input
                 id="log-in-key"
-                className={styles.input}
+                className={cn(styles.input, styles.monospace)}
                 type="text"
                 placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                 value={userId}
@@ -245,8 +245,7 @@ function LoggedIn() {
         </div>
         <input
           id="account-key"
-          className={styles.input}
-          type="email"
+          className={cn(styles.input, styles.monospace)}
           disabled={!showAccountKey}
           readOnly
           value={

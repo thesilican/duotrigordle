@@ -74,7 +74,7 @@ export function apiGameModeToParts(gameMode: string): {
   challenge: Challenge;
 } {
   const matches = gameMode.match(
-    /(daily|practice)-(normal|sequence|jumble|practice)/
+    /(daily|practice)-(normal|sequence|jumble|perfect)/
   );
   if (!matches) {
     throw new Error(

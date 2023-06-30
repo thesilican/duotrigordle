@@ -1,5 +1,5 @@
 import { createAction, createReducer } from "@reduxjs/toolkit";
-import { getDailyId, initialState } from "..";
+import { DailyChallenge, getDailyId, initialState } from "..";
 
 export type StorageState = {
   daily: DailySaves;
@@ -15,7 +15,7 @@ export type DailySaves = {
 export type GameSave = {
   id: number;
   guesses: string[];
-  startTime: number | null;
+  startTime: number;
   endTime: number | null;
   pauseTime: number | null;
 };
@@ -38,8 +38,11 @@ export const storageInitialState: StorageState = {
 
 export const storageAction = {
   load: createAction<StorageState>("storage/load"),
-  setLastUpdated: createAction<string>("storage/setLastUpdated"),
+  setDaily: createAction<{ challenge: DailyChallenge; gameSave: GameSave }>(
+    "storage/setDaily"
+  ),
   pruneSaves: createAction<{ timestamp: number }>("storage/pruneSaves"),
+  setLastUpdated: createAction<string>("storage/setLastUpdated"),
   login: createAction<UserAccount>("storage/login"),
   logout: createAction("storage/logout"),
   updateAccount: createAction<Partial<UserAccount>>("storage/setAccount"),
@@ -51,6 +54,9 @@ export const storageReducer = createReducer(
     builder
       .addCase(storageAction.load, (state, action) => {
         state.storage = action.payload;
+      })
+      .addCase(storageAction.setDaily, (state, action) => {
+        state.storage.daily[action.payload.challenge] = action.payload.gameSave;
       })
       .addCase(storageAction.setLastUpdated, (state, action) => {
         state.storage.lastUpdated = action.payload;
@@ -68,8 +74,11 @@ export const storageReducer = createReducer(
         state.storage.account = action.payload;
         state.storage.prevUserId = action.payload.userId;
       })
-      .addCase(storageAction.logout, (state, action) => {
+      .addCase(storageAction.logout, (state, _) => {
         state.storage.account = null;
+        for (const entry of state.stats.history) {
+          entry.synced = false;
+        }
       })
       .addCase(storageAction.updateAccount, (state, action) => {
         if (!state.storage.account) {

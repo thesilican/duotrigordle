@@ -1,13 +1,16 @@
 import cn from "classnames";
 import { FormEvent, useEffect, useState } from "react";
 import {
+  apiDeleteUser,
   apiFetch,
-  DELETE_USER,
+  apiGetGameSaves,
+  apiLogin,
+  apiPatchUser,
+  apiSignUp,
   GET_USER,
-  PATCH_USER,
-  POST_USER,
 } from "../../api";
 import {
+  getDailyId,
   storageAction,
   uiAction,
   useAppDispatch,
@@ -37,6 +40,7 @@ function SignUpForm() {
   const [prevAccountUsername, setPrevAccountUsername] = useState<string | null>(
     null
   );
+  const stats = useAppSelector((s) => s.stats.history);
 
   useEffect(() => {
     apiFetch(GET_USER, { user_id: prevUserId }).then((x) => {
@@ -49,43 +53,15 @@ function SignUpForm() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (tab === 0) {
-      apiFetch(GET_USER, { user_id: userId }).then((x) => {
-        if (x.success) {
-          dispatch(
-            storageAction.login({
-              userId: x.data.user.user_id,
-              username: x.data.user.username,
-              email: x.data.user.email,
-            })
-          );
-          dispatch(
-            uiAction.setSnackbar({
-              status: "success",
-              text: "Successfully logged in",
-            })
-          );
-        } else {
-          dispatch(uiAction.setSnackbar({ status: "error", text: x.message }));
+      apiLogin(dispatch, userId).then((res) => {
+        if (res) {
+          apiGetGameSaves(dispatch, res.userId, getDailyId(Date.now()));
         }
       });
     } else {
-      apiFetch(POST_USER, { email: email || null, username }).then((x) => {
-        if (x.success) {
-          dispatch(
-            storageAction.login({
-              userId: x.data.user.user_id,
-              username: x.data.user.username,
-              email: x.data.user.email,
-            })
-          );
-          dispatch(
-            uiAction.setSnackbar({
-              status: "success",
-              text: "Successfully created account",
-            })
-          );
-        } else {
-          dispatch(uiAction.setSnackbar({ status: "error", text: x.message }));
+      apiSignUp(dispatch, username, email || null).then((res) => {
+        if (res) {
+          apiGetGameSaves(dispatch, res.userId, getDailyId(Date.now()));
         }
       });
     }
@@ -93,23 +69,9 @@ function SignUpForm() {
 
   const handleAltSubmit = () => {
     if (!prevUserId) return;
-    apiFetch(GET_USER, { user_id: prevUserId }).then((x) => {
-      if (x.success) {
-        dispatch(
-          storageAction.login({
-            userId: x.data.user.user_id,
-            username: x.data.user.username,
-            email: x.data.user.email,
-          })
-        );
-        dispatch(
-          uiAction.setSnackbar({
-            status: "success",
-            text: "Successfully logged in",
-          })
-        );
-      } else {
-        dispatch(uiAction.setSnackbar({ status: "error", text: x.message }));
+    apiLogin(dispatch, prevUserId).then((res) => {
+      if (res) {
+        apiGetGameSaves(dispatch, res.userId, getDailyId(Date.now()));
       }
     });
   };
@@ -332,49 +294,21 @@ function AdvancedInfo() {
   };
   const handleEditSubmit = (e: FormEvent) => {
     e.preventDefault();
-    apiFetch(PATCH_USER, {
-      user_id: account.userId,
-      username: editUsername,
-      email: editEmail || null,
-    }).then((x) => {
-      if (x.success) {
-        setEditUsername(x.data.user.username);
-        setEditEmail(x.data.user.email ?? "");
-        dispatch(
-          storageAction.updateAccount({
-            userId: account.userId,
-            email: x.data.user.email,
-            username: x.data.user.username,
-          })
-        );
+    apiPatchUser(
+      dispatch,
+      account.userId,
+      editUsername,
+      editEmail || null
+    ).then((x) => {
+      if (x) {
+        setEditUsername(x.username);
+        setEditEmail(x.email ?? "");
         setEditEnabled(false);
-        dispatch(
-          uiAction.setSnackbar({
-            status: "success",
-            text: "Successfully updated account details",
-          })
-        );
-      } else {
-        dispatch(uiAction.setSnackbar({ status: "error", text: x.message }));
       }
     });
   };
   const handleDeleteAccountClick = () => {
-    apiFetch(DELETE_USER, {
-      user_id: account.userId,
-    }).then((x) => {
-      if (x.success) {
-        dispatch(storageAction.logout());
-        dispatch(
-          uiAction.setSnackbar({
-            status: "success",
-            text: "Successfully deleted account",
-          })
-        );
-      } else {
-        dispatch(uiAction.setSnackbar({ status: "error", text: x.message }));
-      }
-    });
+    apiDeleteUser(dispatch, account.userId);
   };
 
   return (

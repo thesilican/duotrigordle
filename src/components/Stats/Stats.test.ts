@@ -1,15 +1,16 @@
-import { HistoryEntry } from "../../store";
+import { SyncedStatsEntry } from "../../store";
 import { stringifyHistory } from "./Stats";
 
 describe("stats editor", () => {
   test("stringify history", () => {
-    const test1: HistoryEntry[] = [
+    const test1: SyncedStatsEntry[] = [
       {
         gameMode: "daily",
         id: 1,
         challenge: "normal",
         guesses: 32,
         time: 1000,
+        synced: false,
       },
       {
         gameMode: "daily",
@@ -17,6 +18,7 @@ describe("stats editor", () => {
         challenge: "sequence",
         guesses: 37,
         time: 60000,
+        synced: false,
       },
       {
         gameMode: "daily",
@@ -24,6 +26,7 @@ describe("stats editor", () => {
         challenge: "jumble",
         guesses: null,
         time: null,
+        synced: false,
       },
       {
         gameMode: "practice",
@@ -31,6 +34,7 @@ describe("stats editor", () => {
         challenge: "normal",
         guesses: 32,
         time: null,
+        synced: false,
       },
       {
         gameMode: "practice",
@@ -38,6 +42,7 @@ describe("stats editor", () => {
         challenge: "sequence",
         guesses: 32,
         time: null,
+        synced: false,
       },
       {
         gameMode: "practice",
@@ -45,6 +50,7 @@ describe("stats editor", () => {
         challenge: "jumble",
         guesses: 32,
         time: null,
+        synced: false,
       },
       {
         gameMode: "practice",
@@ -52,6 +58,7 @@ describe("stats editor", () => {
         challenge: "perfect",
         guesses: 32,
         time: null,
+        synced: false,
       },
     ];
     const expect1 =

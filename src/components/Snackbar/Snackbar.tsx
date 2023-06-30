@@ -7,37 +7,37 @@ export function Snackbar() {
   const dispatch = useAppDispatch();
   const { status, text } = useAppSelector((s) => s.ui.snackbar);
   const [handle, setHandle] = useState<null | NodeJS.Timeout>(null);
-  const [color, setColor] = useState<"error" | "success">("error");
+  const [uiStatus, setUiStatus] = useState<"error" | "success" | null>(status);
+  const [uiText, setUiText] = useState(text);
 
   useEffect(() => {
-    if (status) {
-      setColor(status);
-    }
-  }, [status]);
-
-  useEffect(() => {
-    if (status) {
-      if (!handle) {
-        const handle = setTimeout(() => {
+    if (uiStatus !== status || uiText !== text) {
+      setUiStatus(status);
+      setUiText(text);
+      if (status) {
+        if (handle) {
+          clearTimeout(handle);
+        }
+        const newHandle = setTimeout(() => {
           dispatch(uiAction.setSnackbar({ status: null }));
         }, 10000);
-        setHandle(handle);
+        setHandle(newHandle);
+      } else {
+        if (handle) {
+          clearTimeout(handle);
+        }
+        setHandle(null);
       }
-    } else {
-      if (handle) {
-        clearTimeout(handle);
-      }
-      setHandle(null);
     }
-  }, [dispatch, handle, status]);
+  }, [dispatch, handle, status, text, uiStatus, uiText]);
 
   return (
     <div
       className={cn(
         styles.snackbar,
-        !status && styles.hidden,
-        color === "error" && styles.error,
-        color === "success" && styles.success
+        status === null && styles.hidden,
+        status === "error" && styles.error,
+        status === "success" && styles.success
       )}
       onClick={() => dispatch(uiAction.setSnackbar({ status: null }))}
     >

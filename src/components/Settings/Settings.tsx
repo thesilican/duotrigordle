@@ -1,6 +1,6 @@
 import cn from "classnames";
-import { useEffect, useState } from "react";
-import { apiFetch, GET_EMAILS_VALIDATE } from "../../api";
+import { ChangeEvent, useState } from "react";
+import { apiValidateEmail } from "../../api";
 import {
   settingsAction,
   uiAction,
@@ -177,34 +177,24 @@ export function Settings() {
 function KofiEmailInput() {
   const dispatch = useAppDispatch();
   const kofiEmail = useAppSelector((s) => s.settings.kofiEmail);
-  const [text, setText] = useState("");
+  const [input, setInput] = useState("");
   const [status, setStatus] = useState<null | "error" | "success">(null);
 
-  useEffect(() => {
-    if (kofiEmail) {
-      setText(kofiEmail);
-    }
-  }, [kofiEmail]);
+  function handleInput(e: ChangeEvent<HTMLInputElement>) {
+    setInput(e.target.value);
+    setStatus(null);
+  }
 
   function handleSubmit() {
     if (kofiEmail) {
       dispatch(settingsAction.update({ hideAds: false, kofiEmail: null }));
       setStatus(null);
     } else {
-      const url = new URL("/api/emails/validate", window.location.href);
-      url.searchParams.append("email", text);
-      apiFetch(GET_EMAILS_VALIDATE, { email: text }).then((res) => {
-        if (res.success) {
-          if (res.data) {
-            dispatch(settingsAction.update({ kofiEmail: text }));
-            setStatus("success");
-          } else {
-            setStatus("error");
-          }
-        } else {
-          dispatch(
-            uiAction.setSnackbar({ status: "error", text: res.message })
-          );
+      apiValidateEmail(dispatch, input).then((x) => {
+        if (x === true) {
+          setStatus("success");
+        } else if (x === false) {
+          setStatus("error");
         }
       });
     }
@@ -229,8 +219,8 @@ function KofiEmailInput() {
         <input
           type="email"
           className={styles.email}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
+          value={kofiEmail ?? input}
+          onChange={handleInput}
           disabled={kofiEmail !== null}
           required
         />

@@ -3,6 +3,7 @@ import {
   AppState,
   Challenge,
   DailyChallenge,
+  GameSave,
   getDailyId,
   initialState,
   loadSave,
@@ -55,10 +56,7 @@ type SideEffect = {
   id: number;
 } & SideEffectAction;
 type SideEffectAction =
-  | {
-      type: "scroll-board-into-view";
-      board: number;
-    }
+  | { type: "scroll-board-into-view"; board: number }
   | {
       type: "update-history";
       action:
@@ -70,7 +68,7 @@ type SideEffectAction =
             type: "pop";
           };
     }
-  | { type: "fetch-user" };
+  | { type: "upload-game-save"; challenge: DailyChallenge; gameSave: GameSave };
 
 export const uiInitialState: UiState = {
   view: "welcome",

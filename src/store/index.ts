@@ -2,16 +2,16 @@ import { AnyAction, configureStore, Dispatch } from "@reduxjs/toolkit";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
 import { gameInitialState, gameReducer, GameState } from "./slice/game";
 import {
-  storageInitialState,
-  storageReducer,
-  StorageState,
-} from "./slice/storage";
-import {
   settingsInitialState,
   settingsReducer,
   SettingsState,
 } from "./slice/settings";
 import { statsInitialState, statsReducer, StatsState } from "./slice/stats";
+import {
+  storageInitialState,
+  storageReducer,
+  StorageState,
+} from "./slice/storage";
 import { uiInitialState, uiReducer, UiState } from "./slice/ui";
 
 export type AppState = {
@@ -50,7 +50,7 @@ export const useAppDispatch: () => Dispatch<AnyAction> = useDispatch;
 export * from "./consts";
 export * from "./funcs";
 export * from "./slice/game";
-export * from "./slice/storage";
 export * from "./slice/settings";
 export * from "./slice/stats";
+export * from "./slice/storage";
 export * from "./slice/ui";

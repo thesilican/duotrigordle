@@ -2,7 +2,7 @@ import {
   Challenge,
   DailySaves,
   GameSave,
-  HistoryEntry,
+  SyncedStatsEntry,
   StorageState,
   SettingsState,
   StatsState,
@@ -64,7 +64,7 @@ export class StorageParser implements Parser<StorageState> {
       "guesses" in obj &&
       Array.isArray(obj.guesses) &&
       "startTime" in obj &&
-      (typeof obj.startTime == "number" || obj.startTime === null) &&
+      typeof obj.startTime == "number" &&
       "endTime" in obj &&
       (typeof obj.endTime == "number" || obj.endTime === null) &&
       "pauseTime" in obj &&
@@ -124,7 +124,7 @@ class StatsParser implements Parser<StatsState> {
     if (typeof obj !== "object" || obj === null) {
       return null;
     }
-    const history: HistoryEntry[] = [];
+    const history: SyncedStatsEntry[] = [];
     if ("history" in obj && Array.isArray(obj.history)) {
       for (const el of obj.history) {
         const entry = this.parseEntry(el);
@@ -139,7 +139,7 @@ class StatsParser implements Parser<StatsState> {
       history,
     };
   }
-  parseEntry(obj: unknown): HistoryEntry | null {
+  parseEntry(obj: unknown): SyncedStatsEntry | null {
     if (typeof obj !== "object" || obj === null) {
       return null;
     }
@@ -147,7 +147,8 @@ class StatsParser implements Parser<StatsState> {
       challenge: Challenge,
       id: number,
       guesses: number | null,
-      time: number | null;
+      time: number | null,
+      synced: boolean;
 
     if (!("gameMode" in obj)) {
       gameMode = "daily";
@@ -209,7 +210,15 @@ class StatsParser implements Parser<StatsState> {
       return null;
     }
 
-    return { gameMode, challenge, id, guesses, time };
+    if (!("synced" in obj)) {
+      synced = false;
+    } else if (typeof obj.synced === "boolean") {
+      synced = obj.synced;
+    } else {
+      return null;
+    }
+
+    return { gameMode, challenge, id, guesses, time, synced };
   }
 }
 

@@ -181,12 +181,28 @@ export const gameReducer = createReducer(
                 : null,
               time: game.endTime - game.startTime,
               challenge: game.challenge,
+              synced: false,
             };
-            state.stats.history = addHistoryEntry(state.stats.history, entry);
+            addHistoryEntry(state, entry);
           }
 
           // Clear board highlights
           state.game.highlightedBoard = null;
+
+          // Upload game save
+          if (game.gameMode === "daily" && game.challenge !== "perfect") {
+            addSideEffect(state, {
+              type: "upload-game-save",
+              challenge: game.challenge,
+              gameSave: {
+                id: game.id,
+                guesses: game.guesses,
+                startTime: game.startTime,
+                endTime: game.endTime,
+                pauseTime: game.pauseTime,
+              },
+            });
+          }
         } else {
           // Check if highlighted board is invalid, then shift right until it isn't
           const completedBoards = getCompletedBoards(
@@ -316,7 +332,11 @@ export function loadSave(
 
 export function saveGame(state: AppState) {
   const game = state.game;
-  if (game.gameMode === "daily" && game.challenge !== "perfect") {
+  if (
+    game.gameMode === "daily" &&
+    game.challenge !== "perfect" &&
+    game.startTime
+  ) {
     state.storage.daily[game.challenge] = {
       id: game.id,
       guesses: game.guesses,

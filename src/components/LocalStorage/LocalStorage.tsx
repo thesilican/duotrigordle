@@ -1,12 +1,14 @@
 import { Fragment, useEffect, useLayoutEffect, useState } from "react";
+import { apiGetGameSaves, apiLogin } from "../../api";
 import {
-  storageAction,
+  getDailyId,
+  LAST_UPDATED,
   settingsAction,
   statsAction,
+  storageAction,
+  uiAction,
   useAppDispatch,
   useAppSelector,
-  LAST_UPDATED,
-  uiAction,
 } from "../../store";
 import {
   loadFromLocalStorage,
@@ -43,9 +45,13 @@ export function LocalStorage() {
         }
       }
 
-      // Check login
+      // Perform actions if logged in
       if (storage?.account) {
-        dispatch(uiAction.createSideEffect({ type: "fetch-user" }));
+        apiLogin(dispatch, storage.account.userId, false).then((res) => {
+          if (res) {
+            apiGetGameSaves(dispatch, res.userId, getDailyId(Date.now()));
+          }
+        });
       }
 
       setLoaded(true);

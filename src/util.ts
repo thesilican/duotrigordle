@@ -104,3 +104,14 @@ export function unreachable(): never {
 export function assertNever(x: never): never {
   throw new Error("Expected unreachable statement, got " + x);
 }
+
+export function chunk<T>(arr: T[], chunkSize: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < arr.length; i++) {
+    if (i % chunkSize === 0) {
+      chunks.push([]);
+    }
+    chunks[chunks.length - 1].push(arr[i]);
+  }
+  return chunks;
+}

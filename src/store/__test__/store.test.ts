@@ -3,10 +3,12 @@ import { getGuessColors, getJumbleWords, getTargetWords } from "../funcs";
 import {
   addHistoryEntry,
   gameAction,
-  HistoryEntry,
+  SyncedStatsEntry,
   normalizeHistory,
   reducer,
   uiAction,
+  AppState,
+  statsAction,
 } from "../index";
 
 describe("funcs", () => {
@@ -32,13 +34,14 @@ describe("funcs", () => {
 describe("stats", () => {
   test("normalizeHistory", () => {
     // Test deduplication
-    const test1: HistoryEntry[] = [
+    const test1: SyncedStatsEntry[] = [
       {
         gameMode: "daily",
         challenge: "normal",
         id: 1,
         guesses: 32,
         time: null,
+        synced: false,
       },
       {
         gameMode: "daily",
@@ -46,6 +49,7 @@ describe("stats", () => {
         id: 1,
         guesses: 33,
         time: null,
+        synced: false,
       },
       {
         gameMode: "practice",
@@ -53,6 +57,7 @@ describe("stats", () => {
         id: 1,
         guesses: 32,
         time: null,
+        synced: false,
       },
       {
         gameMode: "practice",
@@ -60,6 +65,7 @@ describe("stats", () => {
         id: 1,
         guesses: 33,
         time: null,
+        synced: false,
       },
     ];
     const expect1 = [
@@ -69,6 +75,7 @@ describe("stats", () => {
         id: 1,
         guesses: 32,
         time: null,
+        synced: false,
       },
       {
         gameMode: "practice",
@@ -76,18 +83,21 @@ describe("stats", () => {
         id: 1,
         guesses: 32,
         time: null,
+        synced: false,
       },
     ];
-    expect(normalizeHistory(test1)).toEqual(expect1);
+    normalizeHistory(test1);
+    expect(test1).toEqual(expect1);
 
     // Test sorting
-    const test2: HistoryEntry[] = [
+    const test2: SyncedStatsEntry[] = [
       {
         gameMode: "daily",
         challenge: "normal",
         id: 1,
         guesses: null,
         time: null,
+        synced: false,
       },
       {
         gameMode: "daily",
@@ -95,6 +105,7 @@ describe("stats", () => {
         id: 1,
         guesses: null,
         time: null,
+        synced: false,
       },
       {
         gameMode: "daily",
@@ -102,6 +113,7 @@ describe("stats", () => {
         id: 1,
         guesses: null,
         time: null,
+        synced: false,
       },
       {
         gameMode: "daily",
@@ -109,6 +121,7 @@ describe("stats", () => {
         id: 2,
         guesses: null,
         time: null,
+        synced: false,
       },
       {
         gameMode: "daily",
@@ -116,6 +129,7 @@ describe("stats", () => {
         id: 2,
         guesses: null,
         time: null,
+        synced: false,
       },
       {
         gameMode: "daily",
@@ -123,6 +137,7 @@ describe("stats", () => {
         id: 2,
         guesses: null,
         time: null,
+        synced: false,
       },
       {
         gameMode: "practice",
@@ -130,6 +145,7 @@ describe("stats", () => {
         id: 12345,
         guesses: null,
         time: null,
+        synced: false,
       },
       {
         gameMode: "practice",
@@ -137,6 +153,7 @@ describe("stats", () => {
         id: 67890,
         guesses: null,
         time: null,
+        synced: false,
       },
       {
         gameMode: "practice",
@@ -144,6 +161,7 @@ describe("stats", () => {
         id: 33333,
         guesses: null,
         time: null,
+        synced: false,
       },
       {
         gameMode: "practice",
@@ -151,6 +169,7 @@ describe("stats", () => {
         id: 22222,
         guesses: null,
         time: null,
+        synced: false,
       },
       {
         gameMode: "practice",
@@ -158,6 +177,7 @@ describe("stats", () => {
         id: 11111,
         guesses: null,
         time: null,
+        synced: false,
       },
     ];
     const expect2 = [...test2];
@@ -169,32 +189,43 @@ describe("stats", () => {
       test2[a] = test2[b];
       test2[b] = tmp;
     }
-    expect(normalizeHistory(test2)).toEqual(expect2);
+    normalizeHistory(test2);
+    expect(test2).toEqual(expect2);
   });
   test("addHistoryEntry", () => {
-    const history1: HistoryEntry[] = [
+    const store = configureStore({ reducer });
+    store.dispatch(
+      statsAction.load({
+        history: [
+          {
+            gameMode: "daily",
+            id: 1,
+            challenge: "normal",
+            guesses: null,
+            time: null,
+            synced: false,
+          },
+        ],
+      })
+    );
+    store.dispatch(
+      statsAction.addEntry({
+        gameMode: "daily",
+        id: 2,
+        challenge: "normal",
+        guesses: null,
+        time: null,
+        synced: false,
+      })
+    );
+    const expect1: SyncedStatsEntry[] = [
       {
         gameMode: "daily",
         id: 1,
         challenge: "normal",
         guesses: null,
         time: null,
-      },
-    ];
-    const entry1: HistoryEntry = {
-      gameMode: "daily",
-      id: 2,
-      challenge: "normal",
-      guesses: null,
-      time: null,
-    };
-    const expect1: HistoryEntry[] = [
-      {
-        gameMode: "daily",
-        id: 1,
-        challenge: "normal",
-        guesses: null,
-        time: null,
+        synced: false,
       },
       {
         gameMode: "daily",
@@ -202,9 +233,10 @@ describe("stats", () => {
         challenge: "normal",
         guesses: null,
         time: null,
+        synced: false,
       },
     ];
-    expect(addHistoryEntry(history1, entry1)).toEqual(expect1);
+    expect(store.getState().stats.history).toEqual(expect1);
   });
 });
 
@@ -242,13 +274,13 @@ describe("game", () => {
   it("should time", () => {
     let timestamp = 1000;
     const store = configureStore({ reducer });
+    timestamp += 1000;
     store.dispatch(
       uiAction.navigate({
         to: { view: "game", gameMode: "daily", challenge: "normal" },
         timestamp,
       })
     );
-    timestamp += 1000;
     store.dispatch(gameAction.inputLetter({ letter: "H" }));
     store.dispatch(gameAction.inputLetter({ letter: "E" }));
     store.dispatch(gameAction.inputLetter({ letter: "L" }));

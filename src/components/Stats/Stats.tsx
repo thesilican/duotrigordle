@@ -1,11 +1,11 @@
-import { Fragment, useState } from "react";
+import { Fragment, useLayoutEffect, useMemo, useState } from "react";
+import { apiGetStats } from "../../api";
 import {
   Challenge,
   GameMode,
-  HistoryEntry,
-  normalizeHistory,
   NUM_GUESSES,
-  StatsState,
+  StatsEntry,
+  useAppDispatch,
   useAppSelector,
 } from "../../store";
 import { formatTimeElapsed, range } from "../../util";
@@ -16,6 +16,27 @@ import styles from "./Stats.module.css";
 export default function Stats() {
   const [gameModeTab, setGameModeTab] = useState(0);
   const [challengeTab, setChallengeTab] = useState(0);
+  const localStats = useAppSelector((s) => s.stats.history);
+  const userId = useAppSelector((s) => s.storage.account?.userId ?? null);
+  const dispatch = useAppDispatch();
+  const [serverStats, setServerStats] = useState<StatsEntry[] | null>(null);
+
+  const stats = useMemo(
+    () => [...localStats, ...(serverStats ?? [])],
+    [localStats, serverStats]
+  );
+
+  useLayoutEffect(() => {
+    if (!userId) {
+      setServerStats([]);
+      return;
+    }
+    apiGetStats(dispatch, userId).then((x) => {
+      if (x) {
+        setServerStats(x);
+      }
+    });
+  }, [dispatch, userId]);
 
   function handleGameModeTabChange(idx: number) {
     setGameModeTab(idx);
@@ -23,10 +44,8 @@ export default function Stats() {
       setChallengeTab(0);
     }
   }
-
   const gameMode =
     gameModeTab === 0 ? "daily" : gameModeTab === 1 ? "practice" : "daily";
-
   const challenge =
     challengeTab === 0
       ? "normal"
@@ -58,19 +77,19 @@ export default function Stats() {
           size="small"
         />
       </div>
-      <StatsInfo gameMode={gameMode} challenge={challenge} />
+      <StatsInfo challenge={challenge} gameMode={gameMode} stats={stats} />
       <hr />
-      <StatsExport />
+      <StatsExport stats={stats} />
     </div>
   );
 }
 
 type StatsInfoProps = {
-  gameMode: GameMode;
+  stats: StatsEntry[];
   challenge: Challenge;
+  gameMode: GameMode;
 };
-function StatsInfo({ challenge, gameMode }: StatsInfoProps) {
-  const stats = useAppSelector((s) => s.stats);
+function StatsInfo(props: StatsInfoProps) {
   const {
     played,
     win,
@@ -83,16 +102,16 @@ function StatsInfo({ challenge, gameMode }: StatsInfoProps) {
     avgTimeAll,
     timeCount,
     timeMax,
-  } = calculateStatsInfo(stats, gameMode, challenge);
+  } = calculateStatsInfo(props.stats);
 
-  const rangeMin = challenge === "jumble" ? 35 : 32;
-  const rangeMax = NUM_GUESSES[challenge];
+  const rangeMin = props.challenge === "jumble" ? 35 : 32;
+  const rangeMax = NUM_GUESSES[props.challenge];
   const bars: (number | null)[] = range(rangeMin, rangeMax + 1);
   bars.push(null);
 
   return (
     <div className={styles.statsContainer}>
-      {gameMode === "daily" ? (
+      {props.gameMode === "daily" ? (
         <div className={styles.grid}>
           <p className={styles.value}>{played}</p>
           <p className={styles.value}>{win}</p>
@@ -192,7 +211,10 @@ const TIME_BUCKETS = [
   8.0 * 60000,
   9.0 * 60000,
   10.0 * 60000,
-  15.0 * 60000,
+  12.0 * 60000,
+  14.0 * 60000,
+  16.0 * 60000,
+  18.0 * 60000,
   20.0 * 60000,
   25.0 * 60000,
   30.0 * 60000,
@@ -202,23 +224,16 @@ const TIME_BUCKETS = [
   Infinity,
 ];
 
-function calculateStatsInfo(
-  stats: StatsState,
-  gameMode: GameMode,
-  challenge: Challenge
-) {
-  const history = stats.history.filter(
-    (x) => x.challenge === challenge && x.gameMode === gameMode
-  );
-  const played = history.length;
-  const wonGames = history.filter((x) => x.guesses !== null).length;
+function calculateStatsInfo(stats: StatsEntry[]) {
+  const played = stats.length;
+  const wonGames = stats.filter((x) => x.guesses !== null).length;
   const win = played === 0 ? 0 : ((wonGames / played) * 100).toFixed(0);
 
   // Get a list of all streak lengths
   const streaks = [];
   let prev: number | null = null;
-  for (let i = 0; i < history.length; i++) {
-    const entry = history[i];
+  for (let i = 0; i < stats.length; i++) {
+    const entry = stats[i];
     if (entry.guesses === null || entry.gameMode !== "daily") {
       continue;
     }
@@ -232,14 +247,14 @@ function calculateStatsInfo(
 
   // Calculate streak stats
   const currStreak =
-    streaks.length === 0 || history[history.length - 1].guesses === null
+    streaks.length === 0 || stats[stats.length - 1].guesses === null
       ? 0
       : streaks[streaks.length - 1];
   const maxStreak = Math.max(0, ...streaks);
 
   // Calculate guess distribution
   const guessCount = new Map<number | null, number>();
-  for (const entry of history) {
+  for (const entry of stats) {
     const key = entry.guesses;
     const count = guessCount.get(key) ?? 0;
     guessCount.set(key, count + 1);
@@ -247,7 +262,7 @@ function calculateStatsInfo(
   const guessMax = Math.max(...guessCount.values());
 
   // Calculate best, average of 7, and average times
-  const times = history
+  const times = stats
     .filter((x) => x.guesses !== null && x.time !== null)
     .map((x) => x.time!);
   let bestTime, avgTime7, avgTimeAll;
@@ -264,7 +279,7 @@ function calculateStatsInfo(
 
   // Create times chart, bucket by minutes
   const timeCount = new Map<number, number>();
-  for (const entry of history) {
+  for (const entry of stats) {
     if (!entry.guesses || !entry.time) {
       continue;
     }
@@ -294,11 +309,13 @@ function calculateStatsInfo(
   };
 }
 
-function StatsExport() {
+type StatsExportProps = {
+  stats: StatsEntry[];
+};
+function StatsExport(props: StatsExportProps) {
   const [isExpanded, setExpanded] = useState(false);
-  const history = useAppSelector((s) => s.stats.history);
 
-  const value = stringifyHistory(history);
+  const value = stringifyHistory(props.stats);
 
   return (
     <div className={styles.exportContainer}>
@@ -322,11 +339,10 @@ function StatsExport() {
   );
 }
 
-export function stringifyHistory(history: HistoryEntry[]): string {
-  history = normalizeHistory(history);
+export function stringifyHistory(stats: StatsEntry[]): string {
   const lines = [];
   lines.push("Game Mode,Challenge,Id,Guesses,Time (ms)");
-  for (const entry of history) {
+  for (const entry of stats) {
     const line = [];
     line.push(entry.gameMode);
     line.push(entry.challenge);

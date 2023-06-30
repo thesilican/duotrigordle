@@ -18,4 +18,5 @@
 }
 .snackbar.success {
   background-color: var(--green);
+  color: var(--black);
 }

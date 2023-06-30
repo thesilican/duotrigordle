@@ -2,6 +2,7 @@ import { Fragment, useEffect, useMemo, useState } from "react";
 import { apiGetStats } from "../../api";
 import {
   Challenge,
+  entryKeysEqual,
   GameMode,
   NUM_GUESSES,
   StatsEntry,
@@ -22,7 +23,7 @@ export default function Stats() {
   const [serverStats, setServerStats] = useState<StatsEntry[] | null>(null);
 
   const stats = useMemo(
-    () => (serverStats ? [...localStats, ...serverStats] : []),
+    () => (serverStats ? mergeStats(localStats, serverStats) : []),
     [localStats, serverStats]
   );
 
@@ -82,6 +83,16 @@ export default function Stats() {
       <StatsExport stats={stats} />
     </div>
   );
+}
+
+function mergeStats(local: StatsEntry[], server: StatsEntry[]) {
+  const entries = [...local];
+  for (const entry of server) {
+    if (!entries.find((x) => entryKeysEqual(entry, x))) {
+      entries.push(entry);
+    }
+  }
+  return entries;
 }
 
 type StatsInfoProps = {

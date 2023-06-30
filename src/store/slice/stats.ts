@@ -53,7 +53,7 @@ export const statsReducer = createReducer(
       })
 );
 
-function entryKeysEqual(a: StatsEntryKey, b: StatsEntryKey) {
+export function entryKeysEqual(a: StatsEntryKey, b: StatsEntryKey) {
   return (
     a.gameMode === b.gameMode && a.challenge === b.challenge && a.id === b.id
   );

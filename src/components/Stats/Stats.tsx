@@ -115,7 +115,7 @@ function StatsInfo(props: StatsInfoProps) {
     avgTimeAll,
     timeCount,
     timeMax,
-  } = calculateStatsInfo(props.stats);
+  } = calculateStatsInfo(props.stats, props.gameMode, props.challenge);
 
   const rangeMin = props.challenge === "jumble" ? 35 : 32;
   const rangeMax = NUM_GUESSES[props.challenge];
@@ -237,7 +237,14 @@ const TIME_BUCKETS = [
   Infinity,
 ];
 
-function calculateStatsInfo(stats: StatsEntry[]) {
+function calculateStatsInfo(
+  entries: StatsEntry[],
+  gameMode: GameMode,
+  challenge: Challenge
+) {
+  const stats = entries.filter(
+    (x) => x.gameMode === gameMode && x.challenge === challenge
+  );
   const played = stats.length;
   const wonGames = stats.filter((x) => x.guesses !== null).length;
   const win = played === 0 ? 0 : ((wonGames / played) * 100).toFixed(0);

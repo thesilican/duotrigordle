@@ -40,7 +40,6 @@ function SignUpForm() {
   const [prevAccountUsername, setPrevAccountUsername] = useState<string | null>(
     null
   );
-  const stats = useAppSelector((s) => s.stats.history);
 
   useEffect(() => {
     apiFetch(GET_USER, { user_id: prevUserId }).then((x) => {

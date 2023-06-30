@@ -245,6 +245,9 @@ export async function apiLogin(
     return { userId: res.data.user.user_id };
   } else {
     dispatch(snackbarError("Error logging in", res));
+    if (res.statusCode === 404) {
+      dispatch(storageAction.logout());
+    }
     return null;
   }
 }

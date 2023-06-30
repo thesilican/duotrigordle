@@ -121,7 +121,12 @@ function Key(props: KeyProps) {
   );
 
   return (
-    <button style={style} className={styles.key} onClick={handleClick}>
+    <button
+      style={style}
+      className={styles.key}
+      onClick={handleClick}
+      tabIndex={-1}
+    >
       {char}
     </button>
   );

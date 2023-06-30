@@ -1,4 +1,4 @@
-import { Fragment, useLayoutEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import { apiGetStats } from "../../api";
 import {
   Challenge,
@@ -22,11 +22,11 @@ export default function Stats() {
   const [serverStats, setServerStats] = useState<StatsEntry[] | null>(null);
 
   const stats = useMemo(
-    () => [...localStats, ...(serverStats ?? [])],
+    () => (serverStats ? [...localStats, ...serverStats] : []),
     [localStats, serverStats]
   );
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (!userId) {
       setServerStats([]);
       return;

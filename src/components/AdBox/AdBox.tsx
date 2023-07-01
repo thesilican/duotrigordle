@@ -23,7 +23,7 @@ export function AdBox() {
           window.ezstandalone = window.ezstandalone || {};
           ezstandalone.cmd = ezstandalone.cmd || [];
           ezstandalone.cmd.push(function () {
-            ezstandalone.define(101);
+            ezstandalone.define(103);
             ezstandalone.enable();
             ezstandalone.display();
           });
@@ -39,7 +39,7 @@ export function AdBox() {
 
   return (
     <div className={cn("ads-box", styles.adBox)}>
-      <div id="ezoic-pub-ad-placeholder-101"> </div>
+      <div id="ezoic-pub-ad-placeholder-103"> </div>
     </div>
   );
 }

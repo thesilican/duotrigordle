@@ -36,6 +36,8 @@ export default function Stats() {
     apiGetStats(dispatch, userId).then((x) => {
       if (x) {
         setServerStats(x);
+      } else {
+        setServerStats([]);
       }
     });
   }, [dispatch, userId]);

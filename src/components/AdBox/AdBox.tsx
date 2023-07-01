@@ -4,7 +4,7 @@ import { useAppSelector } from "../../store";
 import styles from "./AdBox.module.css";
 
 // If you're develping Duotrigordle locally and would like to hide ads, set this to true
-const overrideHideAds = false;
+const overrideHideAds = true;
 
 declare global {
   const ezstandalone: any;

@@ -356,6 +356,19 @@ export function pauseGame(state: AppState, timestamp: number) {
   ) {
     game.pauseTime = timestamp;
     saveGame(state);
+    if (game.gameMode === "daily" && game.challenge !== "perfect") {
+      addSideEffect(state, {
+        type: "upload-game-save",
+        challenge: game.challenge,
+        gameSave: {
+          id: game.id,
+          guesses: game.guesses,
+          startTime: game.startTime,
+          endTime: game.endTime,
+          pauseTime: game.pauseTime,
+        },
+      });
+    }
   }
 }
 

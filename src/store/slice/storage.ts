@@ -21,6 +21,7 @@ export type GameSave = {
 };
 export type UserAccount = {
   userId: string;
+  accountKey: string;
   username: string;
   email: string | null;
 };

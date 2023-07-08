@@ -35,12 +35,16 @@ export const GET_EMAILS_VALIDATE: ApiReq<{ email: string }, boolean> = {
 
 export type ApiUser = {
   user_id: string;
+  account_key: string;
   username: string;
   email: string | null;
   created_at: number;
 };
 
-export const GET_USER: ApiReq<{ user_id: string }, { user: ApiUser }> = {
+export const GET_USER: ApiReq<
+  { user_id: string } | { account_key: string },
+  { user: ApiUser }
+> = {
   method: "GET",
   path: "/user",
 };
@@ -222,14 +226,19 @@ export async function apiValidateEmail(
 
 export async function apiLogin(
   dispatch: Dispatch<AnyAction>,
-  userId: string,
+  options: { userId: string } | { accountKey: string },
   showSuccessMessage = true
 ): Promise<{ userId: string } | null> {
-  const res = await apiFetch(GET_USER, { user_id: userId });
+  const args =
+    "userId" in options
+      ? { user_id: options.userId }
+      : { account_key: options.accountKey };
+  const res = await apiFetch(GET_USER, args);
   if (res.success) {
     dispatch(
       storageAction.login({
         userId: res.data.user.user_id,
+        accountKey: res.data.user.account_key,
         username: res.data.user.username,
         email: res.data.user.email,
       })
@@ -262,6 +271,7 @@ export async function apiSignUp(
     dispatch(
       storageAction.login({
         userId: res.data.user.user_id,
+        accountKey: res.data.user.account_key,
         username: res.data.user.username,
         email: res.data.user.email,
       })
@@ -269,7 +279,7 @@ export async function apiSignUp(
     dispatch(
       uiAction.setSnackbar({
         status: "success",
-        text: "Successfully logged in as " + res.data.user,
+        text: "Successfully logged in as " + res.data.user.username,
       })
     );
     return { userId: res.data.user.user_id };

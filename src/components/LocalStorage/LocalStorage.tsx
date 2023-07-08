@@ -47,11 +47,13 @@ export function LocalStorage() {
 
       // Perform actions if logged in
       if (storage?.account) {
-        apiLogin(dispatch, storage.account.userId, false).then((res) => {
-          if (res) {
-            apiGetGameSaves(dispatch, res.userId, getDailyId(Date.now()));
+        apiLogin(dispatch, { userId: storage.account.userId }, false).then(
+          (res) => {
+            if (res) {
+              apiGetGameSaves(dispatch, res.userId, getDailyId(Date.now()));
+            }
           }
-        });
+        );
       }
 
       setLoaded(true);

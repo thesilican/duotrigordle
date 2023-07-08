@@ -32,7 +32,7 @@ export function Account() {
 function SignUpForm() {
   const dispatch = useAppDispatch();
   const [forgotKeyModal, setForgotKeyModal] = useState(false);
-  const [userId, setUserId] = useState("");
+  const [accountKey, setAccountKey] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [tab, setTab] = useState(0);
@@ -42,17 +42,19 @@ function SignUpForm() {
   );
 
   useEffect(() => {
-    apiFetch(GET_USER, { user_id: prevUserId }).then((x) => {
-      if (x.success) {
-        setPrevAccountUsername(x.data.user.username);
-      }
-    });
+    if (prevUserId) {
+      apiFetch(GET_USER, { user_id: prevUserId }).then((x) => {
+        if (x.success) {
+          setPrevAccountUsername(x.data.user.username);
+        }
+      });
+    }
   }, [prevUserId]);
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (tab === 0) {
-      apiLogin(dispatch, userId).then((res) => {
+      apiLogin(dispatch, { accountKey }).then((res) => {
         if (res) {
           apiGetGameSaves(dispatch, res.userId, getDailyId(Date.now()));
         }
@@ -68,7 +70,7 @@ function SignUpForm() {
 
   const handleAltSubmit = () => {
     if (!prevUserId) return;
-    apiLogin(dispatch, prevUserId).then((res) => {
+    apiLogin(dispatch, { userId: prevUserId }).then((res) => {
       if (res) {
         apiGetGameSaves(dispatch, res.userId, getDailyId(Date.now()));
       }
@@ -113,11 +115,13 @@ function SignUpForm() {
                 id="log-in-key"
                 className={cn(styles.input, styles.monospace)}
                 type="text"
-                placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-                value={userId}
-                onChange={(e) => setUserId(e.target.value.trim())}
+                placeholder="xxxxxxxxxx"
+                value={accountKey}
+                onChange={(e) =>
+                  setAccountKey(e.target.value.trim().toLowerCase())
+                }
                 required
-                pattern="[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}"
+                pattern="[0-9a-ZA-Z]{10}"
                 onFocus={(e) => e.target.select()}
               />
               <LinkButton onClick={() => setForgotKeyModal(true)}>
@@ -194,7 +198,7 @@ function LoggedIn() {
   }
 
   const handleCopyAccountKeyClick = () => {
-    navigator.clipboard.writeText(account.userId).then(() => {
+    navigator.clipboard.writeText(account.accountKey).then(() => {
       setCopyConfirm(true);
       setTimeout(() => {
         setCopyConfirm(false);
@@ -248,11 +252,7 @@ function LoggedIn() {
           className={cn(styles.input, styles.monospace)}
           disabled={!showAccountKey}
           readOnly
-          value={
-            showAccountKey
-              ? account.userId
-              : "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-          }
+          value={showAccountKey ? account.accountKey : "xxxxxxxxxx"}
           onFocus={(e) => e.currentTarget.select()}
         />
       </div>

@@ -97,10 +97,13 @@ export class StorageParser implements Parser<StorageState> {
       "username" in obj &&
       typeof obj.username === "string" &&
       "email" in obj &&
-      (typeof obj.email === "string" || obj.email === null)
+      (typeof obj.email === "string" || obj.email === null) &&
+      "accountKey" in obj &&
+      typeof obj.accountKey === "string"
     ) {
       return {
         userId: obj.userId,
+        accountKey: obj.accountKey,
         username: obj.username,
         email: obj.email,
       };

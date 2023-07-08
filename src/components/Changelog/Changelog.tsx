@@ -11,11 +11,14 @@ export function Changelog() {
       <h1 className={styles.title}>Changelog</h1>
       <div className={styles.overflow}>
         <p>
-          July 1, 2023 <span className={styles.new}>New!</span>
+          July 20, 2023 <span className={styles.new}>New!</span>
         </p>
         <ul>
-          <li>Added how to play guide</li>
-          <li>Added time distribution to statistics</li>
+          <li>Added user accounts!</li>
+          <ul>
+            <li>Log in to save your stats to the server</li>
+            <li>Synchronize your stats between multiple devices</li>
+          </ul>
           <li>
             Increased guess limit for
             <br />
@@ -23,9 +26,13 @@ export function Changelog() {
             <br />
             jumble mode: 37 =&gt; 39
           </li>
-          <li>Timer now pauses when game is out of focus</li>
-          <li>Updated main menu layout</li>
           <li>Various UI tweaks &amp; improvements</li>
+          <ul>
+            <li>Added time distribution to statistics</li>
+            <li>Timer now pauses when game is out of focus</li>
+            <li>Updated main menu layout</li>
+            <li>Added how to play guide</li>
+          </ul>
         </ul>
         <hr />
         <p>May 15, 2023</p>

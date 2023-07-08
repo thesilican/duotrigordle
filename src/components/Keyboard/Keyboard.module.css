@@ -33,6 +33,7 @@
   font-size: 25px;
   user-select: none;
   padding: 0;
+  transition: background-color 0.1s ease;
   color: var(--white);
 }
 @media screen and (min-width: 600px) {

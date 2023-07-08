@@ -32,7 +32,6 @@
   cursor: pointer;
   font-size: 25px;
   user-select: none;
-  transition: filter 0.1s ease, background-color 0.1s ease;
   padding: 0;
   color: var(--white);
 }

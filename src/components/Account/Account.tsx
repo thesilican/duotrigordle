@@ -54,8 +54,8 @@ function SignUpForm() {
   const handleAccountKeyInputChange = (e: ChangeEvent<HTMLInputElement>) => {
     // Format: xxxx-xxxx-xxxx
     let text = "";
-    for (const c of e.target.value) {
-      if (c.toLowerCase().match(/[0-9a-z]/g)) {
+    for (const c of e.target.value.toLowerCase()) {
+      if (c.match(/[0-9a-z]/g)) {
         if (text.length >= 14) {
           continue;
         }

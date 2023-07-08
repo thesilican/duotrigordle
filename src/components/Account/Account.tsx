@@ -122,7 +122,6 @@ function SignUpForm() {
                 }
                 required
                 pattern="[0-9a-ZA-Z]{10}"
-                onFocus={(e) => e.target.select()}
               />
               <LinkButton onClick={() => setForgotKeyModal(true)}>
                 Forgot your key?

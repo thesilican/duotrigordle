@@ -1,6 +1,7 @@
 {
   "short_name": "Duotrigordle",
   "name": "Duotrigordle",
+  "description": "Put your skills to the test and solve thirty-two Wordles at once! You have 37 guesses to solve all 32 words. A new Duotrigordle available each day to solve.",
   "icons": [
     {
       "src": "favicon.ico",

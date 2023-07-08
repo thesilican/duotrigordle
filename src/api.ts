@@ -358,7 +358,7 @@ export async function apiPostStats(
   stats: SyncedStatsEntry[]
 ) {
   const unsyncedStats = stats.filter((x) => !x.synced);
-  const chunks = chunk(unsyncedStats, 100);
+  const chunks = chunk(unsyncedStats, 1000);
   for (const chunk of chunks) {
     const res = await apiFetch(POST_STATS, {
       user_id: userId,

@@ -62,28 +62,35 @@ export default function Stats() {
       : "normal";
 
   return (
-    <div className={styles.main}>
-      <div className={styles.tabs}>
-        <TabButtons
-          tabs={["Daily", "Practice"]}
-          idx={gameModeTab}
-          onTabChange={handleGameModeTabChange}
-          size="small"
-        />
-        <TabButtons
-          tabs={
-            gameModeTab === 0
-              ? ["Normal", "Sequence", "Jumble"]
-              : ["Normal", "Sequence", "Jumble", "Perfect"]
-          }
-          idx={challengeTab}
-          onTabChange={setChallengeTab}
-          size="small"
-        />
+    <div className={styles.container}>
+      {serverStats ? null : (
+        <div className={styles.loading}>
+          <p>Loading...</p>
+        </div>
+      )}
+      <div className={styles.main}>
+        <div className={styles.tabs}>
+          <TabButtons
+            tabs={["Daily", "Practice"]}
+            idx={gameModeTab}
+            onTabChange={handleGameModeTabChange}
+            size="small"
+          />
+          <TabButtons
+            tabs={
+              gameModeTab === 0
+                ? ["Normal", "Sequence", "Jumble"]
+                : ["Normal", "Sequence", "Jumble", "Perfect"]
+            }
+            idx={challengeTab}
+            onTabChange={setChallengeTab}
+            size="small"
+          />
+        </div>
+        <StatsInfo challenge={challenge} gameMode={gameMode} stats={stats} />
+        <hr />
+        <StatsExport stats={stats} />
       </div>
-      <StatsInfo challenge={challenge} gameMode={gameMode} stats={stats} />
-      <hr />
-      <StatsExport stats={stats} />
     </div>
   );
 }

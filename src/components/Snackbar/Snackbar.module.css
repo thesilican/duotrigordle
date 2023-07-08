@@ -14,9 +14,8 @@
   transform: scale(0.9);
 }
 .snackbar.error {
-  background-color: var(--red);
+  background-color: var(--red-bg);
 }
 .snackbar.success {
-  background-color: var(--green);
-  color: var(--black);
+  background-color: var(--green-bg);
 }

@@ -1,5 +1,5 @@
 import cn from "classnames";
-import { FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import {
   apiDeleteUser,
   apiFetch,
@@ -50,6 +50,23 @@ function SignUpForm() {
       });
     }
   }, [prevUserId]);
+
+  const handleAccountKeyInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+    // Format: xxxx-xxxx-xxxx
+    let text = "";
+    for (const c of e.target.value) {
+      if (c.toLowerCase().match(/[0-9a-z]/g)) {
+        if (text.length >= 14) {
+          continue;
+        }
+        if (text.length === 4 || text.length === 9) {
+          text += "-";
+        }
+        text += c;
+      }
+    }
+    setAccountKey(text);
+  };
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
@@ -115,13 +132,10 @@ function SignUpForm() {
                 id="log-in-key"
                 className={cn(styles.input, styles.monospace)}
                 type="text"
-                placeholder="xxxxxxxxxx"
+                placeholder="xxxx-xxxx-xxxx"
                 value={accountKey}
-                onChange={(e) =>
-                  setAccountKey(e.target.value.trim().toLowerCase())
-                }
+                onChange={handleAccountKeyInputChange}
                 required
-                pattern="[0-9a-ZA-Z]{10}"
               />
               <LinkButton onClick={() => setForgotKeyModal(true)}>
                 Forgot your key?
@@ -251,7 +265,7 @@ function LoggedIn() {
           className={cn(styles.input, styles.monospace)}
           disabled={!showAccountKey}
           readOnly
-          value={showAccountKey ? account.accountKey : "xxxxxxxxxx"}
+          value={showAccountKey ? account.accountKey : "xxxx-xxxx-xxxx"}
           onFocus={(e) => e.currentTarget.select()}
         />
       </div>

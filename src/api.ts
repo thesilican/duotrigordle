@@ -374,7 +374,8 @@ export async function apiPostStats(
         )
       );
     } else {
-      dispatch(snackbarError("Error uploading stats", res));
+      // Don't show error message when uploading (it could be destracting to the user e.g. if they're offline)
+      // dispatch(snackbarError("Error uploading stats", res));
       break;
     }
   }
@@ -445,6 +446,7 @@ export async function apiPostGameSave(
   });
   if (res.success) {
   } else {
-    dispatch(snackbarError("Error uploading game save", res));
+    // Don't show error message when uploading (it could be destracting to the user e.g. if they're offline)
+    // dispatch(snackbarError("Error uploading game save", res));
   }
 }

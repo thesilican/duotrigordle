@@ -42,6 +42,7 @@ describe("serialization", () => {
       id: 1,
       guesses: 32,
       time: 1234,
+      synced: false,
     });
     // Missing gamemode and challenge
     expect(
@@ -56,6 +57,7 @@ describe("serialization", () => {
       id: 1,
       guesses: 32,
       time: 1234,
+      synced: false,
     });
     // Missing practice id
     for (let i = 0; i < 1000; i++) {
@@ -78,6 +80,8 @@ describe("serialization", () => {
         jumble: null,
       },
       lastUpdated: "1970-01-01",
+      account: null,
+      prevUserId: null,
     };
     expect(STORAGE_PARSER.parse(test1)).toEqual(expect1);
     const test2 = {
@@ -94,6 +98,8 @@ describe("serialization", () => {
         jumble: null,
       },
       lastUpdated: "1970-01-01",
+      account: null,
+      prevUserId: null,
     };
     expect(STORAGE_PARSER.parse(test2)).toEqual(expect2);
     const test3 = {
@@ -131,6 +137,8 @@ describe("serialization", () => {
         },
       },
       lastUpdated: "2023-03-03",
+      account: null,
+      prevUserId: null,
     };
     expect(STORAGE_PARSER.parse(test3)).toEqual(expect3);
   });

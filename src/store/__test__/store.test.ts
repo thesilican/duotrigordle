@@ -269,6 +269,8 @@ describe("game", () => {
         jumble: null,
       },
       lastUpdated: "1970-01-01",
+      account: null,
+      prevUserId: null,
     });
   });
   it("should time", () => {

@@ -71,13 +71,13 @@ function SignUpForm() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (tab === 0) {
-      apiLogin(dispatch, { accountKey }).then((res) => {
+      apiSignUp(dispatch, username, email || null).then((res) => {
         if (res) {
           apiGetGameSaves(dispatch, res.userId, getDailyId(Date.now()));
         }
       });
     } else {
-      apiSignUp(dispatch, username, email || null).then((res) => {
+      apiLogin(dispatch, { accountKey }).then((res) => {
         if (res) {
           apiGetGameSaves(dispatch, res.userId, getDailyId(Date.now()));
         }
@@ -102,47 +102,11 @@ function SignUpForm() {
       </p>
       <form className={styles.box} onSubmit={handleSubmit}>
         <TabButtons
-          tabs={["Log in", "Sign up"]}
+          tabs={["Sign up", "Log in"]}
           idx={tab}
           onTabChange={setTab}
         />
         {tab === 0 ? (
-          <>
-            {prevAccountUsername && (
-              <>
-                <p>
-                  Another account ({prevAccountUsername}) was previously used to
-                  log in to this device.
-                </p>
-                <Button className={styles.submit} onClick={handleAltSubmit}>
-                  Log in as {prevAccountUsername}
-                </Button>
-                <hr />
-              </>
-            )}
-            <p>
-              Link an existing account. You can obtain your account key from
-              another device.
-            </p>
-            <div className={styles.group}>
-              <label className={styles.label} htmlFor="log-in-key">
-                Account Key
-              </label>
-              <input
-                id="log-in-key"
-                className={cn(styles.input, styles.monospace)}
-                type="text"
-                placeholder="xxxx-xxxx-xxxx"
-                value={accountKey}
-                onChange={handleAccountKeyInputChange}
-                required
-              />
-              <LinkButton onClick={() => setForgotKeyModal(true)}>
-                Forgot your key?
-              </LinkButton>
-            </div>
-          </>
-        ) : (
           <>
             <p>
               Create a new account. Your email is used for account recovery
@@ -174,11 +138,47 @@ function SignUpForm() {
               />
             </div>
           </>
+        ) : (
+          <>
+            {prevAccountUsername && (
+              <>
+                <p>
+                  Another account ({prevAccountUsername}) was previously used to
+                  log in to this device.
+                </p>
+                <Button className={styles.submit} onClick={handleAltSubmit}>
+                  Log in as {prevAccountUsername}
+                </Button>
+                <hr />
+              </>
+            )}
+            <p>
+              Link an existing account. You can obtain your account key from
+              your other device.
+            </p>
+            <div className={styles.group}>
+              <label className={styles.label} htmlFor="log-in-key">
+                Account Key
+              </label>
+              <input
+                id="log-in-key"
+                className={cn(styles.input, styles.monospace)}
+                type="text"
+                placeholder="xxxx-xxxx-xxxx"
+                value={accountKey}
+                onChange={handleAccountKeyInputChange}
+                required
+              />
+              <LinkButton onClick={() => setForgotKeyModal(true)}>
+                Forgot your key?
+              </LinkButton>
+            </div>
+          </>
         )}
         <Button
           className={styles.submit}
           type="submit"
-          value={tab === 0 ? "Log in" : "Sign up"}
+          value={tab === 0 ? "Sign up" : "Log in"}
         />
       </form>
       <Modal

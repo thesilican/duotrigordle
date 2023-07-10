@@ -269,6 +269,13 @@ function LoggedIn() {
           onFocus={(e) => e.currentTarget.select()}
         />
       </div>
+      <p>
+        Keep your account key secret, it can be used to log into your account on
+        other devices.
+        <br />
+        We also recommend you write it down in case you lose access to your
+        browser.
+      </p>
       <Button className={styles.logOut} onClick={handleLogout}>
         Log out
       </Button>

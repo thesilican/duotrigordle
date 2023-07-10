@@ -19,13 +19,15 @@ import styles from "./Boards.module.css";
 export function Boards() {
   const wideMode = useAppSelector((s) => s.settings.wideMode);
   const colorBlind = useAppSelector((s) => s.settings.colorBlindMode);
+  const disableAnimations = useAppSelector((s) => s.settings.disableAnimations);
 
   return (
     <div
       className={cn(
         styles.boards,
         wideMode && styles.wide,
-        colorBlind && styles.colorBlind
+        colorBlind && styles.colorBlind,
+        disableAnimations && styles.disableAnimations
       )}
     >
       {range(NUM_BOARDS).map((i) => (

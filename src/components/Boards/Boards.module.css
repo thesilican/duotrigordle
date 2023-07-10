@@ -86,6 +86,9 @@
     position: fixed;
   }
 }
+.boards.disableAnimations .board.hidden {
+  display: none;
+}
 .scrollIntoView {
   position: absolute;
   top: -4px;

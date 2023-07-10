@@ -247,6 +247,7 @@ function PracticeTab() {
 function MoreTab() {
   const dispatch = useAppDispatch();
   const kofiEmail = useAppSelector((s) => s.settings.kofiEmail);
+  const username = useAppSelector((s) => s.storage.account?.username ?? null);
 
   return (
     <>
@@ -264,7 +265,11 @@ function MoreTab() {
         >
           Account
         </LinkButton>
-        <p>Manage your duotrigordle account</p>
+        {username ? (
+          <p>Logged in as {username}</p>
+        ) : (
+          <p>Manage your duotrigordle account</p>
+        )}
       </div>
       <div className={styles.item}>
         <LinkButton
@@ -310,7 +315,7 @@ function MoreTab() {
         {kofiEmail ? (
           <p>Thank you for supporting ♥️</p>
         ) : (
-          <p>Love duotrigordle? Show your support!</p>
+          <p>Show your support! (and hide ads)</p>
         )}
       </div>
       <div className={styles.item}>

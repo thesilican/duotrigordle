@@ -11,13 +11,14 @@ export function Changelog() {
       <h1 className={styles.title}>Changelog</h1>
       <div className={styles.overflow}>
         <p>
-          July 20, 2023 <span className={styles.new}>New!</span>
+          July 10, 2023 <span className={styles.new}>New!</span>
         </p>
         <ul>
           <li>Added user accounts!</li>
           <ul>
             <li>Log in to save your stats to the server</li>
             <li>Synchronize your stats between multiple devices</li>
+            <li>(Global leaderboard stats may come in the future)</li>
           </ul>
           <li>
             Increased guess limit for

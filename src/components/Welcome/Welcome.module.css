@@ -18,14 +18,17 @@
   gap: 30px;
 }
 /*
-  Whenever the .practice class state changes,
+  Whenever the welcome class state changes,
   play fade in animation
 */
-.welcome:not(.practice) .tabContainer {
-  animation: fadeIn 0.5s ease;
+.welcome.daily .tabContainer {
+  animation: fadeIn 0.1s ease;
 }
-.welcome .tabContainer {
-  animation: fadeIn2 0.5s ease;
+.welcome.practice .tabContainer {
+  animation: fadeIn2 0.1s ease;
+}
+.welcome.more .tabContainer {
+  animation: fadeIn3 0.1s ease;
 }
 @keyframes fadeIn {
   0% {
@@ -43,8 +46,16 @@
     opacity: 1;
   }
 }
+@keyframes fadeIn3 {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
 
-.gameMode {
+.item {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -54,24 +65,33 @@
   font-size: 24px;
 }
 
-.archiveDescription {
+.historicDescription {
   display: flex;
   gap: 4px;
   align-items: center;
   line-height: 1;
 }
 
-.archiveSelect {
+.historicSelect {
   font-size: 16px;
-  padding: 0px;
+  padding: 2px;
   background-color: transparent;
   border: none;
   border: 1px solid var(--white);
   border-radius: 4px;
   color: var(--white);
+  appearance: none;
 }
 
-.archiveSelect option {
+.historicSelect option {
   background-color: var(--black);
   color: var(--white);
+}
+
+.historicInput {
+  font-size: 16px;
+  border: 1px solid var(--white);
+  border-radius: 4px;
+  background-color: transparent;
+  width: min-content;
 }

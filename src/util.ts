@@ -64,18 +64,22 @@ export function randU32() {
 }
 
 // Format time elapsed in 00:00.00 format
-export function formatTimeElapsed(miliseconds: number) {
+export function formatTimeElapsed(miliseconds: number, showHundreds = true) {
   miliseconds = Math.max(miliseconds, 0);
-  const minutes = Math.floor(miliseconds / 1000 / 60);
-  const seconds = Math.floor(miliseconds / 1000) % 60;
-  const hundreds = Math.floor(miliseconds / 10) % 100;
-  return (
-    minutes.toString().padStart(2, "0") +
-    ":" +
-    seconds.toString().padStart(2, "0") +
-    "." +
-    hundreds.toString().padStart(2, "0")
-  );
+  const minutes = Math.floor(miliseconds / 1000 / 60)
+    .toString()
+    .padStart(2, "0");
+  const seconds = (Math.floor(miliseconds / 1000) % 60)
+    .toString()
+    .padStart(2, "0");
+  const hundreds = (Math.floor(miliseconds / 10) % 100)
+    .toString()
+    .padStart(2, "0");
+  if (!showHundreds) {
+    return `${minutes}:${seconds}`;
+  } else {
+    return `${minutes}:${seconds}.${hundreds}`;
+  }
 }
 
 // Parse time elapsed in 00:00.00 format
@@ -91,4 +95,23 @@ export function parseTimeElapsed(text: string): number | null {
     return null;
   }
   return time;
+}
+
+export function unreachable(): never {
+  throw new Error("Expected unreachable statement");
+}
+
+export function assertNever(x: never): never {
+  throw new Error("Expected unreachable statement, got " + x);
+}
+
+export function chunk<T>(arr: T[], chunkSize: number): T[][] {
+  const chunks: T[][] = [];
+  for (let i = 0; i < arr.length; i++) {
+    if (i % chunkSize === 0) {
+      chunks.push([]);
+    }
+    chunks[chunks.length - 1].push(arr[i]);
+  }
+  return chunks;
 }

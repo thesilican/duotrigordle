@@ -1,13 +1,11 @@
 import cn from "classnames";
 import { useEffect, useMemo, useState } from "react";
-import aboutIcon from "../../assets/about.svg";
 import backIcon from "../../assets/back.svg";
 import fullscreenExitIcon from "../../assets/fullscreen-exit.svg";
 import fullscreenIcon from "../../assets/fullscreen.svg";
 import logoIcon from "../../assets/logo.svg";
 import restartIcon from "../../assets/restart.svg";
 import settingsIcon from "../../assets/settings.svg";
-import statsIcon from "../../assets/stats.svg";
 import {
   gameAction,
   getCompletedBoards,
@@ -18,23 +16,26 @@ import {
   useAppDispatch,
   useAppSelector,
 } from "../../store";
-import { formatTimeElapsed, range } from "../../util";
+import { assertNever, formatTimeElapsed, range } from "../../util";
 import { AdBox } from "../AdBox/AdBox";
 import { Button } from "../common/Button/Button";
 import styles from "./Header.module.css";
 
 export function Header() {
-  const isWelcome = useAppSelector((s) => s.ui.view === "welcome");
+  const view = useAppSelector((s) => s.ui.view);
   const wideMode = useAppSelector((s) => s.settings.wideMode);
   const colorBlind = useAppSelector((s) => s.settings.colorBlindMode);
+  const disableAnimations = useAppSelector((s) => s.settings.disableAnimations);
 
   return (
     <div
       className={cn(
         styles.header,
-        isWelcome && styles.welcome,
+        view === "welcome" && styles.welcome,
+        view === "game" && styles.game,
         wideMode && styles.wide,
-        colorBlind && styles.colorBlind
+        colorBlind && styles.colorBlind,
+        disableAnimations && styles.disableAnimations
       )}
     >
       <AdBox />
@@ -48,20 +49,25 @@ export function Header() {
 function Row1() {
   const dispatch = useAppDispatch();
   const { fullscreen, toggleFullscreen } = useFullscreen();
-  const isGameView = useAppSelector((s) => s.ui.view === "game");
+  const view = useAppSelector((s) => s.ui.view);
   const gameMode = useAppSelector((s) => s.game.gameMode);
   const gameId = useAppSelector((s) => s.game.id);
   const challenge = useAppSelector((s) => s.game.challenge);
-  const showRestart = isGameView && gameMode !== "daily";
+  const showRestart = view === "game" && gameMode !== "daily";
 
   const handleBackClick = () => {
-    if (gameMode !== "daily") {
+    if (view === "game" && gameMode !== "daily") {
       const res = window.confirm(
         "Are you sure you want to quit your current game?"
       );
       if (!res) return;
     }
-    dispatch(uiAction.setView("welcome"));
+    dispatch(
+      uiAction.navigate({
+        to: { view: "welcome" },
+        timestamp: Date.now(),
+      })
+    );
   };
 
   const handleRestartClick = () => {
@@ -76,9 +82,9 @@ function Row1() {
   };
 
   const renderTitle = () => {
-    if (!isGameView) {
+    if (view === "welcome") {
       return "Duotrigordle";
-    } else {
+    } else if (view === "game") {
       if (challenge === "perfect") {
         return "Perfect Challenge";
       }
@@ -101,13 +107,23 @@ function Row1() {
       const gameNumber =
         gameMode === "daily" || gameMode === "historic" ? ` #${gameId}` : "";
       return `${gameModeText} ${challengeText}${gameNumber}`;
+    } else if (view === "privacy-policy") {
+      return "Privacy Policy";
+    } else if (view === "how-to-play") {
+      return "How to play";
+    } else if (view === "stats") {
+      return "Stats";
+    } else if (view === "account") {
+      return "Account";
+    } else {
+      assertNever(view);
     }
   };
 
   return (
     <div className={styles.row1}>
       <Button
-        className={cn(styles.icon, !isGameView && styles.hidden)}
+        className={cn(styles.icon, view === "welcome" && styles.hidden)}
         onClick={handleBackClick}
       >
         <img
@@ -130,29 +146,12 @@ function Row1() {
       </Button>
       <div className={styles.titleWrapper}>
         <div className={styles.title}>
-          {!isGameView ? (
+          {view === "welcome" ? (
             <img src={logoIcon} width={30} height={30} alt="Logo" />
           ) : null}
           <span className={styles.text}>{renderTitle()}</span>
         </div>
       </div>
-      <Button
-        className={styles.icon}
-        onClick={() => dispatch(uiAction.showModal("stats"))}
-      >
-        <img
-          className={styles.img}
-          src={statsIcon}
-          alt="statistics"
-          title="Statistics"
-        />
-      </Button>
-      <Button
-        className={styles.icon}
-        onClick={() => dispatch(uiAction.showModal("about"))}
-      >
-        <img className={styles.img} src={aboutIcon} alt="about" title="About" />
-      </Button>
       <Button
         className={styles.icon}
         onClick={() => dispatch(uiAction.showModal("settings"))}
@@ -179,14 +178,14 @@ function Row1() {
 function Row2() {
   const targets = useAppSelector((s) => s.game.targets);
   const guesses = useAppSelector((s) => s.game.guesses);
-  const gameOver = useAppSelector((s) => s.game.gameOver);
+  const gameOver = useAppSelector((s) => s.game.endTime !== null);
   const boardsCompleted = useMemo(
     () => getCompletedBoardsCount(targets, guesses),
     [guesses, targets]
   );
   const challenge = useAppSelector((s) => s.game.challenge);
   const numGuesses = guesses.length;
-  const maxGuesses = challenge === "perfect" ? NUM_BOARDS : NUM_GUESSES;
+  const maxGuesses = NUM_GUESSES[challenge];
   const extraGuessesNum =
     maxGuesses - NUM_BOARDS - (numGuesses - boardsCompleted);
   const cannotWin = extraGuessesNum < 0;
@@ -210,21 +209,22 @@ function Timer() {
   const showTimer = useAppSelector((s) => s.settings.showTimer);
   const startTime = useAppSelector((s) => s.game.startTime);
   const endTime = useAppSelector((s) => s.game.endTime);
-  const gameStarted = useAppSelector((s) => s.game.guesses.length > 0);
-  const gameOver = useAppSelector((s) => s.game.gameOver);
+  const pauseTime = useAppSelector((s) => s.game.pauseTime);
   const [now, setNow] = useState(() => Date.now());
 
   const timerText = useMemo(() => {
     if (!showTimer) {
       return "";
-    } else if (!gameStarted) {
+    } else if (startTime === null) {
       return formatTimeElapsed(0);
-    } else if (gameOver) {
+    } else if (endTime !== null) {
       return formatTimeElapsed(endTime - startTime);
+    } else if (pauseTime !== null) {
+      return "PAUSED";
     } else {
       return formatTimeElapsed(now - startTime);
     }
-  }, [now, showTimer, startTime, endTime, gameStarted, gameOver]);
+  }, [showTimer, startTime, endTime, pauseTime, now]);
 
   useEffect(() => {
     if (!showTimer) return;
@@ -241,7 +241,7 @@ function Row3() {
   const dispatch = useAppDispatch();
   const targets = useAppSelector((s) => s.game.targets);
   const guesses = useAppSelector((s) => s.game.guesses);
-  const highlightedBoard = useAppSelector((s) => s.ui.highlightedBoard);
+  const highlightedBoard = useAppSelector((s) => s.game.highlightedBoard);
   const boardsCompleted = useMemo(
     () => getCompletedBoards(targets, guesses),
     [targets, guesses]

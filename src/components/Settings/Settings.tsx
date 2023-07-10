@@ -1,6 +1,13 @@
 import cn from "classnames";
-import { useEffect, useState } from "react";
-import { settingsAction, useAppDispatch, useAppSelector } from "../../store";
+import { ChangeEvent, useState } from "react";
+import { apiValidateEmail } from "../../api";
+import {
+  settingsAction,
+  uiAction,
+  useAppDispatch,
+  useAppSelector,
+} from "../../store";
+import { assertNever } from "../../util";
 import { Checkbox } from "../common/Checkbox/Checkbox";
 import { Modal } from "../common/Modal/Modal";
 import styles from "./Settings.module.css";
@@ -23,7 +30,7 @@ export function Settings() {
   } = useAppSelector((s) => s.settings);
 
   return (
-    <Modal shown={shown}>
+    <Modal shown={shown} onClose={() => dispatch(uiAction.showModal(null))}>
       <p className={styles.title}>Settings</p>
       <div className={styles.settingsList}>
         <div className={styles.setting}>
@@ -170,45 +177,26 @@ export function Settings() {
 function KofiEmailInput() {
   const dispatch = useAppDispatch();
   const kofiEmail = useAppSelector((s) => s.settings.kofiEmail);
-  const [text, setText] = useState("");
-  // 0 - no status
-  // 1 - not a valid kofi email
-  // 2 - error communicating with server
-  // 3 - input field was empty
-  // 4 - success
-  const [statusCode, setStatusCode] = useState(0);
+  const [input, setInput] = useState("");
+  const [status, setStatus] = useState<null | "error" | "success">(null);
 
-  useEffect(() => {
-    if (kofiEmail) {
-      setText(kofiEmail);
-    }
-  }, [kofiEmail]);
+  function handleInput(e: ChangeEvent<HTMLInputElement>) {
+    setInput(e.target.value);
+    setStatus(null);
+  }
 
-  function handleClick() {
+  function handleSubmit() {
     if (kofiEmail) {
-      setText("");
       dispatch(settingsAction.update({ hideAds: false, kofiEmail: null }));
-      setStatusCode(0);
+      setStatus(null);
     } else {
-      if (!text) {
-        setStatusCode(3);
-        return;
-      }
-      const url = new URL("/api/emails/validate", window.location.href);
-      url.searchParams.append("email", text);
-      fetch(url)
-        .then((x) => x.json())
-        .then((valid) => {
-          if (valid) {
-            dispatch(settingsAction.update({ kofiEmail: text }));
-            setStatusCode(4);
-          } else {
-            setStatusCode(1);
-          }
-        })
-        .catch(() => {
-          setStatusCode(2);
-        });
+      apiValidateEmail(dispatch, input).then((x) => {
+        if (x === true) {
+          setStatus("success");
+        } else if (x === false) {
+          setStatus("error");
+        }
+      });
     }
   }
   return (
@@ -224,39 +212,38 @@ function KofiEmailInput() {
       <form
         className={styles.kofiInputGroup}
         onSubmit={(e) => {
+          handleSubmit();
           e.preventDefault();
         }}
       >
         <input
           type="email"
           className={styles.email}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
+          value={kofiEmail ?? input}
+          onChange={handleInput}
           disabled={kofiEmail !== null}
+          required
         />
         <input
           className={styles.submit}
           type="submit"
-          onClick={handleClick}
           value={kofiEmail ? "Reset" : "Submit"}
         />
       </form>
       <p className={styles.hint}>
-        {statusCode === 1 ? (
+        {status === "error" ? (
           <>
-            Not a valid supporter email
-            <br />
-            (Contact{" "}
-            <a href="mailto:bryanchen74@gmail.com">bryanchen74@gmail.com</a> for
-            any issues)
+            Not a valid supporter email (Contact{" "}
+            <a href="mailto:bryan.chen@duotrigordle.com">
+              bryan.chen@duotrigordle.com
+            </a>{" "}
+            for any issues)
           </>
-        ) : statusCode === 2 ? (
-          <>There was a problem communicating with the server</>
-        ) : statusCode === 3 ? (
-          <>Please enter an email</>
-        ) : statusCode === 4 ? (
+        ) : status === "success" ? (
           <>Success!</>
-        ) : null}
+        ) : status === null ? null : (
+          assertNever(status)
+        )}
       </p>
     </div>
   );

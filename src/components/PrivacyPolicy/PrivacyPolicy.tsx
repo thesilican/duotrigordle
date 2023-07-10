@@ -1,34 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Duotrigordle Privacy Policy</title>
-    <link href="https://unpkg.com/sanitize.css" rel="stylesheet" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Rubik&display=swap"
-      rel="stylesheet"
-    />
-    <style>
-      body {
-        background-color: black;
-        color: white;
-        font-family: "Rubik", sans-serif;
-      }
-      a {
-        color: white;
-      }
-      main {
-        margin: auto;
-        max-width: 600px;
-      }
-    </style>
-  </head>
-  <body>
-    <main>
-      <h1>Privacy Policy for Duotrigordle</h1>
+import styles from "./PrivacyPolicy.module.css";
 
+export function PrivacyPolicy() {
+  return (
+    <div className={styles.main}>
       <p>
         At Duotrigordle, accessible from https://duotrigordle.com, one of our
         main priorities is the privacy of our visitors. This Privacy Policy
@@ -53,34 +27,46 @@
         linked to any information that is personally identifiable. The purpose
         of the information is for analyzing trends, administering the site,
         tracking users' movement on the website, and gathering demographic
-        information. Our Privacy Policy was created with the help of the
-        <a href="https://www.privacypolicygenerator.org"
-          >Privacy Policy Generator</a
-        >.
+        information. Our Privacy Policy was created with the help of the{" "}
+        <a href="https://www.privacypolicygenerator.org">
+          Privacy Policy Generator
+        </a>
+        .
       </p>
 
       <h2>Cookies and Web Beacons</h2>
 
       <p>
-        Like any other website, Duotrigordle uses 'cookies'. These cookies are
+        Like any other website, Duotrigordle uses "cookies". These cookies are
         used to store information including visitors' preferences, and the pages
         on the website that the visitor accessed or visited. The information is
         used to optimize the users' experience by customizing our web page
         content based on visitors' browser type and/or other information.
       </p>
 
-      <h2>Google DoubleClick DART Cookie</h2>
+      <h2>Our Advertising Partners</h2>
 
       <p>
-        Google is one of a third-party vendor on our site. It also uses cookies,
-        known as DART cookies, to serve ads to our site visitors based upon
-        their visit to www.website.com and other sites on the internet. However,
-        visitors may choose to decline the use of DART cookies by visiting the
-        Google ad and content network Privacy Policy at the following URL –
-        <a href="https://policies.google.com/technologies/ads"
-          >https://policies.google.com/technologies/ads</a
-        >
+        Some of advertisers on our site may use cookies and web beacons. Our
+        advertising partners are listed below. Each of our advertising partners
+        has their own Privacy Policy for their policies on user data. For easier
+        access, we hyperlinked to their Privacy Policies below.
       </p>
+
+      <ul>
+        <li>
+          Ezoic &mdash;{" "}
+          <a href="https://www.ezoic.com/privacy-policy/">
+            https://www.ezoic.com/privacy-policy/
+          </a>
+        </li>
+        <li>
+          Ezoic Ad Partners &mdash;{" "}
+          <a href="https://www.ezoic.com/privacy-policy/ad-partners/">
+            https://www.ezoic.com/privacy-policy/ad-partners/
+          </a>
+        </li>
+      </ul>
 
       <h2>Privacy Policies</h2>
 
@@ -153,6 +139,6 @@
         By using our website, you hereby consent to our Privacy Policy and agree
         to its Terms and Conditions.
       </p>
-    </main>
-  </body>
-</html>
+    </div>
+  );
+}

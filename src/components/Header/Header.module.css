@@ -1,15 +1,19 @@
 .header {
   width: 100%;
 
+  position: sticky;
+  top: 0;
+  z-index: 10;
+
   display: flex;
   flex-direction: column;
   align-items: center;
   background-color: var(--gray-1);
-  padding: 0px 4px 4px 4px;
+  padding: 4px 8px 4px 8px;
   border-bottom: 1px solid var(--gray-3);
 }
-.header.welcome {
-  padding: 0px 8px 4px 8px;
+.header.game {
+  padding: 0px 4px 4px 4px;
 }
 
 .row1 {
@@ -20,7 +24,7 @@
   gap: 4px;
   padding-top: 4px;
 }
-.header.wide .row1 {
+.header.wide.game .row1 {
   max-width: var(--width-wide);
 }
 
@@ -32,36 +36,41 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  font-size: 14px;
+  font-size: 24px;
 }
 .header.welcome .title {
   margin-left: 40px;
   margin-right: -40px;
   transform: translateX(-36px);
-  font-size: 24px;
+}
+.header.game .title {
+  font-size: 16px;
 }
 @media screen and (min-width: 400px) {
   .title {
-    font-size: 18px;
+    font-size: 30px;
+  }
+  .header.game .title {
+    font-size: 20px;
   }
 }
 @media screen and (min-width: 600px) {
   .title {
-    font-size: 24px;
-  }
-  .header.welcome .title {
     font-size: 30px;
+  }
+  .header.game .title {
+    font-size: 24px;
   }
 }
 .text {
   text-align: center;
   flex: 1;
 }
-.welcome .text {
+.header.welcome .text {
   text-align: left;
 }
 
-.icon {
+.header .icon {
   background-color: transparent;
   border: none;
   padding: 0px;
@@ -93,7 +102,7 @@
     font-size: 16px;
   }
 }
-.header.welcome .row2 {
+.header:not(.game) .row2 {
   visibility: hidden;
   height: 0;
   opacity: 0;
@@ -118,7 +127,7 @@
   gap: 1px;
   transition: opacity 0.25s ease;
 }
-.header.welcome .row3 {
+.header:not(.game) .row3 {
   visibility: hidden;
   height: 0;
   opacity: 0;
@@ -135,6 +144,7 @@
   cursor: pointer;
   flex: 1;
   color: var(--white);
+  transition: background-color 0.1s ease;
 }
 .chip.green {
   background-color: var(--green);
@@ -147,4 +157,7 @@
 .chip.white {
   background-color: var(--white);
   color: var(--black);
+}
+.header.disableAnimations .chip {
+  transition: none;
 }

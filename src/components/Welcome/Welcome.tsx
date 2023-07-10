@@ -2,10 +2,9 @@ import cn from "classnames";
 import { useEffect, useState } from "react";
 import {
   Challenge,
-  gameAction,
+  DailyChallenge,
   getCompletedBoardsCount,
   getDailyId,
-  getIsGameOver,
   getTargetWords,
   NUM_BOARDS,
   storageAction,
@@ -13,23 +12,39 @@ import {
   useAppDispatch,
   useAppSelector,
 } from "../../store";
-import { range } from "../../util";
+import { unreachable } from "../../util";
 import { LinkButton } from "../common/LinkButton/LinkButton";
 import { TabButtons } from "../common/TabButtons/TabButtons";
 import styles from "./Welcome.module.css";
 
 export function Welcome() {
-  const [tabIdx, setTabIdx] = useState(0);
+  const dispatch = useAppDispatch();
+  const tabIdx = useAppSelector((s) => s.ui.welcomeTab);
 
   return (
-    <div className={cn(styles.welcome, tabIdx === 1 && styles.practice)}>
+    <div
+      className={cn(
+        styles.welcome,
+        tabIdx === 0 && styles.daily,
+        tabIdx === 1 && styles.practice,
+        tabIdx === 2 && styles.more
+      )}
+    >
       <TabButtons
-        tabs={["Daily", "Practice"]}
+        tabs={["Daily", "Practice", "More"]}
         idx={tabIdx}
-        onTabChange={setTabIdx}
+        onTabChange={(idx) => dispatch(uiAction.setWelcomeTab(idx))}
       />
       <div className={styles.tabContainer}>
-        {tabIdx === 0 ? <DailyTab /> : <PracticeTab />}
+        {tabIdx === 0 ? (
+          <DailyTab />
+        ) : tabIdx === 1 ? (
+          <PracticeTab />
+        ) : tabIdx === 2 ? (
+          <MoreTab />
+        ) : (
+          unreachable()
+        )}
       </div>
     </div>
   );
@@ -66,32 +81,28 @@ function DailyTab() {
 type DailyLinkProps = {
   title: string;
   description: string;
-  challenge: "normal" | "sequence" | "jumble";
+  challenge: DailyChallenge;
 };
 function DailyLink(props: DailyLinkProps) {
   const dispatch = useAppDispatch();
   const gameSave = useAppSelector((s) => s.storage.daily)[props.challenge];
 
   const handleClick = () => {
-    const timestamp = Date.now();
-    const dailyId = getDailyId(timestamp);
-    if (gameSave && gameSave.id === dailyId) {
-      dispatch(gameAction.loadSave({ timestamp, challenge: props.challenge }));
-    } else {
-      dispatch(
-        gameAction.start({
+    dispatch(
+      uiAction.navigate({
+        to: {
+          view: "game",
           gameMode: "daily",
           challenge: props.challenge,
-          timestamp,
-        })
-      );
-    }
-    dispatch(uiAction.setView("game"));
+        },
+        timestamp: Date.now(),
+      })
+    );
   };
 
   if (!gameSave) {
     return (
-      <div className={styles.gameMode}>
+      <div className={styles.item}>
         <LinkButton className={styles.link} onClick={handleClick}>
           {props.title}
         </LinkButton>
@@ -103,10 +114,10 @@ function DailyLink(props: DailyLinkProps) {
   const targets = getTargetWords(gameSave.id, props.challenge);
   const guesses = gameSave.guesses;
   const boardsComplete = getCompletedBoardsCount(targets, guesses);
-  const gameOver = getIsGameOver(targets, guesses, props.challenge);
+  const gameOver = gameSave.endTime !== null;
 
   return (
-    <div className={styles.gameMode}>
+    <div className={styles.item}>
       <LinkButton className={styles.link} onClick={handleClick}>
         {gameOver ? "View Results" : "Continue"}
       </LinkButton>
@@ -120,35 +131,48 @@ function DailyLink(props: DailyLinkProps) {
 function PracticeTab() {
   const dispatch = useAppDispatch();
   const todaysId = getDailyId(Date.now());
-  const [archiveId, setArchiveId] = useState(() => todaysId - 1);
-  const [archiveChallenge, setArchiveChallenge] = useState<Challenge>("normal");
+  const [historicId, setHistoricId] = useState(() => todaysId - 1);
+  const [historicChallenge, setHistoricChallenge] =
+    useState<DailyChallenge>("normal");
 
   const handleNewPracticeGameClick = (challenge: Challenge) => {
     dispatch(
-      gameAction.start({
-        gameMode: "practice",
-        challenge,
+      uiAction.navigate({
+        to: {
+          view: "game",
+          gameMode: "practice",
+          challenge,
+        },
         timestamp: Date.now(),
       })
     );
-    dispatch(uiAction.setView("game"));
   };
 
   const handleNewArchiveClick = () => {
+    if (
+      !Number.isInteger(historicId) ||
+      historicId < 1 ||
+      historicId >= todaysId
+    ) {
+      alert("Please enter an number from 1 to " + (todaysId - 1));
+      return;
+    }
     dispatch(
-      gameAction.start({
-        gameMode: "historic",
-        challenge: archiveChallenge,
+      uiAction.navigate({
+        to: {
+          view: "game",
+          gameMode: "historic",
+          challenge: historicChallenge,
+          id: historicId,
+        },
         timestamp: Date.now(),
-        id: archiveId,
       })
     );
-    dispatch(uiAction.setView("game"));
   };
 
   return (
     <>
-      <div className={styles.gameMode}>
+      <div className={styles.item}>
         <LinkButton
           className={styles.link}
           onClick={() => handleNewPracticeGameClick("normal")}
@@ -157,7 +181,7 @@ function PracticeTab() {
         </LinkButton>
         <p>Solve 32 wordles at the same time</p>
       </div>
-      <div className={styles.gameMode}>
+      <div className={styles.item}>
         <LinkButton
           className={styles.link}
           onClick={() => handleNewPracticeGameClick("sequence")}
@@ -166,7 +190,7 @@ function PracticeTab() {
         </LinkButton>
         <p>The next board is revealed only after solving the current board</p>
       </div>
-      <div className={styles.gameMode}>
+      <div className={styles.item}>
         <LinkButton
           className={styles.link}
           onClick={() => handleNewPracticeGameClick("jumble")}
@@ -178,7 +202,7 @@ function PracticeTab() {
           chosen for you
         </p>
       </div>
-      <div className={styles.gameMode}>
+      <div className={styles.item}>
         <LinkButton
           className={styles.link}
           onClick={() => handleNewPracticeGameClick("perfect")}
@@ -190,33 +214,152 @@ function PracticeTab() {
           without making a single mistake?
         </p>
       </div>
-      <div className={styles.gameMode}>
+      <div className={styles.item}>
         <LinkButton className={styles.link} onClick={handleNewArchiveClick}>
-          Archive
+          Historic
         </LinkButton>
-        <p className={styles.archiveDescription}>
-          <span>Play historic </span>
+        <p className={styles.historicDescription}>
+          <span>Play historic</span>
           <select
-            className={styles.archiveSelect}
-            value={archiveChallenge}
-            onChange={(e) => setArchiveChallenge(e.target.value as "normal")}
+            className={styles.historicSelect}
+            value={historicChallenge}
+            onChange={(e) => setHistoricChallenge(e.target.value as "normal")}
           >
             <option value="normal">duotrigordle</option>
             <option value="sequence">sequence</option>
             <option value="jumble">jumble</option>
           </select>
-          <select
-            className={styles.archiveSelect}
-            value={archiveId}
-            onChange={(e) => setArchiveId(parseInt(e.target.value, 10))}
-          >
-            {range(1, todaysId).map((i) => (
-              <option key={i} value={i}>
-                {i}
-              </option>
-            ))}
-          </select>
+          <input
+            size={3}
+            className={styles.historicInput}
+            type="number"
+            min={0}
+            max={todaysId - 1}
+            value={historicId}
+            onChange={(e) => setHistoricId(parseInt(e.target.value, 10))}
+          />
         </p>
+      </div>
+    </>
+  );
+}
+
+function MoreTab() {
+  const dispatch = useAppDispatch();
+  const kofiEmail = useAppSelector((s) => s.settings.kofiEmail);
+  const username = useAppSelector((s) => s.storage.account?.username ?? null);
+
+  return (
+    <>
+      <div className={styles.item}>
+        <LinkButton
+          className={styles.link}
+          onClick={() =>
+            dispatch(
+              uiAction.navigate({
+                to: { view: "account" },
+                timestamp: Date.now(),
+              })
+            )
+          }
+        >
+          Account
+        </LinkButton>
+        {username ? (
+          <p>Logged in as {username}</p>
+        ) : (
+          <p>Manage your duotrigordle account</p>
+        )}
+      </div>
+      <div className={styles.item}>
+        <LinkButton
+          className={styles.link}
+          onClick={() =>
+            dispatch(
+              uiAction.navigate({
+                to: { view: "stats" },
+                timestamp: Date.now(),
+              })
+            )
+          }
+        >
+          Stats
+        </LinkButton>
+        <p>View your duotrigordle stats</p>
+      </div>
+      <div className={styles.item}>
+        <LinkButton
+          className={styles.link}
+          onClick={() =>
+            dispatch(
+              uiAction.navigate({
+                to: { view: "how-to-play" },
+                timestamp: Date.now(),
+              })
+            )
+          }
+        >
+          How to play
+        </LinkButton>
+        <p>Learn how to play duotrigordle</p>
+      </div>
+      <div className={styles.item}>
+        <a
+          className={styles.link}
+          target="_blank"
+          href="https://ko-fi.com/thesilican"
+          rel="noreferrer"
+        >
+          Buy me a ☕️
+        </a>
+        {kofiEmail ? (
+          <p>Thank you for supporting ♥️</p>
+        ) : (
+          <p>Show your support! (and hide ads)</p>
+        )}
+      </div>
+      <div className={styles.item}>
+        <LinkButton
+          className={styles.link}
+          onClick={() => dispatch(uiAction.showModal("changelog"))}
+        >
+          Changelog
+        </LinkButton>
+      </div>
+      <div className={styles.item}>
+        <a
+          className={styles.link}
+          target="_blank"
+          href="https://github.com/thesilican/duotrigordle"
+          rel="noreferrer"
+        >
+          GitHub
+        </a>
+      </div>
+      <div className={styles.item}>
+        <a
+          className={styles.link}
+          target="_blank"
+          href="mailto:bryan.chen@duotrigordle.com"
+          rel="noreferrer"
+        >
+          Contact us
+        </a>
+      </div>
+      <div className={styles.item}>
+        <LinkButton
+          className={styles.link}
+          onClick={() =>
+            dispatch(
+              uiAction.navigate({
+                to: { view: "privacy-policy" },
+                timestamp: Date.now(),
+              })
+            )
+          }
+        >
+          Privacy Policy
+        </LinkButton>
       </div>
     </>
   );

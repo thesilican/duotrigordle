@@ -4,6 +4,7 @@
   "private": true,
   "proxy": "http://localhost:8080",
   "dependencies": {
+    "@nivo/bar": "^0.83.0",
     "@reduxjs/toolkit": "^1.9.2",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",

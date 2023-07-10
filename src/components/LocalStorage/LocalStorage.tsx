@@ -1,22 +1,21 @@
 import { Fragment, useEffect, useLayoutEffect, useState } from "react";
+import { apiGetGameSaves, apiLogin } from "../../api";
 import {
-  storageAction,
+  getDailyId,
+  LAST_UPDATED,
   settingsAction,
   statsAction,
+  storageAction,
+  uiAction,
   useAppDispatch,
   useAppSelector,
-  LAST_UPDATED,
-  uiAction,
 } from "../../store";
 import {
   loadFromLocalStorage,
-  STORAGE_KEY_STORAGE,
-  parseStorage,
-  STORAGE_KEY_SETTINGS,
-  parseSettings,
-  STORAGE_KEY_STATS,
-  parseStats,
   saveToLocalStorage,
+  SETTINGS_PARSER,
+  STATS_PARSER,
+  STORAGE_PARSER,
 } from "./storage";
 
 export function LocalStorage() {
@@ -25,29 +24,36 @@ export function LocalStorage() {
 
   useLayoutEffect(() => {
     if (!loaded) {
-      const storage = loadFromLocalStorage(STORAGE_KEY_STORAGE, parseStorage);
+      const storage = loadFromLocalStorage(STORAGE_PARSER);
       if (storage) {
         dispatch(storageAction.load(storage));
       }
-      const settings = loadFromLocalStorage(
-        STORAGE_KEY_SETTINGS,
-        parseSettings
-      );
+      const settings = loadFromLocalStorage(SETTINGS_PARSER);
       if (settings) {
         dispatch(settingsAction.update(settings));
       }
-      const stats = loadFromLocalStorage(STORAGE_KEY_STATS, parseStats);
+      const stats = loadFromLocalStorage(STATS_PARSER);
       if (stats) {
         dispatch(statsAction.load(stats));
       }
 
-      // Check last updated, if so open changelog
+      // Check last updated, show changelog if different
       if (storage?.lastUpdated !== LAST_UPDATED) {
         dispatch(storageAction.setLastUpdated(LAST_UPDATED));
         if (storage?.lastUpdated !== undefined) {
-          dispatch(uiAction.showModal("about"));
-          dispatch(uiAction.createSideEffect({ type: "show-changelog-tab" }));
+          dispatch(uiAction.showModal("changelog"));
         }
+      }
+
+      // Perform actions if logged in
+      if (storage?.account) {
+        apiLogin(dispatch, { userId: storage.account.userId }, false).then(
+          (res) => {
+            if (res) {
+              apiGetGameSaves(dispatch, res.userId, getDailyId(Date.now()));
+            }
+          }
+        );
       }
 
       setLoaded(true);
@@ -57,19 +63,19 @@ export function LocalStorage() {
   const storage = useAppSelector((s) => s.storage);
   useEffect(() => {
     if (loaded) {
-      saveToLocalStorage(STORAGE_KEY_STORAGE, storage);
+      saveToLocalStorage(STORAGE_PARSER.key, storage);
     }
   }, [storage, loaded]);
   const settings = useAppSelector((s) => s.settings);
   useEffect(() => {
     if (loaded) {
-      saveToLocalStorage(STORAGE_KEY_SETTINGS, settings);
+      saveToLocalStorage(SETTINGS_PARSER.key, settings);
     }
   }, [settings, loaded]);
   const stats = useAppSelector((s) => s.stats);
   useEffect(() => {
     if (loaded) {
-      saveToLocalStorage(STORAGE_KEY_STATS, stats);
+      saveToLocalStorage(STATS_PARSER.key, stats);
     }
   }, [stats, loaded]);
 

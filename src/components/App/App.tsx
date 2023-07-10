@@ -1,23 +1,27 @@
+import cn from "classnames";
 import { useEffect } from "react";
 import { useAppSelector } from "../../store";
 import { addDebugHooks } from "../../store/debug";
-import { About } from "../About/About";
-import { Boards } from "../Boards/Boards";
+import { assertNever } from "../../util";
+import { Account } from "../Account/Account";
+import { Changelog } from "../Changelog/Changelog";
+import { Game } from "../Game/Game";
 import { Header } from "../Header/Header";
-import { Keyboard } from "../Keyboard/Keyboard";
+import { HowToPlay } from "../HowToPlay/HowToPlay";
 import { KeyboardListener } from "../KeyboardListener/KeyboardListener";
 import { LocalStorage } from "../LocalStorage/LocalStorage";
-import { Results } from "../Results/Results";
+import { NavigationListener } from "../NavigationListener/NavigationListener";
+import { PrivacyPolicy } from "../PrivacyPolicy/PrivacyPolicy";
+import { ServerListener } from "../ServerListener/ServerListener";
 import { Settings } from "../Settings/Settings";
+import { Snackbar } from "../Snackbar/Snackbar";
 import Stats from "../Stats/Stats";
 import { Welcome } from "../Welcome/Welcome";
 import styles from "./App.module.css";
 
 export function App() {
   const view = useAppSelector((s) => s.ui.view);
-  const gameOver = useAppSelector((s) => s.game.gameOver);
-  const showKeyboard = view === "game" && !gameOver;
-  const showResults = view === "game" && gameOver;
+  const disableAnimations = useAppSelector((s) => s.settings.disableAnimations);
 
   useEffect(() => {
     addDebugHooks();
@@ -36,18 +40,36 @@ export function App() {
   }
 
   return (
-    <>
-      <div className={styles.main}>
-        <Header />
-        {view === "welcome" ? <Welcome /> : <Boards />}
-        {showKeyboard ? <Keyboard /> : null}
-        {showResults ? <Results /> : null}
-      </div>
-      <About />
-      <Stats />
+    <div
+      className={cn(
+        styles.main,
+        view === "game" && styles.game,
+        disableAnimations && styles.disableAnimations
+      )}
+    >
+      <Header />
+      {view === "welcome" ? (
+        <Welcome />
+      ) : view === "game" ? (
+        <Game />
+      ) : view === "privacy-policy" ? (
+        <PrivacyPolicy />
+      ) : view === "how-to-play" ? (
+        <HowToPlay />
+      ) : view === "stats" ? (
+        <Stats />
+      ) : view === "account" ? (
+        <Account />
+      ) : (
+        assertNever(view)
+      )}
+      <Changelog />
       <Settings />
+      <Snackbar />
       <LocalStorage />
       <KeyboardListener />
-    </>
+      <NavigationListener />
+      <ServerListener />
+    </div>
   );
 }

@@ -29,7 +29,7 @@ export const settingsInitialState: SettingsState = {
 };
 
 export const settingsAction = {
-  update: createAction<Partial<SettingsState>>("settings/updateSettings"),
+  update: createAction<Partial<SettingsState>>("settings/update"),
 };
 
 export const settingsReducer = createReducer(

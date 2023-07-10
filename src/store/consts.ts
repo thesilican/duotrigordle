@@ -1,6 +1,11 @@
 export const NUM_BOARDS = 32;
 
-export const NUM_GUESSES = 37;
+export const NUM_GUESSES = {
+  normal: 37,
+  sequence: 40,
+  jumble: 39,
+  perfect: 32,
+};
 
 export const PRACTICE_MODE_MIN_ID = 100_000;
 
@@ -14,7 +19,7 @@ export const START_DATE = (() => {
   return utcDate + offset * 60 * 1000;
 })();
 
-export const LAST_UPDATED = "2023-05-15";
+export const LAST_UPDATED = "2023-07-10";
 
 export const ALPHABET = new Set([
   "A",

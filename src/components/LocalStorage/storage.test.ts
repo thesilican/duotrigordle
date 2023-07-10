@@ -1,92 +1,75 @@
-import { HistoryEntry, StatsState } from "../../store";
-import { parseGameSave, parseStorage, parseStats } from "./storage";
+import { PRACTICE_MODE_MAX_ID, PRACTICE_MODE_MIN_ID } from "../../store";
+import { STATS_PARSER, STORAGE_PARSER } from "./storage";
 
 describe("serialization", () => {
   test("game serialization", () => {
-    expect(parseGameSave(null)).toBeNull();
-    expect(parseGameSave({ id: 1 })).toBeNull();
+    // Normal
     expect(
-      parseGameSave({
+      STORAGE_PARSER.parseGameSave({
         id: 123,
         guesses: ["HAPPY", "FLAME"],
         startTime: 123,
-        endTime: 456,
+        endTime: null,
+        pauseTime: 789,
         extraField: 123,
       })
     ).toEqual({
       id: 123,
       guesses: ["HAPPY", "FLAME"],
       startTime: 123,
-      endTime: 456,
+      endTime: null,
+      pauseTime: 789,
     });
+    // Empty
+    expect(STORAGE_PARSER.parseGameSave(null)).toBeNull();
+    expect(STORAGE_PARSER.parseGameSave({ id: 1 })).toBeNull();
   });
   test("stats serialization", () => {
-    const test1 = {
-      history: [
-        // Valid
-        {
-          gameMode: "daily",
-          challenge: "normal",
-          id: 1,
-          guesses: 37,
-          time: 1234,
-        },
-        { gameMode: "practice", challenge: "perfect", guesses: 37, time: 1234 },
-        // Implicit
-        { id: 2, guesses: 37 },
-        { id: 3, guesses: 37, time: null },
-        { id: 4, guesses: 37, time: 1234 },
-        { challenge: "sequence", id: 5, guesses: 37, time: 1234 },
-      ],
-    };
-    const expect1: StatsState = {
-      history: [
-        {
-          gameMode: "daily",
-          challenge: "normal",
-          id: 1,
-          guesses: 37,
-          time: 1234,
-        },
-        { gameMode: "practice", challenge: "perfect", guesses: 37, time: 1234 },
-        {
-          gameMode: "daily",
-          challenge: "normal",
-          id: 2,
-          guesses: 37,
-          time: null,
-        },
-        {
-          gameMode: "daily",
-          challenge: "normal",
-          id: 3,
-          guesses: 37,
-          time: null,
-        },
-        {
-          gameMode: "daily",
-          challenge: "normal",
-          id: 4,
-          guesses: 37,
-          time: 1234,
-        },
-        {
-          gameMode: "daily",
-          challenge: "sequence",
-          id: 5,
-          guesses: 37,
-          time: 1234,
-        },
-      ],
-    };
-    expect(parseStats(test1)).toEqual(expect1);
-    const test2 = {
-      history: [null, 123, {}],
-    };
-    const expect2 = {
-      history: [],
-    };
-    expect(parseStats(test2)).toEqual(expect2);
+    // Empty
+    expect(STATS_PARSER.parseEntry({})).toEqual(null);
+    // Normal
+    expect(
+      STATS_PARSER.parseEntry({
+        gameMode: "daily",
+        challenge: "normal",
+        id: 1,
+        guesses: 32,
+        time: 1234,
+      })
+    ).toEqual({
+      gameMode: "daily",
+      challenge: "normal",
+      id: 1,
+      guesses: 32,
+      time: 1234,
+      synced: false,
+    });
+    // Missing gamemode and challenge
+    expect(
+      STATS_PARSER.parseEntry({
+        id: 1,
+        guesses: 32,
+        time: 1234,
+      })
+    ).toEqual({
+      gameMode: "daily",
+      challenge: "normal",
+      id: 1,
+      guesses: 32,
+      time: 1234,
+      synced: false,
+    });
+    // Missing practice id
+    for (let i = 0; i < 1000; i++) {
+      const id = STATS_PARSER.parseEntry({
+        gameMode: "practice",
+        challenge: "normal",
+        guesses: null,
+        time: null,
+      })?.id;
+      expect(id).toBeLessThan(PRACTICE_MODE_MAX_ID);
+      expect(id).toBeGreaterThanOrEqual(PRACTICE_MODE_MIN_ID);
+    }
   });
   test("storage serialization", () => {
     const test1 = {};
@@ -97,8 +80,10 @@ describe("serialization", () => {
         jumble: null,
       },
       lastUpdated: "1970-01-01",
+      account: null,
+      prevUserId: null,
     };
-    expect(parseStorage(test1)).toEqual(expect1);
+    expect(STORAGE_PARSER.parse(test1)).toEqual(expect1);
     const test2 = {
       daily: {
         normal: null,
@@ -113,8 +98,10 @@ describe("serialization", () => {
         jumble: null,
       },
       lastUpdated: "1970-01-01",
+      account: null,
+      prevUserId: null,
     };
-    expect(parseStorage(test2)).toEqual(expect2);
+    expect(STORAGE_PARSER.parse(test2)).toEqual(expect2);
     const test3 = {
       daily: {
         normal: {
@@ -132,6 +119,7 @@ describe("serialization", () => {
           guesses: ["HELLO", "WORLD", "THERE"],
           startTime: 12345,
           endTime: 67890,
+          pauseTime: null,
         },
       },
       lastUpdated: "2023-03-03",
@@ -145,10 +133,13 @@ describe("serialization", () => {
           guesses: ["HELLO", "WORLD", "THERE"],
           startTime: 12345,
           endTime: 67890,
+          pauseTime: null,
         },
       },
       lastUpdated: "2023-03-03",
+      account: null,
+      prevUserId: null,
     };
-    expect(parseStorage(test3)).toEqual(expect3);
+    expect(STORAGE_PARSER.parse(test3)).toEqual(expect3);
   });
 });

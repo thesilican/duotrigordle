@@ -1,0 +1,93 @@
+.main {
+  width: 100%;
+  max-width: 400px;
+  padding: 30px 12px 30px 12px;
+  animation: fadeIn 0.25s ease;
+
+  display: flex;
+  flex-direction: column;
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.signUp {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+.forgotKeyModal {
+  padding: 16px 0px;
+}
+.labelRow {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.box {
+  padding: 16px;
+  border: 1px solid var(--gray-6);
+  border-radius: 8px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+}
+.input {
+  font-size: 20px;
+  padding: 8px;
+  width: 100%;
+  border: 1px solid var(--gray-8);
+  border-radius: 4px;
+}
+.input.monospace {
+  font-size: 16px;
+  font-family: monospace;
+}
+.input:disabled {
+  border: 1px solid var(--gray-4);
+}
+.label {
+  font-size: 16px;
+}
+.submit {
+  width: 100%;
+}
+.danger {
+  background-color: var(--red);
+}
+
+.loggedIn {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.big {
+  font-size: 20px;
+}
+.logOut {
+  width: 100px;
+}
+.deleteAccountModal {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.deleteAccountModal .row {
+  display: flex;
+  gap: 16px;
+}

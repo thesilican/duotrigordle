@@ -1,0 +1,9 @@
+server {
+    listen ${PORT};
+    root ${PUBLIC_DIR};
+
+    location / {
+        try_files $uri /index.html;
+    }
+}
+

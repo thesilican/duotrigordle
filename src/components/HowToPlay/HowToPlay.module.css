@@ -1,0 +1,68 @@
+.main {
+  width: 100%;
+  max-width: 600px;
+  padding: 14px 12px 30px 12px;
+  animation: fadeIn 0.25s ease;
+}
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+.big {
+  font-size: 24px;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+.main p {
+  margin-bottom: 8px;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+}
+.grid {
+  margin: 16px 0px;
+  display: grid;
+  grid-template-columns: repeat(5, auto);
+  gap: 2px;
+  align-items: center;
+}
+.cell {
+  width: 32px;
+  height: 32px;
+  font-size: 24px;
+  background-color: var(--gray-4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cell.yellow {
+  background-color: var(--yellow);
+  color: var(--black);
+}
+.main.colorBlind .cell.yellow {
+  background-color: var(--orange);
+}
+.cell.green {
+  background-color: var(--green);
+  color: var(--black);
+}
+.main.colorBlind .cell.green {
+  background-color: var(--blue);
+}
+.cell.input {
+  background-color: var(--gray-2);
+  color: var(--gray-6);
+}
+.cell.hint {
+  background-color: var(--gray-2);
+  color: var(--yellow);
+}
+.main.colorBlind .cell.hint {
+  color: var(--blue);
+}

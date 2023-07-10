@@ -5,5 +5,9 @@ RUN npm ci
 COPY . /app/
 RUN npm run build
 
-FROM thesilican/httpd
+FROM nginx:alpine
+COPY nginx/nginx.conf /etc/nginx/
+COPY nginx/default.conf.template /etc/nginx/templates/
 COPY --from=builder /app/build/ /public
+ENV PORT 8080
+ENV PUBLIC_DIR /public

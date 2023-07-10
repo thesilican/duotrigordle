@@ -22,7 +22,9 @@ export function Results() {
   const targets = useAppSelector((s) => s.game.targets);
   const guesses = useAppSelector((s) => s.game.guesses);
   const showTimer = useAppSelector((s) => s.settings.showTimer);
-  const timeElapsed = useAppSelector((s) => s.game.endTime - s.game.startTime);
+  const timeElapsed = useAppSelector(
+    (s) => (s.game.endTime ?? 0) - (s.game.startTime ?? 0)
+  );
   const wideMode = useAppSelector((s) => s.settings.wideMode);
   const colorBlind = useAppSelector((s) => s.settings.colorBlindMode);
 
@@ -115,7 +117,7 @@ function getShareableText(
 
   // Title
   if (challenge === "perfect") {
-    text += "Perfect Duotrigordle Challenge";
+    text += "Perfect Duotrigordle";
   } else {
     if (gameMode === "daily") {
       text += "Daily";
@@ -142,7 +144,7 @@ function getShareableText(
   const guessCount = getAllWordsGuessed(targets, guesses)
     ? guesses.length
     : "X";
-  const maxGuesses = challenge === "perfect" ? NUM_BOARDS : NUM_GUESSES;
+  const maxGuesses = NUM_GUESSES[challenge];
   text += `Guesses: ${guessCount}/${maxGuesses}\n`;
 
   // Timer

@@ -1,11 +1,13 @@
 import cn from "classnames";
 import React, { useEffect, useMemo, useRef } from "react";
 import {
+  gameAction,
   getGhostLetters,
   getSequenceVisibleBoard,
   getWarnHint,
   NUM_BOARDS,
   NUM_GUESSES,
+  selectNextSideEffect,
   uiAction,
   useAppDispatch,
   useAppSelector,
@@ -17,18 +19,16 @@ import styles from "./Boards.module.css";
 export function Boards() {
   const wideMode = useAppSelector((s) => s.settings.wideMode);
   const colorBlind = useAppSelector((s) => s.settings.colorBlindMode);
-  const disableAnimations = useAppSelector((s) => s.settings.disableAnimations);
 
   return (
     <div
       className={cn(
         styles.boards,
-        disableAnimations && styles.disableAnimations,
         wideMode && styles.wide,
         colorBlind && styles.colorBlind
       )}
     >
-      {range(32).map((i) => (
+      {range(NUM_BOARDS).map((i) => (
         <Board key={i} idx={i} />
       ))}
     </div>
@@ -42,9 +42,9 @@ function Board(props: BoardProps) {
   const dispatch = useAppDispatch();
   const targets = useAppSelector((s) => s.game.targets);
   const guesses = useAppSelector((s) => s.game.guesses);
-  const gameOver = useAppSelector((s) => s.game.gameOver);
+  const gameOver = useAppSelector((s) => s.game.endTime !== null);
   const isHighlighted = useAppSelector(
-    (s) => s.ui.highlightedBoard === props.idx
+    (s) => s.game.highlightedBoard === props.idx
   );
   const guessColors = useAppSelector((s) => s.game.colors[props.idx]);
   const hideBoard = useAppSelector((s) => s.settings.hideCompletedBoards);
@@ -64,7 +64,7 @@ function Board(props: BoardProps) {
   const complete = guessedAt !== -1;
   const coloredCount = complete ? guessedAt + 1 : guesses.length;
   const showInput = !complete && !gameOver && !isConcealed;
-  const maxGuesses = challenge === "perfect" ? NUM_BOARDS : NUM_GUESSES;
+  const maxGuesses = NUM_GUESSES[challenge];
   const emptyCount = hideEmptyRows
     ? 0
     : maxGuesses - coloredCount - (showInput ? 1 : 0);
@@ -73,7 +73,7 @@ function Board(props: BoardProps) {
   const isHidden = !gameOver && complete && hideBoard;
 
   const scrollRef = useRef<HTMLDivElement>(null);
-  const sideEffect = useAppSelector((s) => s.ui.sideEffects[0]);
+  const sideEffect = useAppSelector(selectNextSideEffect);
   useEffect(() => {
     if (
       sideEffect &&
@@ -96,7 +96,7 @@ function Board(props: BoardProps) {
         isDimmed && styles.dimmed,
         isHidden && styles.hidden
       )}
-      onClick={() => dispatch(uiAction.highlightClick(props.idx))}
+      onClick={() => dispatch(gameAction.highlightClick(props.idx))}
     >
       <div ref={scrollRef} className={styles.scrollIntoView} />
       <ColoredRows

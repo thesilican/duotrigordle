@@ -193,7 +193,6 @@ function StatsInfo(props: StatsInfoProps) {
 
   return (
     <div className={styles.statsContainer}>
-      <p className={styles.title}>Games History</p>
       {props.gameMode === "daily" ? (
         <div className={styles.grid}>
           <p className={styles.value}>{played}</p>
@@ -225,6 +224,7 @@ function StatsInfo(props: StatsInfoProps) {
           <div />
         </div>
       )}
+      <p className={styles.title}>Games History</p>
       <div className={styles.pastGames}>
         <p className={styles.header}>#</p>
         <p className={styles.header}>Guesses</p>

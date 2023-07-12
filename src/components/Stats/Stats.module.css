@@ -55,7 +55,7 @@
   flex-direction: column;
   gap: 8px;
   margin-bottom: 4px;
-  overflow-y: scroll;
+  white-space: nowrap;
 }
 
 .pastGames {
@@ -73,7 +73,6 @@
   justify-content: center;
   gap: 8px;
   text-align: right;
-  white-space: nowrap;
   font-size: 20px;
 }
 .pastGames .header {

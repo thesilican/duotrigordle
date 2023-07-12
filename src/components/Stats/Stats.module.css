@@ -73,6 +73,7 @@
   justify-content: center;
   gap: 8px;
   text-align: right;
+  white-space: nowrap;
   font-size: 20px;
 }
 .pastGames .header {

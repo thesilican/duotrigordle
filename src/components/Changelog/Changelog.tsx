@@ -14,7 +14,7 @@ export function Changelog() {
           July 17, 2023 <span className={styles.new}>New!</span>
         </p>
         <ul>
-          <li>A couple tweaks from user feedback</li>
+          <li>A few tweaks from user feedback</li>
           <ul>
             <li>
               Rebalance guess limit
@@ -25,7 +25,6 @@ export function Changelog() {
             </li>
             <li>Add link to stats after completing game</li>
             <li>Show past games list in stats screen</li>
-            <li>Small UI tweaks</li>
           </ul>
         </ul>
         <p>July 10, 2023</p>

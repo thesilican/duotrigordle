@@ -132,7 +132,7 @@ function serializePath(path: UiPath): { url: string; title: string } {
     }
     return { url, title };
   } else if (path.view === "stats") {
-    const url = `/stats/summary/${path.gameMode}/${path.challenge}`;
+    const url = `/stats/${path.gameMode}/${path.challenge}`;
     return { url, title: "Stats" };
   } else if (path.view === "welcome") {
     return { url: "/", title: "Duotrigordle" };
@@ -185,10 +185,9 @@ function parsePath(path: string): UiPath {
         return { view: "game", gameMode, challenge, id: num };
       }
     }
-  } else if ((match = path.match(/\/stats\/(summary)\/(\w+)\/(\w+)/))) {
-    // const summary = match[1];
-    const gameMode = match[2];
-    const challenge = match[3];
+  } else if ((match = path.match(/\/stats\/(\w+)\/(\w+)/))) {
+    const gameMode = match[1];
+    const challenge = match[2];
     if (
       (gameMode === "daily" || gameMode === "practice") &&
       (challenge === "normal" ||

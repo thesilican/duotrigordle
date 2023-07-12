@@ -46,48 +46,57 @@ export default function Stats() {
     return null;
   }
 
+  const gameMode = path.gameMode;
+  const challenge = path.challenge;
+  const filteredStats = stats.filter(
+    (x) => x.gameMode === gameMode && x.challenge === challenge
+  );
+
   const gameModeTab =
-    path.gameMode === "daily"
+    gameMode === "daily"
       ? 0
-      : path.gameMode === "practice"
+      : gameMode === "practice"
       ? 1
-      : assertNever(path.gameMode);
+      : assertNever(gameMode);
   const challengeTab =
-    path.challenge === "normal"
+    challenge === "normal"
       ? 0
-      : path.challenge === "sequence"
+      : challenge === "sequence"
       ? 1
-      : path.challenge === "jumble"
+      : challenge === "jumble"
       ? 2
-      : path.challenge === "perfect"
+      : challenge === "perfect"
       ? 3
-      : assertNever(path.challenge);
+      : assertNever(challenge);
 
   function handleGameModeTabChange(idx: number) {
-    if (path.view !== "stats") return;
-    let gameMode: "daily" | "practice";
-    let challenge = path.challenge;
     if (idx === 0) {
-      gameMode = "daily";
       if (challenge === "perfect") {
-        challenge = "normal";
+        dispatch(
+          uiAction.navigate({
+            to: { view: "stats", gameMode: "daily", challenge: "normal" },
+            timestamp: Date.now(),
+          })
+        );
+      } else {
+        dispatch(
+          uiAction.navigate({
+            to: { view: "stats", gameMode: "daily", challenge },
+            timestamp: Date.now(),
+          })
+        );
       }
     } else if (idx === 1) {
-      gameMode = "practice";
-    } else {
-      return;
+      dispatch(
+        uiAction.navigate({
+          to: { view: "stats", gameMode: "practice", challenge },
+          timestamp: Date.now(),
+        })
+      );
     }
-    dispatch(
-      uiAction.navigate({
-        to: { view: "stats", gameMode, challenge },
-        timestamp: Date.now(),
-      })
-    );
   }
 
   function handleChallengeTabChange(idx: number) {
-    if (path.view !== "stats") return;
-    let gameMode = path.gameMode;
     let challenge: Challenge;
     if (idx === 0) {
       challenge = "normal";
@@ -137,7 +146,7 @@ export default function Stats() {
         <StatsInfo
           challenge={path.challenge}
           gameMode={path.gameMode}
-          stats={stats}
+          stats={filteredStats}
         />
         <hr />
         <StatsExport stats={stats} />
@@ -215,6 +224,22 @@ function StatsInfo(props: StatsInfoProps) {
           <div />
         </div>
       )}
+      <p className={styles.title}>Games History</p>
+      <div className={styles.pastGames}>
+        <p className={styles.header}>#</p>
+        <p className={styles.header}>Guesses</p>
+        <p className={styles.header}>Time</p>
+        {props.stats
+          .map((stats, i) => ({ stats, i }))
+          .reverse()
+          .map(({ stats, i }) => (
+            <Fragment key={i}>
+              <p>{stats.gameMode === "practice" ? i + 1 : stats.id}</p>
+              <p>{stats.guesses ?? "X"}</p>
+              <p>{stats.time ? formatTimeElapsed(stats.time) : "???"}</p>
+            </Fragment>
+          ))}
+      </div>
       <p className={styles.title}>Guess Distribution</p>
       <p>Guess Count</p>
       <div className={styles.chart}>
@@ -240,7 +265,7 @@ function StatsInfo(props: StatsInfoProps) {
       <div className={styles.times}>
         <p>Best:</p>
         <p>{bestTime}</p>
-        <p>Average (last 7):</p>
+        <p>Average (recent 7):</p>
         <p>{avgTime7}</p>
         <p>Average (all):</p>
         <p>{avgTimeAll}</p>

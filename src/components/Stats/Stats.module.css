@@ -55,6 +55,36 @@
   flex-direction: column;
   gap: 8px;
   margin-bottom: 4px;
+  overflow-y: scroll;
+}
+
+.pastGames {
+  align-self: center;
+  max-height: 300px;
+  overflow-y: scroll;
+
+  padding: 0px 30px 12px 30px;
+  border: 2px solid white;
+  border-radius: 8px;
+
+  display: grid;
+  grid-template-columns: auto auto auto;
+  align-items: start;
+  justify-content: center;
+  gap: 8px;
+  text-align: right;
+  font-size: 20px;
+}
+.pastGames .header {
+  padding-top: 12px;
+  top: 0;
+  position: sticky;
+  z-index: 1;
+  text-align: center;
+  background-color: var(--black);
+}
+.pastGames p:nth-child(3n + 2) {
+  text-align: center;
 }
 
 .title {
@@ -95,6 +125,7 @@
 .barColor {
   flex: 1;
   background: var(--green);
+  border-radius: 2px;
 }
 .times {
   display: grid;

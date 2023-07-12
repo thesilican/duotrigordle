@@ -148,7 +148,7 @@ function serializePath(path: UiPath): { url: string; title: string } {
 }
 function parsePath(path: string): UiPath {
   let match;
-  if ((match = path.match(/\/game\/(\w+)\/(\w+)(\/(\d+))?/))) {
+  if ((match = path.match(/\/game\/([a-z]+)\/([a-z]+)(\/(\d+))?/))) {
     const gameMode = match[1];
     const challenge = match[2];
     const hasId = match[3];
@@ -197,7 +197,7 @@ function parsePath(path: string): UiPath {
     ) {
       return { view: "stats", gameMode, challenge };
     }
-  } else if ((match = path.match(/\/(\w+)/))) {
+  } else if ((match = path.match(/\/([-a-z]+)/))) {
     const view = match[1];
     if (
       view === "privacy-policy" ||

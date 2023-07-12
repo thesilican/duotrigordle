@@ -3,14 +3,12 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import {
   apiDeleteUser,
   apiFetch,
-  apiGetGameSaves,
   apiLogin,
   apiPatchUser,
   apiSignUp,
   GET_USER,
 } from "../../api";
 import {
-  getDailyId,
   storageAction,
   uiAction,
   useAppDispatch,
@@ -71,27 +69,15 @@ function SignUpForm() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (tab === 0) {
-      apiLogin(dispatch, { accountKey }).then((res) => {
-        if (res) {
-          apiGetGameSaves(dispatch, res.userId, getDailyId(Date.now()));
-        }
-      });
+      apiLogin(dispatch, { accountKey });
     } else {
-      apiSignUp(dispatch, username, email || null).then((res) => {
-        if (res) {
-          apiGetGameSaves(dispatch, res.userId, getDailyId(Date.now()));
-        }
-      });
+      apiSignUp(dispatch, username, email || null);
     }
   };
 
   const handleAltSubmit = () => {
     if (!prevUserId) return;
-    apiLogin(dispatch, { userId: prevUserId }).then((res) => {
-      if (res) {
-        apiGetGameSaves(dispatch, res.userId, getDailyId(Date.now()));
-      }
-    });
+    apiLogin(dispatch, { userId: prevUserId });
   };
 
   return (

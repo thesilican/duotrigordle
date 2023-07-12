@@ -218,6 +218,7 @@ function PracticeTab() {
         <LinkButton className={styles.link} onClick={handleNewArchiveClick}>
           Historic
         </LinkButton>
+        <p>Play a past daily duotrigordle.</p>
         <p className={styles.historicDescription}>
           <span>Play historic</span>
           <select

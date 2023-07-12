@@ -13,42 +13,28 @@ import {
 } from "..";
 
 export type UiState = {
-  view: UiView;
+  path: UiPath;
   modal: ModalState;
   sideEffects: SideEffect[];
   sideEffectCount: number;
   welcomeTab: number;
-  snackbar: Snackbar;
+  snackbar: SnackbarState;
 };
-export type UiView =
-  | "welcome"
-  | "game"
-  | "stats"
-  | "privacy-policy"
-  | "how-to-play"
-  | "account";
-export type Path =
+export type UiPath =
   | {
-      view: Exclude<UiView, "game">;
+      view: "welcome" | "privacy-policy" | "how-to-play" | "account";
     }
-  | {
-      view: "game";
-      gameMode: "daily";
-      challenge: DailyChallenge;
-    }
-  | {
-      view: "game";
-      gameMode: "practice";
-      challenge: Challenge;
-    }
+  | { view: "game"; gameMode: "daily"; challenge: DailyChallenge }
+  | { view: "game"; gameMode: "practice"; challenge: Challenge }
   | {
       view: "game";
       gameMode: "historic";
       id: number;
       challenge: DailyChallenge;
-    };
+    }
+  | { view: "stats"; gameMode: "daily" | "practice"; challenge: Challenge };
 type ModalState = "changelog" | "settings" | null;
-type Snackbar = {
+type SnackbarState = {
   status: "success" | "error" | null;
   text: string;
 };
@@ -62,7 +48,7 @@ type SideEffectAction =
       action:
         | {
             type: "push" | "replace";
-            path: Path;
+            path: UiPath;
           }
         | {
             type: "pop";
@@ -71,7 +57,7 @@ type SideEffectAction =
   | { type: "upload-game-save"; challenge: DailyChallenge; gameSave: GameSave };
 
 export const uiInitialState: UiState = {
-  view: "welcome",
+  path: { view: "welcome" },
   modal: null,
   sideEffects: [],
   sideEffectCount: 0,
@@ -83,26 +69,22 @@ export const uiInitialState: UiState = {
 };
 
 export const uiAction = {
-  setView: createAction<UiView>("ui/setView"),
   showModal: createAction<ModalState>("ui/showModal"),
   createSideEffect: createAction<SideEffectAction>("ui/createSideEffect"),
   resolveSideEffect: createAction<number>("ui/resolveSideEffect"),
   navigate: createAction<{
-    to: Path;
+    to: UiPath;
     timestamp: number;
     browser?: boolean;
   }>("ui/navigate"),
   setWelcomeTab: createAction<number>("ui/setWelcomeTab"),
-  setSnackbar: createAction<Partial<Snackbar>>("ui/setSnackbar"),
+  setSnackbar: createAction<Partial<SnackbarState>>("ui/setSnackbar"),
 };
 
 export const uiReducer = createReducer(
   () => initialState,
   (builder) =>
     builder
-      .addCase(uiAction.setView, (state, action) => {
-        state.ui.view = action.payload;
-      })
       .addCase(uiAction.showModal, (state, action) => {
         state.ui.modal = action.payload;
       })
@@ -115,8 +97,14 @@ export const uiReducer = createReducer(
         );
       })
       .addCase(uiAction.navigate, (state, action) => {
+        const oldPath = state.ui.path;
         const path = action.payload.to;
         const timestamp = action.payload.timestamp;
+        if (pathsEqual(oldPath, path)) {
+          return;
+        }
+
+        state.ui.path = path;
         if (path.view === "game") {
           if (path.gameMode === "daily") {
             if (
@@ -148,14 +136,13 @@ export const uiReducer = createReducer(
         } else {
           pauseGame(state, timestamp);
         }
-        const prevView = state.ui.view;
-        state.ui.view = path.view;
+
         if (!action.payload.browser) {
-          if (prevView === "welcome") {
+          if (oldPath.view === "welcome") {
             if (path.view !== "welcome") {
               addSideEffect(state, {
                 type: "update-history",
-                action: { type: "push", path },
+                action: { type: "push", path: path },
               });
             }
           } else {
@@ -167,7 +154,7 @@ export const uiReducer = createReducer(
             } else {
               addSideEffect(state, {
                 type: "update-history",
-                action: { type: "replace", path },
+                action: { type: "replace", path: path },
               });
             }
           }
@@ -191,3 +178,37 @@ export function addSideEffect(state: AppState, effect: SideEffectAction) {
 
 export const selectNextSideEffect = (s: AppState) =>
   s.ui.sideEffects.length === 0 ? null : s.ui.sideEffects[0];
+
+export function pathsEqual(a: UiPath, b: UiPath) {
+  if (a.view !== b.view) {
+    return false;
+  }
+  if (a.view === "game" && b.view === "game") {
+    if (a.gameMode !== b.gameMode) {
+      return false;
+    }
+    if (a.gameMode === "daily" && b.gameMode === "daily") {
+      if (a.challenge !== b.challenge) {
+        return false;
+      }
+    } else if (a.gameMode === "practice" && b.gameMode === "practice") {
+      if (a.challenge !== b.challenge) {
+        return false;
+      }
+    } else if (a.gameMode === "historic" && b.gameMode === "historic") {
+      if (a.challenge !== b.challenge) {
+        return false;
+      } else if (a.id !== b.id) {
+        return false;
+      }
+    }
+  }
+  if (a.view === "stats" && b.view === "stats") {
+    if (a.gameMode !== b.gameMode) {
+      return false;
+    } else if (a.challenge !== b.challenge) {
+      return false;
+    }
+  }
+  return true;
+}

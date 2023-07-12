@@ -1,10 +1,8 @@
 import { Fragment, useEffect, useLayoutEffect } from "react";
 import {
-  gameAction,
-  Path,
   selectNextSideEffect,
   uiAction,
-  UiView,
+  UiPath,
   useAppDispatch,
   useAppSelector,
 } from "../../store";
@@ -14,7 +12,6 @@ import { assertNever } from "../../util";
 export function NavigationListener() {
   const dispatch = useAppDispatch();
   const sideEffect = useAppSelector(selectNextSideEffect);
-  const view = useAppSelector((s) => s.ui.view);
 
   useLayoutEffect(() => {
     // When the user lands on the site initially, we check if
@@ -22,28 +19,23 @@ export function NavigationListener() {
     // if they do, we have to mark the page as "dangling"
     // since going back in the history will not take you
     // to the homepage
-    let view: UiView = "welcome";
+    let path = parsePath(window.location.pathname);
     let dangling = undefined;
-    const DANGLING_VIEWS: Exclude<UiView, "game">[] = [
-      "privacy-policy",
-      "how-to-play",
-      "stats",
-      "account",
-    ];
-    for (const danglingView of DANGLING_VIEWS) {
-      const { url } = serializePath({ view: danglingView });
-      if (window.location.pathname === url) {
-        view = danglingView;
-        dangling = true;
-        break;
-      }
+    if (path.view === "game") {
+      path = { view: "welcome" };
+    } else if (path.view !== "welcome") {
+      dangling = true;
     }
-    const { url, title } = serializePath({ view });
-    window.history.replaceState({ view, dangling }, "", url);
+    const { url, title } = serializePath(path);
+    window.history.replaceState({ path, dangling }, "", url);
     document.title = title;
-    if (view !== "welcome") {
-      dispatch(uiAction.setView(view));
-    }
+    dispatch(
+      uiAction.navigate({
+        to: path,
+        timestamp: Date.now(),
+        browser: true,
+      })
+    );
   }, [dispatch]);
 
   useLayoutEffect(() => {
@@ -62,7 +54,7 @@ export function NavigationListener() {
           const state = { ...window.history.state, path };
           window.history.replaceState(state, "", url);
         } else {
-          window.history.pushState(path, "", url);
+          window.history.pushState({ path }, "", url);
         }
         document.title = title;
       } else if (sideEffect.action.type === "pop") {
@@ -82,7 +74,7 @@ export function NavigationListener() {
     const handler = (e: PopStateEvent) => {
       dispatch(
         uiAction.navigate({
-          to: e.state,
+          to: e.state.path,
           timestamp: Date.now(),
           browser: true,
         })
@@ -93,87 +85,128 @@ export function NavigationListener() {
     return () => window.removeEventListener("popstate", handler);
   }, [dispatch]);
 
-  useEffect(() => {
-    // Install hooks on window visibility change or unload
-    // to pause or unpause the game
-    // Only install hooks when in game view
-    if (view !== "game") {
-      return;
-    }
-    // Pause the game when closing window
-    const handleUnload = () => {
-      dispatch(gameAction.pause({ timestamp: Date.now() }));
-    };
-    // Pause/unpause game when visibility changes
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        dispatch(gameAction.pause({ timestamp: Date.now() }));
-      } else {
-        dispatch(gameAction.unpause({ timestamp: Date.now() }));
-      }
-    };
-    window.addEventListener("beforeunload", handleUnload);
-    document.addEventListener("visibilitychange", handleVisibilityChange);
-    return () => {
-      window.removeEventListener("beforeunload", handleUnload);
-      document.removeEventListener("visibilitychange", handleVisibilityChange);
-    };
-  }, [dispatch, view]);
-
   return <Fragment />;
 }
 
-function serializePath(path: Path): { url: string; title: string } {
+function serializePath(path: UiPath): { url: string; title: string } {
   if (path.view === "game") {
+    let url = `/${path.gameMode}/${path.challenge}`;
+    if (path.gameMode === "historic") {
+      url += `/${path.id}`;
+    }
+    let title;
     if (path.gameMode === "daily") {
       if (path.challenge === "normal") {
-        return { url: "/daily", title: "Daily Duotrigordle" };
+        title = "Daily Duotrigordle";
       } else if (path.challenge === "sequence") {
-        return { url: "/daily-sequence", title: "Daily Sequence" };
+        title = "Daily Sequence";
       } else if (path.challenge === "jumble") {
-        return { url: "/daily-jumble", title: "Daily Jumble" };
+        title = "Daily Jumble";
       } else {
         return assertNever(path.challenge);
       }
     } else if (path.gameMode === "practice") {
       if (path.challenge === "normal") {
-        return { url: "/practice", title: "Practice Duotrigordle" };
+        title = "Practice Duotrigordle";
       } else if (path.challenge === "sequence") {
-        return { url: "/practice-sequence", title: "Practice Sequence" };
+        title = "Practice Sequence";
       } else if (path.challenge === "jumble") {
-        return { url: "/practice-jumble", title: "Practice Jumble" };
+        title = "Practice Jumble";
       } else if (path.challenge === "perfect") {
-        return { url: "/perfect", title: "Perfect Challenge" };
+        title = "Perfect Challenge";
       } else {
         return assertNever(path.challenge);
       }
     } else if (path.gameMode === "historic") {
       if (path.challenge === "normal") {
-        return { url: `/historic/${path.id}`, title: "Historic Duotrigordle" };
+        title = "Historic Duotrigordle";
       } else if (path.challenge === "sequence") {
-        return {
-          url: `/historic-sequence/${path.id}`,
-          title: "Historic Sequence",
-        };
+        title = "Historic Sequence";
       } else if (path.challenge === "jumble") {
-        return { url: `/historic-jumble/${path.id}`, title: "Historic Jumble" };
+        title = "Historic Jumble";
       } else {
         return assertNever(path.challenge);
       }
     } else {
       return assertNever(path);
     }
+    return { url, title };
+  } else if (path.view === "stats") {
+    const url = `/stats/summary/${path.gameMode}/${path.challenge}`;
+    return { url, title: "Stats" };
   } else if (path.view === "welcome") {
     return { url: "/", title: "Duotrigordle" };
   } else if (path.view === "how-to-play") {
     return { url: "/how-to-play", title: "How to play" };
   } else if (path.view === "privacy-policy") {
-    return { url: "/privacy", title: "Privacy Policy" };
-  } else if (path.view === "stats") {
-    return { url: "/stats", title: "Stats" };
+    return { url: "/privacy-policy", title: "Privacy Policy" };
   } else if (path.view === "account") {
     return { url: "/account", title: "Account" };
   } else {
     assertNever(path.view);
   }
+}
+function parsePath(path: string): UiPath {
+  let match;
+  if ((match = path.match(/\/game\/(\w+)\/(\w+)(\/(\d+))?/))) {
+    const gameMode = match[1];
+    const challenge = match[2];
+    const hasId = match[3];
+    const id = match[4];
+    if (gameMode === "daily") {
+      if (
+        !hasId &&
+        (challenge === "normal" ||
+          challenge === "sequence" ||
+          challenge === "jumble")
+      ) {
+        return { view: "game", gameMode, challenge };
+      }
+    } else if (gameMode === "practice") {
+      if (
+        !hasId &&
+        (challenge === "normal" ||
+          challenge === "sequence" ||
+          challenge === "jumble" ||
+          challenge === "perfect")
+      ) {
+        return { view: "game", gameMode, challenge };
+      }
+    } else if (gameMode === "historic") {
+      const num = parseInt(id, 10);
+      if (
+        (challenge === "normal" ||
+          challenge === "sequence" ||
+          challenge === "jumble") &&
+        hasId &&
+        Number.isInteger(num) &&
+        num > 1
+      ) {
+        return { view: "game", gameMode, challenge, id: num };
+      }
+    }
+  } else if ((match = path.match(/\/stats\/(summary)\/(\w+)\/(\w+)/))) {
+    // const summary = match[1];
+    const gameMode = match[2];
+    const challenge = match[3];
+    if (
+      (gameMode === "daily" || gameMode === "practice") &&
+      (challenge === "normal" ||
+        challenge === "sequence" ||
+        challenge === "jumble" ||
+        challenge === "perfect")
+    ) {
+      return { view: "stats", gameMode, challenge };
+    }
+  } else if ((match = path.match(/\/(\w+)/))) {
+    const view = match[1];
+    if (
+      view === "privacy-policy" ||
+      view === "how-to-play" ||
+      view === "account"
+    ) {
+      return { view };
+    }
+  }
+  return { view: "welcome" };
 }

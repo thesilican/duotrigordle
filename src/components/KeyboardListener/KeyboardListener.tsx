@@ -9,7 +9,7 @@ import {
 
 export function KeyboardListener() {
   const dispatch = useAppDispatch();
-  const view = useAppSelector((s) => s.ui.view);
+  const view = useAppSelector((s) => s.ui.path.view);
   const modal = useAppSelector((s) => s.ui.modal);
   const gameMode = useAppSelector((s) => s.game.gameMode);
 

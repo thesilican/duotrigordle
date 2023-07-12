@@ -20,7 +20,7 @@ import { Welcome } from "../Welcome/Welcome";
 import styles from "./App.module.css";
 
 export function App() {
-  const view = useAppSelector((s) => s.ui.view);
+  const view = useAppSelector((s) => s.ui.path.view);
   const disableAnimations = useAppSelector((s) => s.settings.disableAnimations);
 
   useEffect(() => {

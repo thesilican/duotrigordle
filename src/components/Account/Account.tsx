@@ -238,7 +238,7 @@ function LoggedIn() {
           onClick={() =>
             dispatch(
               uiAction.navigate({
-                to: { view: "stats" },
+                to: { view: "stats", gameMode: "daily", challenge: "normal" },
                 timestamp: Date.now(),
               })
             )

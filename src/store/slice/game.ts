@@ -236,7 +236,7 @@ export const gameReducer = createReducer(
           state.game.guesses
         );
         if (
-          state.ui.view === "game" &&
+          state.ui.path.view === "game" &&
           state.game.endTime === null &&
           !completedBoards[action.payload] &&
           (state.game.challenge !== "sequence" ||

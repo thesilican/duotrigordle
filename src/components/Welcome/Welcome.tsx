@@ -1,5 +1,6 @@
 import cn from "classnames";
 import { useEffect, useState } from "react";
+import { apiGetGameSaves } from "../../api";
 import {
   Challenge,
   DailyChallenge,
@@ -20,6 +21,14 @@ import styles from "./Welcome.module.css";
 export function Welcome() {
   const dispatch = useAppDispatch();
   const tabIdx = useAppSelector((s) => s.ui.welcomeTab);
+  const userId = useAppSelector((s) => s.storage.account?.userId ?? null);
+
+  useEffect(() => {
+    dispatch(storageAction.pruneSaves({ timestamp: Date.now() }));
+    if (userId) {
+      apiGetGameSaves(dispatch, userId, getDailyId(Date.now()));
+    }
+  }, [dispatch, userId]);
 
   return (
     <div
@@ -51,12 +60,6 @@ export function Welcome() {
 }
 
 function DailyTab() {
-  const dispatch = useAppDispatch();
-
-  useEffect(() => {
-    dispatch(storageAction.pruneSaves({ timestamp: Date.now() }));
-  }, [dispatch]);
-
   return (
     <>
       <DailyLink
@@ -218,6 +221,7 @@ function PracticeTab() {
         <LinkButton className={styles.link} onClick={handleNewArchiveClick}>
           Historic
         </LinkButton>
+        <p>Play a past daily duotrigordle.</p>
         <p className={styles.historicDescription}>
           <span>Play historic</span>
           <select
@@ -277,7 +281,7 @@ function MoreTab() {
           onClick={() =>
             dispatch(
               uiAction.navigate({
-                to: { view: "stats" },
+                to: { view: "stats", gameMode: "daily", challenge: "normal" },
                 timestamp: Date.now(),
               })
             )

@@ -3,14 +3,12 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import {
   apiDeleteUser,
   apiFetch,
-  apiGetGameSaves,
   apiLogin,
   apiPatchUser,
   apiSignUp,
   GET_USER,
 } from "../../api";
 import {
-  getDailyId,
   storageAction,
   uiAction,
   useAppDispatch,
@@ -71,27 +69,15 @@ function SignUpForm() {
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     if (tab === 0) {
-      apiSignUp(dispatch, username, email || null).then((res) => {
-        if (res) {
-          apiGetGameSaves(dispatch, res.userId, getDailyId(Date.now()));
-        }
-      });
+      apiSignUp(dispatch, username, email || null);
     } else {
-      apiLogin(dispatch, { accountKey }).then((res) => {
-        if (res) {
-          apiGetGameSaves(dispatch, res.userId, getDailyId(Date.now()));
-        }
-      });
+      apiLogin(dispatch, { accountKey });
     }
   };
 
   const handleAltSubmit = () => {
     if (!prevUserId) return;
-    apiLogin(dispatch, { userId: prevUserId }).then((res) => {
-      if (res) {
-        apiGetGameSaves(dispatch, res.userId, getDailyId(Date.now()));
-      }
-    });
+    apiLogin(dispatch, { userId: prevUserId });
   };
 
   return (
@@ -238,7 +224,7 @@ function LoggedIn() {
           onClick={() =>
             dispatch(
               uiAction.navigate({
-                to: { view: "stats" },
+                to: { view: "stats", gameMode: "daily", challenge: "normal" },
                 timestamp: Date.now(),
               })
             )

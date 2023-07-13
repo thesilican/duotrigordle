@@ -29,17 +29,22 @@ export const settingsInitialState: SettingsState = {
 };
 
 export const settingsAction = {
+  load: createAction<SettingsState>("settings/load"),
   update: createAction<Partial<SettingsState>>("settings/update"),
 };
 
 export const settingsReducer = createReducer(
   () => initialState,
   (builder) => {
-    builder.addCase(settingsAction.update, (state, action) => {
-      state.settings = {
-        ...state.settings,
-        ...action.payload,
-      };
-    });
+    builder
+      .addCase(settingsAction.load, (state, action) => {
+        state.settings = action.payload;
+      })
+      .addCase(settingsAction.update, (state, action) => {
+        state.settings = {
+          ...state.settings,
+          ...action.payload,
+        };
+      });
   }
 );

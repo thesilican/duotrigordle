@@ -138,13 +138,24 @@ export const gameReducer = createReducer(
         const game = state.game;
         if (game.endTime !== null) return;
 
-        // Input guess and update colors
+        // Input guess
         const guess = game.input;
         game.input = "";
         if (!WORDS_VALID.has(guess)) {
           return;
         }
         game.guesses.push(guess);
+
+        // Fudge the targets if in perfect mode
+        if (game.guesses.length === 1 && game.challenge === "perfect") {
+          const idx = game.targets.indexOf(guess);
+          if (idx !== -1) {
+            game.targets[idx] = game.targets[0];
+          }
+          game.targets[0] = guess;
+        }
+
+        // Update colors
         for (let i = 0; i < game.targets.length; i++) {
           const colors = getGuessColors(game.targets[i], guess);
           game.colors[i].push(colors);
@@ -153,15 +164,6 @@ export const gameReducer = createReducer(
         // Start timer on first guess
         if (game.startTime === null) {
           game.startTime = action.payload.timestamp;
-        }
-
-        // Fudge the guess if in perfect mode
-        if (game.guesses.length === 1 && game.challenge === "perfect") {
-          const idx = game.targets.indexOf(guess);
-          if (idx !== -1) {
-            game.targets[idx] = game.targets[0];
-          }
-          game.targets[0] = guess;
         }
 
         // Check if game over
@@ -236,7 +238,7 @@ export const gameReducer = createReducer(
           state.game.guesses
         );
         if (
-          state.ui.view === "game" &&
+          state.ui.path.view === "game" &&
           state.game.endTime === null &&
           !completedBoards[action.payload] &&
           (state.game.challenge !== "sequence" ||

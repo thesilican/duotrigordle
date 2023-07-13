@@ -7,21 +7,21 @@ import {
   normalizeHistory,
   NUM_GUESSES,
   StatsEntry,
+  uiAction,
   useAppDispatch,
   useAppSelector,
 } from "../../store";
-import { formatTimeElapsed, range } from "../../util";
+import { assertNever, formatTimeElapsed, range } from "../../util";
 import { LinkButton } from "../common/LinkButton/LinkButton";
 import { TabButtons } from "../common/TabButtons/TabButtons";
 import styles from "./Stats.module.css";
 
 export default function Stats() {
-  const [gameModeTab, setGameModeTab] = useState(0);
-  const [challengeTab, setChallengeTab] = useState(0);
   const localStats = useAppSelector((s) => s.stats.history);
   const userId = useAppSelector((s) => s.storage.account?.userId ?? null);
   const dispatch = useAppDispatch();
   const [serverStats, setServerStats] = useState<StatsEntry[] | null>(null);
+  const path = useAppSelector((s) => s.ui.path);
 
   const stats = useMemo(
     () => (serverStats ? mergeStats(localStats, serverStats) : []),
@@ -42,24 +42,80 @@ export default function Stats() {
     });
   }, [dispatch, userId]);
 
+  if (path.view !== "stats") {
+    return null;
+  }
+
+  const gameMode = path.gameMode;
+  const challenge = path.challenge;
+  const filteredStats = stats.filter(
+    (x) => x.gameMode === gameMode && x.challenge === challenge
+  );
+
+  const gameModeTab =
+    gameMode === "daily"
+      ? 0
+      : gameMode === "practice"
+      ? 1
+      : assertNever(gameMode);
+  const challengeTab =
+    challenge === "normal"
+      ? 0
+      : challenge === "sequence"
+      ? 1
+      : challenge === "jumble"
+      ? 2
+      : challenge === "perfect"
+      ? 3
+      : assertNever(challenge);
+
   function handleGameModeTabChange(idx: number) {
-    setGameModeTab(idx);
-    if (idx === 0 && challengeTab > 2) {
-      setChallengeTab(0);
+    if (idx === 0) {
+      if (challenge === "perfect") {
+        dispatch(
+          uiAction.navigate({
+            to: { view: "stats", gameMode: "daily", challenge: "normal" },
+            timestamp: Date.now(),
+          })
+        );
+      } else {
+        dispatch(
+          uiAction.navigate({
+            to: { view: "stats", gameMode: "daily", challenge },
+            timestamp: Date.now(),
+          })
+        );
+      }
+    } else if (idx === 1) {
+      dispatch(
+        uiAction.navigate({
+          to: { view: "stats", gameMode: "practice", challenge },
+          timestamp: Date.now(),
+        })
+      );
     }
   }
-  const gameMode =
-    gameModeTab === 0 ? "daily" : gameModeTab === 1 ? "practice" : "daily";
-  const challenge =
-    challengeTab === 0
-      ? "normal"
-      : challengeTab === 1
-      ? "sequence"
-      : challengeTab === 2
-      ? "jumble"
-      : challengeTab === 3
-      ? "perfect"
-      : "normal";
+
+  function handleChallengeTabChange(idx: number) {
+    let challenge: Challenge;
+    if (idx === 0) {
+      challenge = "normal";
+    } else if (idx === 1) {
+      challenge = "sequence";
+    } else if (idx === 2) {
+      challenge = "jumble";
+    } else if (idx === 3) {
+      challenge = "perfect";
+    } else {
+      return;
+    }
+    dispatch(
+      uiAction.navigate({
+        to: { view: "stats", gameMode, challenge },
+        timestamp: Date.now(),
+      })
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -83,11 +139,15 @@ export default function Stats() {
                 : ["Normal", "Sequence", "Jumble", "Perfect"]
             }
             idx={challengeTab}
-            onTabChange={setChallengeTab}
+            onTabChange={handleChallengeTabChange}
             size="small"
           />
         </div>
-        <StatsInfo challenge={challenge} gameMode={gameMode} stats={stats} />
+        <StatsInfo
+          challenge={path.challenge}
+          gameMode={path.gameMode}
+          stats={filteredStats}
+        />
         <hr />
         <StatsExport stats={stats} />
       </div>
@@ -164,6 +224,22 @@ function StatsInfo(props: StatsInfoProps) {
           <div />
         </div>
       )}
+      <p className={styles.title}>Games History</p>
+      <div className={styles.pastGames}>
+        <p className={styles.header}>#</p>
+        <p className={styles.header}>Guesses</p>
+        <p className={styles.header}>Time</p>
+        {props.stats
+          .map((stats, i) => ({ stats, i }))
+          .reverse()
+          .map(({ stats, i }) => (
+            <Fragment key={i}>
+              <p>{stats.gameMode === "practice" ? i + 1 : stats.id}</p>
+              <p>{stats.guesses ?? "X"}</p>
+              <p>{stats.time ? formatTimeElapsed(stats.time) : "???"}</p>
+            </Fragment>
+          ))}
+      </div>
       <p className={styles.title}>Guess Distribution</p>
       <p>Guess Count</p>
       <div className={styles.chart}>
@@ -189,7 +265,7 @@ function StatsInfo(props: StatsInfoProps) {
       <div className={styles.times}>
         <p>Best:</p>
         <p>{bestTime}</p>
-        <p>Average (last 7):</p>
+        <p>Average (recent 7):</p>
         <p>{avgTime7}</p>
         <p>Average (all):</p>
         <p>{avgTimeAll}</p>

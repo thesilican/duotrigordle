@@ -11,8 +11,23 @@ export function Changelog() {
       <h1 className={styles.title}>Changelog</h1>
       <div className={styles.overflow}>
         <p>
-          July 10, 2023 <span className={styles.new}>New!</span>
+          July 14, 2023 <span className={styles.new}>New!</span>
         </p>
+        <ul>
+          <li>A few tweaks from user feedback</li>
+          <ul>
+            <li>
+              Rebalance guess limit
+              <br />
+              sequence mode: 40 =&gt; 39
+              <br />
+              jumble mode: 39 =&gt; 38
+            </li>
+            <li>Add link to stats after completing game</li>
+            <li>Show past games list in stats screen</li>
+          </ul>
+        </ul>
+        <p>July 10, 2023</p>
         <ul>
           <li>Added user accounts!</li>
           <ul>
@@ -35,7 +50,6 @@ export function Changelog() {
             <li>Added how to play guide</li>
           </ul>
         </ul>
-        <hr />
         <p>May 15, 2023</p>
         <ul>
           <li>

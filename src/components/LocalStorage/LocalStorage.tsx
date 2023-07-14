@@ -1,7 +1,6 @@
 import { Fragment, useEffect, useLayoutEffect, useState } from "react";
-import { apiGetGameSaves, apiLogin } from "../../api";
+import { apiLogin } from "../../api";
 import {
-  getDailyId,
   LAST_UPDATED,
   settingsAction,
   statsAction,
@@ -30,7 +29,7 @@ export function LocalStorage() {
       }
       const settings = loadFromLocalStorage(SETTINGS_PARSER);
       if (settings) {
-        dispatch(settingsAction.update(settings));
+        dispatch(settingsAction.load(settings));
       }
       const stats = loadFromLocalStorage(STATS_PARSER);
       if (stats) {
@@ -47,13 +46,7 @@ export function LocalStorage() {
 
       // Perform actions if logged in
       if (storage?.account) {
-        apiLogin(dispatch, { userId: storage.account.userId }, false).then(
-          (res) => {
-            if (res) {
-              apiGetGameSaves(dispatch, res.userId, getDailyId(Date.now()));
-            }
-          }
-        );
+        apiLogin(dispatch, { userId: storage.account.userId }, false);
       }
 
       setLoaded(true);

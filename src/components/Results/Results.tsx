@@ -12,6 +12,7 @@ import {
 } from "../../store";
 import { formatTimeElapsed, range } from "../../util";
 import { Button } from "../common/Button/Button";
+import { LinkButton } from "../common/LinkButton/LinkButton";
 import styles from "./Results.module.css";
 
 export function Results() {
@@ -68,7 +69,22 @@ export function Results() {
     );
   };
 
+  const handleViewStatsClick = () => {
+    if (gameMode === "historic") return;
+    dispatch(
+      uiAction.navigate({
+        to: { view: "stats", gameMode, challenge },
+        timestamp: Date.now(),
+      })
+    );
+  };
+
   const win = getAllWordsGuessed(targets, guesses);
+  const guessCount = getAllWordsGuessed(targets, guesses)
+    ? guesses.length
+    : "X";
+  const maxGuesses = NUM_GUESSES[challenge];
+  const timeText = formatTimeElapsed(timeElapsed);
 
   return (
     <div
@@ -80,6 +96,15 @@ export function Results() {
     >
       <p className={styles.title}>
         {win ? "🎉 You win! 🎉" : "Better luck next time 😓"}
+      </p>
+      <p className={styles.info}>
+        Guesses: {guessCount}/{maxGuesses} · Time: {timeText}
+        {gameMode !== "historic" && (
+          <>
+            {" "}
+            · <LinkButton onClick={handleViewStatsClick}>View stats</LinkButton>
+          </>
+        )}
       </p>
       <div className={styles.row}>
         <div className={styles.share}>

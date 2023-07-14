@@ -2,8 +2,8 @@ export const NUM_BOARDS = 32;
 
 export const NUM_GUESSES = {
   normal: 37,
-  sequence: 40,
-  jumble: 39,
+  sequence: 39,
+  jumble: 38,
   perfect: 32,
 };
 
@@ -19,7 +19,7 @@ export const START_DATE = (() => {
   return utcDate + offset * 60 * 1000;
 })();
 
-export const LAST_UPDATED = "2023-07-10";
+export const LAST_UPDATED = "2023-07-14";
 
 export const ALPHABET = new Set([
   "A",

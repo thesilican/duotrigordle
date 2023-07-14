@@ -22,7 +22,7 @@ import { Button } from "../common/Button/Button";
 import styles from "./Header.module.css";
 
 export function Header() {
-  const view = useAppSelector((s) => s.ui.view);
+  const view = useAppSelector((s) => s.ui.path.view);
   const wideMode = useAppSelector((s) => s.settings.wideMode);
   const colorBlind = useAppSelector((s) => s.settings.colorBlindMode);
   const disableAnimations = useAppSelector((s) => s.settings.disableAnimations);
@@ -49,7 +49,7 @@ export function Header() {
 function Row1() {
   const dispatch = useAppDispatch();
   const { fullscreen, toggleFullscreen } = useFullscreen();
-  const view = useAppSelector((s) => s.ui.view);
+  const view = useAppSelector((s) => s.ui.path.view);
   const gameMode = useAppSelector((s) => s.game.gameMode);
   const gameId = useAppSelector((s) => s.game.id);
   const challenge = useAppSelector((s) => s.game.challenge);

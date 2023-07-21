@@ -247,7 +247,7 @@ function StatsInfo(props: StatsInfoProps) {
           const label = i === null ? "X" : i;
           const count = guessCount.get(i) ?? 0;
           const percent = guessMax === 0 ? 0 : count / guessMax;
-          const width = percent === 0 ? "20px" : `${percent * 100}%`;
+          const width = `max(20px, ${percent * 100}%)`;
           return (
             <Fragment key={i}>
               <p>{label}</p>
@@ -280,7 +280,7 @@ function StatsInfo(props: StatsInfoProps) {
           const label = (!last ? "<" : ">") + time;
           const count = timeCount.get(i) ?? 0;
           const percent = timeMax === 0 ? 0 : count / timeMax;
-          const width = percent === 0 ? "20px" : `${percent * 100}%`;
+          const width = `max(20px, ${percent * 100}%)`;
           return (
             <Fragment key={i}>
               <p>{label}</p>

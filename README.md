@@ -1,3 +1,7 @@
+Further Duotrigordle frontend development is now done in a private repository, thank you to all those who contributed!
+
+If you have any issues or feature requests, please send an email to support@duotrigordle.com
+
 # Duotrigordle
 
 https://duotrigordle.com

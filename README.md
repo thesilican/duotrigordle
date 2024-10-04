@@ -1,6 +1,8 @@
 # Duotrigordle
 
-This is the issue tracking repository for [Duotrigordle](https://duotrigordle.com). Click [here](https://github.com/thesilican/duotrigordle/issues/new/choose) to open a bug report or feature request.
+**Note: Duotrigordle is currently in maintenance mode, feature requests are unlikely to be considered.**
+
+This is the issue tracking repository for [Duotrigordle](https://duotrigordle.com). Click [here](https://github.com/thesilican/duotrigordle/issues/new/choose) to open a bug report ~~or feature request~~.
 
 For all other inquiries, please contact me at [support@duotrigordle.com](mailto:support@duotrigordle.com).
 
